@@ -1,0 +1,38 @@
+/* Mapbox overrides for iOS style */
+.mapboxgl-popup {
+  z-index: 1;
+  max-width: none !important;
+}
+
+.mapboxgl-popup-content {
+  padding: 0;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  border: none;
+}
+
+.mapboxgl-popup-tip {
+  display: none;
+}
+
+.mapboxgl-popup-close-button {
+  display: none;
+}
+
+.mapboxgl-ctrl-group {
+  border-radius: 8px !important;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+  background: #fff !important;
+  border: none !important;
+}
+
+.mapboxgl-ctrl button {
+  width: 40px !important;
+  height: 40px !important;
+  border: none !important;
+}
+
+.mapboxgl-ctrl button:not(:disabled):hover {
+  background-color: #f3f4f6 !important;
+}

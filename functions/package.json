@@ -1,0 +1,27 @@
+{
+  "name": "beauty-vision-functions",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "18"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "@netlify/functions": "^2.0.0",
+    "sharp": "^0.32.5",
+    "firebase-admin": "^11.11.1",
+    "firebase-functions": "^4.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.5.0",
+    "@types/sharp": "^0.31.1",
+    "typescript": "^5.1.6"
+  }
+}

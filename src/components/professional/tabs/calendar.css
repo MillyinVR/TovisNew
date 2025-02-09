@@ -1,0 +1,339 @@
+/* Base calendar styles */
+.fc {
+  background: #ffffff;
+  color: #333;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+/* Calendar container */
+.calendar-container {
+  background: #ffffff;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+
+/* View container */
+.fc-view-harness {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  position: absolute !important;
+  top: 95px !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+}
+
+/* Time grid */
+.fc-timegrid.fc-timeGridWeek-view,
+.fc-timegrid.fc-timeGridDay-view {
+  height: 100% !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+}
+
+/* Scrollable area */
+.fc-scroller {
+  height: auto !important;
+  overflow-y: auto !important;
+}
+
+.fc-scroller-liquid-absolute {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+}
+
+/* Grid container */
+.fc-scrollgrid {
+  height: 100% !important;
+}
+
+.fc-scrollgrid-section-body {
+  height: 100% !important;
+}
+
+/* Day column dividers */
+.fc-timegrid-cols td,
+.fc-timegrid-col.fc-day,
+.fc td.fc-timegrid-col,
+.fc .fc-timegrid-col.fc-day-today {
+  border-left: 1px solid rgba(107, 114, 128, 0.2) !important;
+  border-right: 1px solid rgba(107, 114, 128, 0.2) !important;
+}
+
+.fc-theme-standard .fc-scrollgrid {
+  border: 1px solid rgba(107, 114, 128, 0.2) !important;
+}
+
+.fc-scrollgrid-section td {
+  border-left: 1px solid rgba(107, 114, 128, 0.2) !important;
+  border-right: 1px solid rgba(107, 114, 128, 0.2) !important;
+}
+
+/* Column header borders */
+.fc-col-header-cell {
+  border-left: 1px solid rgba(107, 114, 128, 0.2) !important;
+  border-right: 1px solid rgba(107, 114, 128, 0.2) !important;
+  border-bottom: 1px solid rgba(107, 114, 128, 0.2) !important;
+}
+
+/* Time grid slots */
+.fc-timegrid-slot {
+  height: 45px !important;
+  border: none !important;
+  background-color: #ffffff !important;
+  position: relative !important;
+}
+
+.calendar-slot-lane {
+  border-top: 1px solid rgba(107, 114, 128, 0.1) !important;
+  background-color: #ffffff !important;
+}
+
+.calendar-slot-lane.fc-timegrid-slot-minor {
+  border-top-color: rgba(107, 114, 128, 0.1) !important;
+}
+
+.calendar-slot-lane:not(.fc-timegrid-slot-minor) {
+  border-top-color: rgba(107, 114, 128, 0.2) !important;
+}
+
+
+/* Vertical grid lines */
+.fc-timegrid-col-frame {
+  border-left: 1px solid rgba(107, 114, 128, 0.1) !important;
+}
+
+/* Today column */
+.fc-day-today .fc-timegrid-col-frame {
+  background-color: rgba(99, 102, 241, 0.05) !important;
+}
+
+/* Time slots and labels */
+.fc-timegrid-slot-label {
+  color: #6b7280;
+  font-size: 0.875rem;
+  padding-right: 8px !important;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  background: #ffffff !important;
+  width: 65px !important;
+  min-width: 65px !important;
+  border-right: 1px solid rgba(107, 114, 128, 0.2) !important;
+  position: relative !important;
+  height: 45px !important;
+  line-height: 45px !important;
+}
+
+/* Adjust time slot height */
+.fc .fc-timegrid-slot {
+  height: 45px !important;
+  line-height: 45px !important;
+}
+
+/* Ensure grid lines are visible */
+.fc .fc-timegrid-slot-lane {
+  border-bottom: none !important;
+}
+
+/* Time label styles */
+.fc-timegrid-slot-label-cushion {
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  width: 100% !important;
+  padding-right: 12px !important;
+  position: relative !important;
+  font-size: 0.875rem !important;
+  color: #6b7280 !important;
+  height: 45px !important;
+  line-height: 45px !important;
+}
+
+/* Ensure grid lines are consistent */
+.fc-timegrid-slot.fc-timegrid-slot-lane {
+  border-top: 1px solid rgba(107, 114, 128, 0.1) !important;
+}
+
+.fc-timegrid-slot.fc-timegrid-slot-lane:not(.fc-timegrid-slot-minor) {
+  border-top: 1px solid rgba(107, 114, 128, 0.2) !important;
+}
+
+/* Hour slots */
+.fc-timegrid-slot-label[data-time$=":00:00"] .fc-timegrid-slot-label-cushion {
+  font-weight: 500 !important;
+  font-size: 0.875rem !important;
+}
+
+/* Non-hour slots */
+.fc-timegrid-slot-label:not([data-time$=":00:00"]) .fc-timegrid-slot-label-cushion {
+  visibility: hidden;
+}
+
+.fc-timegrid-slot-label:not([data-time$=":00:00"]) .fc-timegrid-slot-label-cushion::after {
+  visibility: visible;
+  position: absolute;
+  right: 16px;
+  font-size: 0.75rem !important;
+  color: #9ca3af !important;
+}
+
+/* Custom minute displays */
+.fc-timegrid-slot-label[data-time$=":15:00"] .fc-timegrid-slot-label-cushion::after {
+  content: "15";
+}
+
+.fc-timegrid-slot-label[data-time$=":30:00"] .fc-timegrid-slot-label-cushion::after {
+  content: "30";
+}
+
+.fc-timegrid-slot-label[data-time$=":45:00"] .fc-timegrid-slot-label-cushion::after {
+  content: "45";
+}
+
+/* Time column width */
+.fc-timegrid-axis,
+.fc-timegrid-axis-frame {
+  width: 65px !important;
+  background: #ffffff !important;
+  border-color: rgba(107, 114, 128, 0.2) !important;
+}
+
+/* Header cells */
+.fc-col-header-cell {
+  background: #ffffff !important;
+  border-color: rgba(107, 114, 128, 0.2) !important;
+  padding: 4px 2px !important;
+}
+
+.fc-col-header {
+  background: #ffffff !important;
+  border-bottom: 1px solid rgba(107, 114, 128, 0.2) !important;
+}
+
+.fc-col-header-cell-cushion {
+  color: #111827 !important;
+  font-weight: 500 !important;
+  text-decoration: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  line-height: 1.1 !important;
+  padding: 2px 0 !important;
+}
+
+/* Current day highlight */
+.fc .fc-day-today {
+  background: rgb(99 102 241 / 0.25) !important;
+}
+
+.fc .fc-day-today .fc-col-header-cell-cushion {
+  color: #111827 !important;
+  font-weight: 600 !important;
+  background: rgb(99 102 241 / 0.3) !important;
+  padding: 4px 8px !important;
+  border-radius: 4px !important;
+}
+
+/* Grid and background colors */
+.fc-theme-standard td, 
+.fc-theme-standard th {
+  border-color: rgba(107, 114, 128, 0.2);
+}
+
+.fc-scrollgrid {
+  border: 1px solid rgba(107, 114, 128, 0.2) !important;
+  background: #ffffff !important;
+}
+
+.fc-timegrid-col-frame {
+  background: #ffffff !important;
+}
+
+/* Time labels */
+.fc-timegrid-slot-label-cushion,
+.fc-timegrid-axis-cushion {
+  color: #6b7280 !important;
+  font-size: 0.875rem !important;
+}
+
+/* Current time indicator */
+.fc-timegrid-now-indicator-line {
+  border-color: #6366f1 !important;
+}
+
+.fc-timegrid-now-indicator-arrow {
+  border-color: #6366f1 !important;
+  color: #6366f1 !important;
+}
+
+/* Event types */
+.event-booking {
+  background-color: #4F46E5 !important;
+}
+
+.event-blocked {
+  background-color: #EF4444 !important;
+}
+
+.event-available {
+  background-color: #10B981 !important;
+}
+
+/* Header toolbar */
+.fc-header-toolbar.fc-toolbar {
+  padding: 4px 8px !important;
+  margin-bottom: 0.5rem !important;
+  border-bottom: 1px solid rgba(107, 114, 128, 0.2) !important;
+  background: #ffffff !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  height: 50px !important;
+  z-index: 1 !important;
+}
+
+/* Buttons */
+.fc-button {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  color: #6b7280 !important;
+  font-size: 0.75rem !important;
+}
+
+.fc-button:hover {
+  background: #f9fafb !important;
+}
+
+.fc-button-active {
+  background: #f3f4f6 !important;
+  color: #111827 !important;
+  font-weight: 600 !important;
+}
+
+/* Calendar wrapper */
+.calendar-wrapper {
+  height: calc(100vh - 400px) !important;
+  min-height: 500px !important;
+  position: relative !important;
+  overflow: hidden !important;
+}

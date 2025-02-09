@@ -1,0 +1,131 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "appointments",
+      "queryScope": "COLLECTION", 
+      "fields": [
+        { 
+          "fieldPath": "professionalId", 
+          "order": "ASCENDING" 
+        },
+        { 
+          "fieldPath": "startTime", 
+          "order": "ASCENDING" 
+        }
+      ]
+    },
+    {
+      "collectionGroup": "appointments",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { 
+          "fieldPath": "clientId", 
+          "order": "ASCENDING" 
+        },
+        { 
+          "fieldPath": "startTime", 
+          "order": "ASCENDING" 
+        }
+      ]
+    },
+    {
+      "collectionGroup": "portfolio",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { 
+          "fieldPath": "professionalId", 
+          "order": "ASCENDING" 
+        },
+        { 
+          "fieldPath": "createdAt", 
+          "order": "DESCENDING" 
+        }
+      ]
+    },
+    {
+      "collectionGroup": "aftercareSummaries",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { 
+          "fieldPath": "professionalId", 
+          "order": "ASCENDING" 
+        },
+        { 
+          "fieldPath": "createdAt", 
+          "order": "DESCENDING" 
+        }
+      ]
+    },
+    {
+      "collectionGroup": "aftercareSummaries",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { 
+          "fieldPath": "clientId", 
+          "order": "ASCENDING" 
+        },
+        { 
+          "fieldPath": "createdAt", 
+          "order": "DESCENDING" 
+        }
+      ]
+    },
+    {
+      "collectionGroup": "products",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { 
+          "fieldPath": "professionalId", 
+          "order": "ASCENDING" 
+        },
+        { 
+          "fieldPath": "createdAt", 
+          "order": "DESCENDING" 
+        }
+      ]
+    },
+    {
+      "collectionGroup": "services",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { 
+          "fieldPath": "professionalId", 
+          "order": "ASCENDING" 
+        },
+        { 
+          "fieldPath": "createdAt", 
+          "order": "DESCENDING" 
+        }
+      ]
+    },
+    {
+      "collectionGroup": "serviceSubcategories", 
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "categoryId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "name",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "serviceDefinitions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "categoryId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "name",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

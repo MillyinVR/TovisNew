@@ -1,0 +1,256 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Root padding for fixed footer */
+#root {
+  padding-bottom: 72px;
+}
+
+/* iOS-style scrollbar */
+::-webkit-scrollbar {
+  width: 2px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 1px;
+}
+
+/* Enable smooth scrolling */
+* {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Hide scrollbar but keep functionality */
+.scrollbar-hide {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+/* Scroll fade effect */
+.relative.z-10.h-screen.overflow-y-auto {
+  scroll-behavior: smooth;
+}
+
+.scroll-fade-section {
+  transition: opacity 0.15s ease-out;
+  will-change: opacity;
+}
+
+@media (min-width: 640px) {
+  .relative.z-10.h-screen.overflow-y-auto {
+    height: calc(100vh - 72px);
+    margin-top: 72px;
+  }
+}
+
+/* Mapbox overrides for iOS style */
+.mapboxgl-popup {
+  z-index: 1;
+  max-width: none !important;
+}
+
+.mapboxgl-popup-content {
+  padding: 0;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  border: none;
+}
+
+.mapboxgl-popup-tip {
+  display: none;
+}
+
+.mapboxgl-popup-close-button {
+  display: none;
+}
+
+.mapboxgl-ctrl-group {
+  border-radius: 8px !important;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+  background: #fff !important;
+  border: none !important;
+}
+
+.mapboxgl-ctrl button {
+  width: 40px !important;
+  height: 40px !important;
+  border: none !important;
+}
+
+.mapboxgl-ctrl button:not(:disabled):hover {
+  background-color: #f3f4f6 !important;
+}
+
+/* FullCalendar styles */
+.fc {
+  width: 100% !important;
+  height: auto !important;
+  font-family: inherit !important;
+}
+
+.fc-timegrid-col.fc-day-today {
+  background-color: rgba(79, 70, 229, 0.05) !important;
+}
+
+.fc-timegrid-col {
+  background-color: #ffffff !important;
+}
+
+.fc-non-business {
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(0, 0, 0, 0.05),
+    rgba(0, 0, 0, 0.05) 10px,
+    rgba(0, 0, 0, 0.08) 10px,
+    rgba(0, 0, 0, 0.08) 20px
+  ) !important;
+}
+
+.fc-timegrid-slot {
+  height: 3rem !important;
+}
+
+.fc-timegrid-slot-label {
+  font-size: 0.875rem !important;
+  color: #6b7280 !important;
+}
+
+.fc-timegrid-axis {
+  padding: 8px !important;
+}
+
+.fc-col-header-cell {
+  padding: 8px !important;
+  background-color: #f9fafb !important;
+  border-bottom: 1px solid #e5e7eb !important;
+}
+
+.fc-scrollgrid-shrink {
+  background-color: #f9fafb !important;
+}
+
+.fc-highlight {
+  background-color: rgba(79, 70, 229, 0.1) !important;
+}
+
+.fc-event {
+  z-index: 1 !important;
+}
+
+.fc-popover {
+  z-index: 100 !important;
+}
+
+.fc .fc-button {
+  z-index: 1 !important;
+}
+
+/* Event types */
+.event-booking {
+  background-color: #4F46E5 !important;
+  border-color: #4338CA !important;
+}
+
+.event-blocked {
+  background-color: #EF4444 !important;
+  border-color: #DC2626 !important;
+}
+
+.event-available {
+  background-color: #10B981 !important;
+  border-color: #059669 !important;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+  .fc {
+    font-size: 0.875rem !important;
+  }
+
+  .fc-toolbar-title {
+    font-size: 1.125rem !important;
+  }
+
+  .fc-header-toolbar {
+    flex-wrap: wrap !important;
+    gap: 0.5rem !important;
+  }
+
+  .fc-toolbar-chunk {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .fc-button {
+    padding: 0.375rem 0.75rem !important;
+    font-size: 0.875rem !important;
+  }
+
+  .fc-timegrid-slot {
+    height: 2.5rem !important;
+  }
+
+  .fc-timegrid-slot-label {
+    font-size: 0.75rem !important;
+  }
+
+  .fc-event {
+    padding: 1px 2px !important;
+    font-size: 0.75rem !important;
+  }
+
+  .fc-event-time {
+    font-size: 0.675rem !important;
+  }
+
+  .fc-event-title {
+    font-size: 0.75rem !important;
+  }
+
+  .fc-timegrid-event {
+    min-height: 1.5rem !important;
+  }
+
+  .fc-scrollgrid-sync-inner {
+    min-height: 2rem !important;
+  }
+
+  .fc-col-header-cell-cushion {
+    padding: 4px !important;
+  }
+
+  .fc-timegrid-axis-cushion {
+    padding: 4px !important;
+  }
+
+  .fc-timegrid-slot-label-cushion {
+    padding: 2px 4px !important;
+  }
+}
+
+/* Touch-friendly improvements */
+@media (hover: none) {
+  .fc-event {
+    touch-action: manipulation !important;
+  }
+
+  .fc-scroller {
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .fc-toolbar button {
+    min-height: 2.5rem !important;
+  }
+}

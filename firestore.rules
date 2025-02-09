@@ -1,0 +1,213 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return request.auth != null && exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    function isProfessional() {
+      return request.auth != null && exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'professional';
+    }
+
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    function isNewUser() {
+      return request.resource != null && request.resource.data.role == 'client';
+    }
+
+    // Service validation helpers
+    function validateServicePrice(baseServiceId) {
+      return exists(/databases/$(database)/documents/services/$(baseServiceId)) &&
+        request.resource.data.price >= get(/databases/$(database)/documents/services/$(baseServiceId)).data.price;
+    }
+
+    function validateServiceDuration(baseServiceId) {
+      let baseService = get(/databases/$(database)/documents/services/$(baseServiceId)).data;
+      let minDuration = baseService.duration * 0.5 >= 15 ? baseService.duration * 0.5 : 15;
+      let maxDuration = baseService.duration * 2;
+      return request.resource.data.duration >= minDuration && 
+             request.resource.data.duration <= maxDuration;
+    }
+
+    // Reference images are admin-only for writing, but the AI service can read
+    match /reference-images/{document=**} {
+      allow read: if isAuthenticated() && (isAdmin() || isProfessional());
+      allow write: if isAuthenticated() && isAdmin();
+    }
+
+    // Allow admins to access all professional management collections
+    match /users/{userId} {
+      allow list: if isAuthenticated() && isAdmin();
+      allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      allow create: if isAuthenticated() && (isOwner(userId) || isNewUser());
+      allow update: if isAuthenticated() && (isOwner(userId) || isAdmin());
+    }
+
+    // License management collections
+    match /licenses/{licenseId} {
+      allow read, list: if isAuthenticated() && (
+        isOwner(resource.data.professionalId) || 
+        isAdmin()
+      );
+      allow create: if isAuthenticated() && (
+        isOwner(request.resource.data.professionalId) || 
+        isAdmin()
+      );
+      allow update: if isAuthenticated() && isAdmin();
+
+      match /history/{historyId} {
+        allow read, list: if isAuthenticated() && (
+          exists(/databases/$(database)/documents/licenses/$(licenseId)) &&
+          (isOwner(get(/databases/$(database)/documents/licenses/$(licenseId)).data.professionalId) || isAdmin())
+        );
+        allow create: if isAuthenticated() && isAdmin();
+      }
+    }
+
+    match /reminders/{reminderId} {
+      allow read, list: if isAuthenticated() && (
+        isOwner(resource.data.professionalId) || 
+        isAdmin()
+      );
+      allow create: if isAuthenticated() && isAdmin();
+    }
+
+    // Performance metrics collections
+    match /bookings/{bookingId} {
+      allow read, list: if isAuthenticated() && (
+        isOwner(resource.data.professionalId) || 
+        isAdmin()
+      );
+    }
+
+    match /reviews/{reviewId} {
+      allow read, list: if isAuthenticated() && (
+        isOwner(resource.data.professionalId) || 
+        isAdmin()
+      );
+    }
+
+    match /messages/{messageId} {
+      allow read, list: if isAuthenticated() && (
+        isOwner(resource.data.professionalId) || 
+        isAdmin()
+      );
+    }
+
+    // Service categories
+    match /serviceCategories/{categoryId} {
+      allow read: if isAuthenticated();
+      allow write, delete: if isAuthenticated() && isAdmin();
+    }
+
+    // Services (top-level collection)
+    match /services/{serviceId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isAuthenticated() && isAdmin();
+    }
+
+    // Professional Services collection
+    match /professionalServices/{serviceId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated() && (
+        (isProfessional() && request.resource.data.professionalId == request.auth.uid) || 
+        isAdmin()
+      );
+      allow delete: if isAuthenticated() && (
+        (isProfessional() && resource.data.professionalId == request.auth.uid) || 
+        isAdmin()
+      );
+    }
+
+    match /portfolio/{itemId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && (isProfessional() || isAdmin());
+      allow update, delete: if isAuthenticated() && (
+        (isProfessional() && request.auth.uid == resource.data.professionalId) || 
+        isAdmin()
+      );
+    }
+
+    match /products/{productId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && (isProfessional() || isAdmin());
+      allow update, delete: if isAuthenticated() && (
+        (isProfessional() && request.auth.uid == resource.data.professionalId) || 
+        isAdmin()
+      );
+    }
+    
+    match /appointments/{appointmentId} {
+      allow read: if isAuthenticated() && 
+        (request.auth.uid == resource.data.professionalId || 
+         request.auth.uid == resource.data.clientId ||
+         isAdmin());
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && 
+        (request.auth.uid == resource.data.professionalId || 
+         request.auth.uid == resource.data.clientId ||
+         isAdmin());
+    }
+
+    // Verification documents collection
+    match /professionalVerifications/{verificationId} {
+      allow read, list: if isAuthenticated() && isAdmin();
+      allow create: if isAuthenticated() && (
+        isOwner(request.resource.data.userId) || 
+        isAdmin()
+      );
+      allow update: if isAuthenticated() && (
+        isOwner(resource.data.userId) || 
+        isAdmin()
+      );
+      allow delete: if false; // Verification documents cannot be deleted
+    }
+
+    match /verifications/{userId} {
+      allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      allow create, update: if isAuthenticated() && (
+        isOwner(userId) || 
+        (isAdmin() && request.resource.data.verificationStatus in ['approved', 'rejected'])
+      );
+      allow delete: if false; // Verification documents cannot be deleted
+    }
+
+    match /aftercareSummaries/{summaryId} {
+      allow read: if isAuthenticated() && 
+        (request.auth.uid == resource.data.professionalId || 
+         request.auth.uid == resource.data.clientId ||
+         isAdmin());
+      allow create: if isAuthenticated() && (isProfessional() || isAdmin());
+      allow update: if isAuthenticated() && 
+        ((isProfessional() && request.auth.uid == resource.data.professionalId) || 
+         isAdmin());
+    }
+
+    // Messaging rules
+    match /conversations/{conversationId} {
+      allow create: if isAuthenticated();
+      allow read: if isAuthenticated() && 
+        (request.auth.uid in resource.data.participants || isAdmin());
+      allow update, delete: if false; // Conversations cannot be modified after creation
+    }
+
+    match /conversations/{conversationId}/messages/{messageId} {
+      allow create: if isAuthenticated() && 
+        exists(/databases/$(database)/documents/conversations/$(conversationId)) &&
+        request.auth.uid in get(/databases/$(database)/documents/conversations/$(conversationId)).data.participants;
+      allow read: if isAuthenticated() && 
+        exists(/databases/$(database)/documents/conversations/$(conversationId)) &&
+        (request.auth.uid in get(/databases/$(database)/documents/conversations/$(conversationId)).data.participants || isAdmin());
+      allow update, delete: if false; // Messages cannot be modified after sending
+    }
+  }
+}
