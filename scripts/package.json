@@ -1,0 +1,9 @@
+{
+  "name": "migration-scripts",
+  "version": "1.0.0",
+  "description": "Migration scripts for the database structure",
+  "type": "module",
+  "dependencies": {
+    "firebase-admin": "^11.0.0"
+  }
+}

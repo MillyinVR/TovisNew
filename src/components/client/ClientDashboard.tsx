@@ -1,7 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNotifications } from '../../hooks/useNotifications';
 import { useNavigate } from 'react-router-dom';
+import { auth } from '../../lib/firebase';
 import { FooterNav } from '../shared/FooterNav';
 import { SavedServices } from './tabs/SavedServices';
 import { SavedProfessionals } from './tabs/SavedProfessionals';
@@ -178,6 +179,38 @@ const DashboardHeader: React.FC<DashboardHeaderProps> = ({
 export const ClientDashboard = () => {
   const { userProfile, logout } = useAuth();
   const [activeTab, setActiveTab] = useState<TabType>('appointments');
+  const navigate = useNavigate();
+
+  // Add token refresh on dashboard load
+  useEffect(() => {
+    const refreshToken = async () => {
+      try {
+        // Force token refresh when dashboard loads to ensure permissions are up to date
+        if (auth.currentUser) {
+          console.log('Refreshing token on client dashboard load');
+          await auth.currentUser.getIdToken(true);
+          console.log('Token refreshed successfully');
+        }
+      } catch (error) {
+        console.error('Error refreshing token:', error);
+        // If token refresh fails, try again after a short delay
+        setTimeout(() => {
+          if (auth.currentUser) {
+            console.log('Retrying token refresh');
+            auth.currentUser.getIdToken(true)
+              .then(() => console.log('Token refresh retry successful'))
+              .catch(retryError => {
+                console.error('Token refresh retry failed:', retryError);
+                // If retry fails, we'll rely on the periodic refresh in AuthContext
+              });
+          }
+        }, 5000);
+      }
+    };
+    
+    // Refresh token when dashboard loads
+    refreshToken();
+  }, []);
 
   const handleLogout = async () => {
     try {

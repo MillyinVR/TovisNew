@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { verificationRef, db } from '../../../lib/firebase';
+import { verificationRef, db, setProfessionalClaim } from '../../../lib/firebase';
 import { collection, query, where, getDocs, doc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { 
   CheckCircle, 
@@ -75,6 +75,14 @@ export const PendingVerifications: React.FC<PendingVerificationsProps> = ({ comp
         'professionalProfile.status': 'verified',
         'role': 'professional'
       });
+
+      // Set professional claim
+      try {
+        await setProfessionalClaim({ userId });
+      } catch (error) {
+        console.error('Error setting professional claim:', error);
+        throw new Error('Failed to set professional claim');
+      }
     } catch (error) {
       console.error('Error approving verification:', error);
       setError('Failed to approve verification');

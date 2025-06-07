@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Message } from './Message';
 import { useMessaging } from '../../contexts/MessagingContext';
 import { useAuth } from '../../contexts/AuthContext';
-import { Button } from '../ui/button';
+import { Button } from '../common/Button';
 
 export const ConversationView: React.FC = () => {
   const { currentUser, userProfile } = useAuth();

@@ -1,101 +1,46 @@
 import { useState, useEffect } from 'react';
-import { Edit2, Trash2, X, Loader2, Plus, Search, Filter } from 'lucide-react';
+import { Edit2, Trash2, X, Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { FileUpload } from '../../shared/FileUpload';
-import { uploadBytes, getDownloadURL, ref } from 'firebase/storage';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { serviceApi } from '../../../lib/api/services';
 import { Timestamp } from 'firebase/firestore';
-import { categoryImagesRef, auth, storage } from '../../../lib/firebase';
 import type { AdminService, ServiceCategory } from '../../../types/service';
 import { toast } from 'react-toastify';
-import { Button } from '../../ui/button';
-import { Input } from '../../ui/input';
-import { Label } from '../../ui/label';
+import { Button } from '../../common/Button';
+import { Input } from '../../common/Input';
 import { useAdminServiceManagement } from '../../../hooks/useAdminServiceManagement';
 
 interface FormValues {
   serviceName: string;
   description: string;
   basePrice: number;
-  price: number;
-  minPrice: number;
-  priceStep: number;
-  baseDuration: number;
-  duration: number;
-  minDuration: number;
-  durationStep: number;
   categoryId: string;
-  subcategoryId?: string;
-  active: boolean;
-  isActive: boolean;
-  isPriceValid: boolean;
-  isDurationValid: boolean;
-  professionalPrice: number;
-  professionalDuration: number;
-  rating: number;
-  reviewCount: number;
-  professionalId: string;
 }
 
 const serviceSchema = yup.object({
   serviceName: yup.string().required('Service name is required'),
   description: yup.string().required('Description is required'),
   basePrice: yup.number()
-    .transform((value) => (isNaN(value) ? undefined : value))
     .required('Base price is required')
     .min(0, 'Price must be positive'),
-  minPrice: yup.number()
-    .transform((value) => (isNaN(value) ? undefined : value))
-    .min(0, 'Minimum price must be positive')
-    .default(0),
-  priceStep: yup.number()
-    .transform((value) => (isNaN(value) ? undefined : value))
-    .min(0, 'Increment must be positive')
-    .default(0),
-  baseDuration: yup.number()
-    .transform((value) => (isNaN(value) ? undefined : value))
-    .required('Base duration is required')
-    .min(15, 'Minimum base duration is 15 minutes'),
-  minDuration: yup.number()
-    .transform((value) => (isNaN(value) ? undefined : value))
-    .min(15, 'Minimum duration is 15 minutes')
-    .default(15),
-  durationStep: yup.number()
-    .transform((value) => (isNaN(value) ? undefined : value))
-    .min(0, 'Increment must be positive')
-    .default(0),
-  categoryId: yup.string().required('Category is required'),
-  subcategoryId: yup.string().optional(),
-  active: yup.boolean().default(true),
-  isActive: yup.boolean().default(true),
-  isPriceValid: yup.boolean().default(true),
-  isDurationValid: yup.boolean().default(true),
-  professionalPrice: yup.number().default(0),
-  professionalDuration: yup.number().default(0),
-  rating: yup.number().default(0),
-  reviewCount: yup.number().default(0),
-  professionalId: yup.string().default('')
+  categoryId: yup.string().required('Category is required')
 });
 
 const categorySchema = yup.object({
   name: yup.string().required('Category name is required'),
-  description: yup.string().nullable()
+  imageUrl: yup.string().url('Invalid image URL').required('Image is required')
 });
 
 export const ServiceManagement = () => {
-  const {
+  const { 
     categories: initialCategories,
     services: initialServices,
-    loading: initialLoading,
-    error: initialError
+    loading: initialLoading
   } = useAdminServiceManagement();
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [modalType, setModalType] = useState<'category' | 'service'>('category');
   const [categories, setCategories] = useState<ServiceCategory[]>(initialCategories || []);
   const [services, setServices] = useState<AdminService[]>(initialServices || []);
   const [loading, setLoading] = useState(initialLoading);
@@ -107,25 +52,10 @@ export const ServiceManagement = () => {
   const { 
     register, 
     handleSubmit, 
-    reset, 
+    reset,
     formState: { errors } 
   } = useForm<FormValues>({
-    resolver: yupResolver(serviceSchema) as any,
-    defaultValues: {
-      minPrice: 0,
-      priceStep: 10,
-      minDuration: 15,
-      durationStep: 15,
-      active: true,
-      isActive: true,
-      isPriceValid: true,
-      isDurationValid: true,
-      professionalPrice: 0,
-      professionalDuration: 0,
-      rating: 0,
-      reviewCount: 0,
-      professionalId: ''
-    }
+    resolver: yupResolver(serviceSchema)
   });
 
   const { 
@@ -133,24 +63,15 @@ export const ServiceManagement = () => {
     handleSubmit: handleSubmitCategory,
     reset: resetCategory,
     formState: { errors: errorsCategory }
-  } = useForm<{ name: string; description?: string }>({
-    resolver: yupResolver(categorySchema) as any
+  } = useForm({
+    resolver: yupResolver(categorySchema)
   });
 
-  const filteredServices = services.filter(service => {
-    const matchesSearch = 
-      service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      service.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || service.categoryId === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const storage = getStorage();
 
   const handleCategoryImageUpload = async (file: File) => {
     try {
-      if (!auth.currentUser) {
-        throw new Error('User must be authenticated to upload images');
-      }
-      const storageRef = categoryImagesRef(file.name);
+      const storageRef = ref(storage, `categories/${file.name}`);
       const snapshot = await uploadBytes(storageRef, file);
       const downloadURL = await getDownloadURL(snapshot.ref);
       setCategoryImage(downloadURL);
@@ -164,9 +85,6 @@ export const ServiceManagement = () => {
 
   const handleServiceImageUpload = async (file: File) => {
     try {
-      if (!auth.currentUser) {
-        throw new Error('User must be authenticated to upload images');
-      }
       const timestamp = Date.now();
       const filename = `${timestamp}-${file.name}`;
       const storageRef = ref(storage, `services/${filename}`);
@@ -181,7 +99,7 @@ export const ServiceManagement = () => {
     }
   };
 
-  const handleCreateCategory = async (data: { name: string; description?: string }) => {
+  const handleCreateCategory = async (data: { name: string }) => {
     try {
       setLoadingCategory(true);
       if (!categoryImage) {
@@ -189,15 +107,13 @@ export const ServiceManagement = () => {
         return;
       }
 
-      const newCategory: Omit<ServiceCategory, 'id' | 'createdAt' | 'updatedAt'> = {
+      const newCategory = {
         name: data.name,
-        description: data.description,
         imageUrl: categoryImage,
         services: []
       };
 
       const categoryId = await serviceApi.admin.createCategory(newCategory);
-
       setCategories(prev => [...prev, {
         ...newCategory,
         id: categoryId,
@@ -230,90 +146,36 @@ export const ServiceManagement = () => {
     }
   };
 
-  const loadCategories = async () => {
-    try {
-      const categories = await serviceApi.getCategories();
-      setCategories(categories);
-      
-      // Load services for each category
-      const allServices = await Promise.all(
-        categories.map(async category => {
-          const services = await serviceApi.admin.getServices({ category: category.id });
-          return services;
-        })
-      );
-      setServices(allServices.flat());
-    } catch (error) {
-      console.error('Failed to load data:', error);
-      toast.error('Failed to load categories and services');
-    }
-  };
-
-  useEffect(() => {
-    loadCategories();
-  }, []);
-
   const onSubmit = async (data: FormValues) => {
     try {
       setLoading(true);
       
-      // Ensure we have at least one image
       if (serviceImages.length === 0) {
         toast.error('At least one service image is required');
         return;
       }
 
-      // Validate required fields
-      if (!data.serviceName?.trim()) {
-        toast.error('Service name is required');
-        return;
-      }
-      if (!data.description?.trim()) {
-        toast.error('Service description is required');
-        return;
-      }
-      if (!data.categoryId) {
-        toast.error('Category is required');
-        return;
-      }
-      if (!data.basePrice || data.basePrice <= 0) {
-        toast.error('Base price must be greater than 0');
-        return;
-      }
-      if (!data.baseDuration || data.baseDuration < 15) {
-        toast.error('Base duration must be at least 15 minutes');
-        return;
-      }
-
-      // Log form data for debugging
-      console.log('Form data:', data);
-      console.log('Service images:', serviceImages);
-
-      // Map form data to match AdminService interface
       const serviceData: Omit<AdminService, 'id' | 'createdAt' | 'updatedAt'> = {
-        name: data.serviceName?.trim() || '',
-        description: data.description.trim(),
+        name: data.serviceName,
+        description: data.description,
         categoryId: data.categoryId,
-        duration: Number(data.baseDuration),
         price: Number(data.basePrice),
-        status: 'active',
-        isPublished: true,
-        media: serviceImages.map(url => ({
-          url,
-          type: 'image'
-        })),
+        duration: 60, // Default duration
         totalBookings: 0,
         revenue: 0,
         rating: 0,
-        professionalId: undefined
+        status: 'active',
+        isPublished: true,
+        media: serviceImages.map(url => ({ url, type: 'image' as const })),
+        professionalId: '',
+        availability: undefined
       };
 
       if (selectedService) {
         await serviceApi.admin.updateService(selectedService.id, serviceData);
-        const updatedServices = services.map(s => 
+        setServices(prev => prev.map(s => 
           s.id === selectedService.id ? { ...s, ...serviceData } : s
-        );
-        setServices(updatedServices);
+        ));
         toast.success('Service updated successfully');
       } else {
         const newService = await serviceApi.admin.createService(serviceData);
@@ -326,7 +188,7 @@ export const ServiceManagement = () => {
       setServiceImages([]);
     } catch (error) {
       console.error('Service operation failed:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to save service. Please try again.');
+      toast.error('Failed to save service');
     } finally {
       setLoading(false);
     }
@@ -343,6 +205,11 @@ export const ServiceManagement = () => {
     }
   };
 
+  useEffect(() => {
+    if (initialCategories) setCategories(initialCategories);
+    if (initialServices) setServices(initialServices);
+  }, [initialCategories, initialServices]);
+
   return (
     <div className="max-w-4xl mx-auto p-6">
       <h2 className="text-2xl font-bold mb-6">Manage Services</h2>
@@ -354,7 +221,7 @@ export const ServiceManagement = () => {
           
           <form onSubmit={handleSubmitCategory(handleCreateCategory)} className="space-y-4">
             <div className="space-y-2">
-              <Label>Category Name</Label>
+              <div className="font-medium">Category Name</div>
               <Input
                 {...registerCategory('name')}
                 placeholder="Enter category name"
@@ -365,19 +232,14 @@ export const ServiceManagement = () => {
             </div>
 
             <div className="space-y-2">
-              <Label>Description</Label>
-              <Input
-                {...registerCategory('description')}
-                placeholder="Enter description"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Category Image</Label>
+              <div className="font-medium">Category Image</div>
               <FileUpload
                 onFileUpload={handleCategoryImageUpload}
                 accept="image/*"
               />
+              {errorsCategory.imageUrl && (
+                <p className="text-sm text-red-500">{errorsCategory.imageUrl.message}</p>
+              )}
             </div>
 
             <Button type="submit" disabled={loadingCategory}>
@@ -416,7 +278,7 @@ export const ServiceManagement = () => {
           
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
-              <Label>Service Name</Label>
+              <div className="font-medium">Service Name</div>
               <Input
                 {...register('serviceName')}
                 placeholder="Enter service name"
@@ -427,7 +289,7 @@ export const ServiceManagement = () => {
             </div>
 
             <div className="space-y-2">
-              <Label>Description</Label>
+              <div className="font-medium">Description</div>
               <Input
                 {...register('description')}
                 placeholder="Enter description"
@@ -437,32 +299,19 @@ export const ServiceManagement = () => {
               )}
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Base Price ($)</Label>
-                <Input
-                  type="number"
-                  {...register('basePrice')}
-                />
-                {errors.basePrice && (
-                  <p className="text-sm text-red-500">{errors.basePrice.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label>Base Duration (mins)</Label>
-                <Input
-                  type="number"
-                  {...register('baseDuration')}
-                />
-                {errors.baseDuration && (
-                  <p className="text-sm text-red-500">{errors.baseDuration.message}</p>
-                )}
-              </div>
+            <div className="space-y-2">
+              <div className="font-medium">Base Price ($)</div>
+              <Input
+                type="number"
+                {...register('basePrice')}
+              />
+              {errors.basePrice && (
+                <p className="text-sm text-red-500">{errors.basePrice.message}</p>
+              )}
             </div>
 
             <div className="space-y-2">
-              <Label>Category</Label>
+              <div className="font-medium">Category</div>
               <select
                 {...register('categoryId')}
                 className="w-full p-2 border rounded"
@@ -480,7 +329,7 @@ export const ServiceManagement = () => {
             </div>
 
             <div className="space-y-2">
-              <Label>Service Images</Label>
+              <div className="font-medium">Service Images</div>
               <FileUpload
                 multiple
                 onFileUpload={handleServiceImageUpload}
@@ -541,7 +390,6 @@ export const ServiceManagement = () => {
                     <p className="text-sm text-gray-600">{service.description}</p>
                     <div className="flex gap-4 mt-1 text-sm">
                       <span>${service.price}</span>
-                      <span>{service.duration} mins</span>
                       <span className="text-blue-600">
                         {categories.find(c => c.id === service.categoryId)?.name}
                       </span>
@@ -559,23 +407,7 @@ export const ServiceManagement = () => {
                         serviceName: service.name,
                         description: service.description,
                         basePrice: service.price,
-                        price: service.price,
-                        minPrice: service.price,
-                        priceStep: 10,
-                        baseDuration: service.duration,
-                        duration: service.duration,
-                        minDuration: service.duration,
-                        durationStep: 15,
-                        categoryId: service.categoryId,
-                        active: service.status === 'active',
-                        isActive: service.status === 'active',
-                        isPriceValid: true,
-                        isDurationValid: true,
-                        professionalPrice: 0,
-                        professionalDuration: 0,
-                        rating: service.rating,
-                        reviewCount: 0,
-                        professionalId: service.professionalId || ''
+                        categoryId: service.categoryId
                       });
                     }}
                   >

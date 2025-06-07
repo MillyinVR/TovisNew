@@ -1,5 +1,20 @@
 import { Timestamp, DocumentData } from 'firebase/firestore';
 
+export interface ServiceDefinition {
+  id: string;
+  name: string;
+  description: string;
+  basePrice: number;
+  baseDuration: number;
+  categoryId: string;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
+  isPublished: boolean;
+  media?: ServiceMedia[];
+  requirements?: string[];
+  cancellationPolicy?: string;
+}
+
 export interface ServiceData extends DocumentData {
   name: string;
   description?: string;

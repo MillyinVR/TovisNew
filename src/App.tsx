@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { MessagingProvider } from './contexts/MessagingContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { LandingPage } from './components/LandingPage';
 import { ConversationView } from './components/shared/ConversationView';
+import ServiceAvailability from './components/client/booking/ServiceAvailability';
+import BookingConfirmation from './components/client/booking/BookingConfirmation';
 
 // Admin Components
 import { AdminDashboardLayout as AdminDashboard } from './components/admin/dashboard/AdminDashboardLayout';
@@ -18,7 +20,6 @@ import { SystemSettings } from './components/admin/settings/SystemSettings';
 import { ProfessionalDashboard } from './components/professional/ProfessionalDashboard';
 import { ServiceSetup } from './components/professional/services/ServiceSetup';
 import { ServiceFlow } from './components/professional/ServiceFlow';
-import { CalendarManagement } from './components/professional/calendar/CalendarManagement';
 import { ProfileManagementWrapper } from './components/professional/profile/ProfileManagementWrapper';
 import { ActivityTab } from './components/professional/tabs/ActivityTab';
 import { FinancialManagement } from './components/professional/finance/FinancialManagement';
@@ -36,12 +37,17 @@ import Bookings from './components/client/tabs/Bookings';
 
 // Shared Components
 import { AuthForm } from './components/AuthForm';
-import { ProtectedRoute } from './components/ProtectedRoute';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { UserRole } from './types/user';
 import BeautyCapture from './components/shared/BeautyCapture';
 import { FooterNav } from './components/shared/FooterNav';
+import { setupClientApiRoutes } from './lib/api/client.api';
 
 function App() {
+  // Initialize client API routes
+  useEffect(() => {
+    setupClientApiRoutes();
+  }, []);
   return (
     <ErrorBoundary>
       <Router>
@@ -57,6 +63,17 @@ function App() {
               <Route path="/discover" element={<ServiceDiscovery />} />
               <Route path="/client/discover" element={<ServiceDiscovery />} />
               <Route path="/professional/discover" element={<ServiceDiscovery />} />
+              <Route path="/professionals/:professionalId" element={<ProfessionalProfile />} />
+              <Route path="/book/:professionalId/:serviceId" element={
+                <ProtectedRoute allowedRoles={['client' as UserRole]}>
+                  <ServiceAvailability />
+                </ProtectedRoute>
+              } />
+              <Route path="/book/confirm" element={
+                <ProtectedRoute allowedRoles={['client' as UserRole]}>
+                  <BookingConfirmation />
+                </ProtectedRoute>
+              } />
 
               {/* Professional Registration Routes */}
               <Route
@@ -81,7 +98,7 @@ function App() {
                 path="/beauty-capture"
                 element={
                   <ProtectedRoute allowedRoles={['admin' as UserRole, 'professional' as UserRole, 'client' as UserRole]}>
-                    <BeautyCapture />
+                    <BeautyCapture onCapture={() => {}} instructions="" />
                   </ProtectedRoute>
                 }
               />
@@ -143,13 +160,10 @@ function App() {
                           </ProtectedRoute>
                         } 
                       />
+                      {/* Redirect from old calendar route to bookings tab in dashboard */}
                       <Route 
                         path="calendar" 
-                        element={
-                          <ProtectedRoute allowedRoles={['professional' as UserRole]}>
-                            <CalendarManagement />
-                          </ProtectedRoute>
-                        } 
+                        element={<Navigate to="/professional/dashboard?tab=bookings" replace />} 
                       />
                       <Route 
                         path="profile/edit" 

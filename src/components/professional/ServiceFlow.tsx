@@ -4,7 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useAppointments } from '../../hooks/useAppointments';
 import { ArrowLeft } from 'lucide-react';
 import BeautyCapture from '../shared/BeautyCapture';
-import { Button } from '../ui/button';
+import { Button } from '../common/Button';
 import { AftercareSummary } from './aftercare/AftercareSummary';
 import { FooterNav } from '../shared/FooterNav';
 import { format } from 'date-fns';

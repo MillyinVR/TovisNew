@@ -15,8 +15,8 @@ export type VerificationStatus =
   | 'suspended'
   | 'update_pending';
 
-import type { Service as BaseServiceType } from '@/types/service';
-export type { Service } from '@/types/service';
+import type { Service as BaseServiceType } from './service';
+export type { Service } from './service';
 
 export interface PortfolioItem {
   id: string;
@@ -121,7 +121,7 @@ export interface Location {
   };
 }
 
-import type { ProfessionalService as ServiceProfessionalService } from '@/types/service';
+import type { ProfessionalService as ServiceProfessionalService } from './service';
 
 export interface ProfessionalService {
   id: string;

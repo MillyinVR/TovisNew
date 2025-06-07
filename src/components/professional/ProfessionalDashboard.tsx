@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Timestamp } from 'firebase/firestore';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth, AuthContextType } from '../../contexts/AuthContext';
+import { auth } from '../../lib/firebase';
+import { useNotifications } from '../../hooks/useNotifications';
 import { LicenseExpirationWarning } from './LicenseExpirationWarning';
 import { FooterNav } from '../shared/FooterNav';
 import { ProfessionalService } from '../../types/service';
@@ -43,10 +45,39 @@ export const ProfessionalDashboard = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabType>('bookings');
   const [loading, setLoading] = useState(true);
+  const { unreadCount } = useNotifications();
 
   const location = useLocation();
   
   useEffect(() => {
+    const refreshToken = async () => {
+      try {
+        // Force token refresh when dashboard loads to ensure permissions are up to date
+        if (auth.currentUser) {
+          console.log('Refreshing token on dashboard load');
+          await auth.currentUser.getIdToken(true);
+          console.log('Token refreshed successfully');
+        }
+      } catch (error) {
+        console.error('Error refreshing token:', error);
+        // If token refresh fails, try again after a short delay
+        setTimeout(() => {
+          if (auth.currentUser) {
+            console.log('Retrying token refresh');
+            auth.currentUser.getIdToken(true)
+              .then(() => console.log('Token refresh retry successful'))
+              .catch(retryError => {
+                console.error('Token refresh retry failed:', retryError);
+                // If retry fails, we'll rely on the periodic refresh in AuthContext
+              });
+          }
+        }, 5000);
+      }
+    };
+    
+    // Refresh token first
+    refreshToken();
+    
     if (userProfile?.uid) {
       setLoading(false);
     }
@@ -56,8 +87,11 @@ export const ProfessionalDashboard = () => {
     const tabParam = params.get('tab');
     if (tabParam === 'bookings') {
       setActiveTab('bookings');
+    } else if (tabParam === 'activity') {
+      // Navigate to ActivityTab when the notification bell is clicked
+      navigate('/professional/activity');
     }
-  }, [userProfile, location.search]);
+  }, [userProfile, location.search, navigate]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -205,9 +239,16 @@ export const ProfessionalDashboard = () => {
                 </p>
               </div>
               <div className="flex items-center space-x-4">
-                <button className="p-1.5 hover:bg-gray-100 rounded-full relative">
+                <button 
+                  onClick={() => navigate('/professional/dashboard?tab=activity')}
+                  className="p-1.5 hover:bg-gray-100 rounded-full relative"
+                >
                   <Bell className="h-5 w-5 text-gray-600" />
-                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                  {unreadCount > 0 && (
+                    <span className="absolute top-0 right-0 flex items-center justify-center h-4 w-4 text-xs text-white bg-red-500 rounded-full">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
+                  )}
                 </button>
                 <button
                   onClick={handleLogout}

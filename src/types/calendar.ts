@@ -14,6 +14,7 @@ export interface CalendarEvent {
   endTime: string;
   extendedProps?: {
     appointmentId?: string;
+    clientId?: string;
     [key: string]: any;
   };
 }
@@ -29,6 +30,7 @@ export interface TimeSlot {
   status: 'confirmed' | 'pending' | 'cancelled' | 'scheduled';
   extendedProps?: {
     appointmentId?: string;
+    clientId?: string;
     [key: string]: any;
   };
 }

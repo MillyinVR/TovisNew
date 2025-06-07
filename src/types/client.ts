@@ -20,6 +20,8 @@ export interface ClientProfile {
   serviceHistory: ServiceRecord[];
   professionalNotes: ProfessionalNote[];
   reviews: ClientReview[];
+  purchasedProducts: any[]; // Products the client has purchased
+  aftercareImages: string[]; // Images from aftercare summaries
   flags?: {
     noShow?: number;
     lateCancel?: number;

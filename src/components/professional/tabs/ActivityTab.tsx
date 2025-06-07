@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FooterNav } from '../../shared/FooterNav';
 import { 
   Bell, 
@@ -11,6 +12,10 @@ import {
   CheckCircle,
   AlertTriangle
 } from 'lucide-react';
+import { useNotifications } from '../../../hooks/useNotifications';
+import { useProfessionalAppointments } from '../../../hooks/useProfessionalAppointments';
+import { format, parseISO } from 'date-fns';
+import { AppointmentStatus } from '../../../types/appointment';
 
 interface Activity {
   id: string;
@@ -26,71 +31,60 @@ interface Activity {
 }
 
 export const ActivityTab = () => {
+  const navigate = useNavigate();
   const [filter, setFilter] = useState<Activity['type'] | 'all'>('all');
+  const { notifications } = useNotifications();
+  const { pendingAppointments } = useProfessionalAppointments();
+  const [activities, setActivities] = useState<Activity[]>([]);
   
-  const activities: Activity[] = [
-    {
-      id: '1',
-      type: 'appointment',
-      title: 'New Appointment Request',
-      description: 'Sarah Johnson requested a Bridal Makeup appointment for March 20th',
-      timestamp: '2024-03-15T10:30:00Z',
-      status: 'pending',
-      action: {
-        label: 'Review Request',
-        onClick: () => console.log('Review appointment request')
-      }
-    },
-    {
-      id: '2',
-      type: 'review',
-      title: 'New Review',
-      description: 'Emma Wilson left a 5-star review for your Soft Glam service',
-      timestamp: '2024-03-15T09:45:00Z',
-      action: {
-        label: 'View Review',
-        onClick: () => console.log('View review')
-      }
-    },
-    {
-      id: '3',
-      type: 'favorite',
-      title: 'Added to Favorites',
-      description: 'Your profile was added to favorites by 3 new clients',
-      timestamp: '2024-03-15T08:20:00Z'
-    },
-    {
-      id: '4',
-      type: 'aftercare',
-      title: 'Aftercare Summary Viewed',
-      description: 'Client viewed and confirmed their aftercare instructions',
-      timestamp: '2024-03-14T15:30:00Z',
-      status: 'completed'
-    },
-    {
-      id: '5',
-      type: 'lastminute',
-      title: 'Last Minute Opportunity',
-      description: 'Fill an empty slot today at 3 PM with 20% higher earnings',
-      timestamp: '2024-03-14T14:00:00Z',
-      status: 'urgent',
-      action: {
-        label: 'Opt In',
-        onClick: () => console.log('Opt in for last minute')
-      }
-    },
-    {
-      id: '6',
-      type: 'trending',
-      title: 'Trending Service Alert',
-      description: 'Chrome Girl Nails is trending in your area',
-      timestamp: '2024-03-14T13:15:00Z',
-      action: {
-        label: 'Add Service',
-        onClick: () => console.log('Add trending service')
-      }
-    }
-  ];
+  // Convert notifications and pending appointments to activities
+  useEffect(() => {
+    const notificationActivities = notifications.map(notification => {
+      // Determine activity type based on notification type
+      let type: Activity['type'] = 'appointment';
+      if (notification.type?.includes('review')) type = 'review';
+      else if (notification.type?.includes('favorite')) type = 'favorite';
+      else if (notification.type?.includes('aftercare')) type = 'aftercare';
+      
+      return {
+        id: notification.id,
+        type,
+        title: notification.message,
+        description: notification.message,
+        timestamp: notification.timestamp.toISOString(),
+        status: notification.read ? 'completed' : 'pending',
+        action: type === 'appointment' ? {
+          label: 'Review Request',
+          onClick: () => navigate('/professional/bookings')
+        } : undefined
+      } as Activity;
+    });
+    
+    // Convert pending appointments to activities
+    const appointmentActivities = pendingAppointments.map(appointment => {
+      const formattedDate = format(parseISO(appointment.startTime), 'MMMM d, yyyy');
+      const formattedTime = format(parseISO(appointment.startTime), 'h:mm a');
+      
+      return {
+        id: `appointment_${appointment.id}`,
+        type: 'appointment',
+        title: 'New Appointment Request',
+        description: `${appointment.clientName} requested a ${appointment.serviceName} appointment for ${formattedDate} at ${formattedTime}`,
+        timestamp: appointment.createdAt,
+        status: 'pending',
+        action: {
+          label: 'Review Request',
+          onClick: () => navigate('/professional/bookings')
+        }
+      } as Activity;
+    });
+    
+    // Combine and sort by timestamp (newest first)
+    const allActivities = [...notificationActivities, ...appointmentActivities]
+      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+    
+    setActivities(allActivities);
+  }, [notifications, pendingAppointments, navigate]);
 
   const getActivityIcon = (type: Activity['type']) => {
     switch (type) {
@@ -245,7 +239,7 @@ export const ActivityTab = () => {
           </div>
         </div>
       </div>
-      <FooterNav />
+      <FooterNav userType="professional" />
     </div>
   );
 };

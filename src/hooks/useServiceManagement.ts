@@ -84,74 +84,90 @@ export const useServiceManagement = () => {
         
         console.log('Loading services for professional:', userProfile.uid);
         
-        const [professionalServicesData, categoriesData] = await Promise.all([
-          getProfessionalServices(userProfile.uid),
-          getCategories()
-        ]);
-        console.log('Fetched professional services:', professionalServicesData);
-        console.log('Fetched categories:', categoriesData);
-        
-        setProfessionalServices(professionalServicesData);
-        setCategories(categoriesData);
-        
-        setIsFetchingServices(true);
-        
-        // Get services from selected category or all categories
-        const relevantCategories = selectedCategory
-          ? [categoriesData.find(c => c.id === selectedCategory)].filter(Boolean)
-          : categoriesData;
+        try {
+          // First try to get professional services and categories
+          const [professionalServicesData, categoriesData] = await Promise.all([
+            getProfessionalServices(userProfile.uid),
+            getCategories()
+          ]);
           
-        console.log('Relevant categories:', relevantCategories);
+          console.log('Fetched professional services:', professionalServicesData);
+          console.log('Fetched categories:', categoriesData);
+          
+          setProfessionalServices(professionalServicesData);
+          setCategories(categoriesData);
+          
+          setIsFetchingServices(true);
+          
+          // Get services from selected category or all categories
+          const relevantCategories = selectedCategory
+            ? [categoriesData.find(c => c.id === selectedCategory)].filter(Boolean)
+            : categoriesData;
+            
+          console.log('Relevant categories:', relevantCategories);
 
-        // Get services from Firestore
-        const servicesRef = collection(db, 'services');
-        const servicesQuery = selectedCategory 
-          ? query(servicesRef, where('categoryId', '==', selectedCategory))
-          : servicesRef;
-        
-        const servicesSnapshot = await getDocs(servicesQuery);
-        
-        // Convert to Service type with proper validation
-        const services = servicesSnapshot.docs
-          .map((doc: QueryDocumentSnapshot) => {
-            try {
-              const data = doc.data();
-              if (!isValidServiceData(data)) {
-                console.warn(`Skipping invalid service ${doc.id}: missing required fields`);
+          // Get services from Firestore
+          const servicesRef = collection(db, 'services');
+          const servicesQuery = selectedCategory 
+            ? query(servicesRef, where('categoryId', '==', selectedCategory))
+            : servicesRef;
+          
+          const servicesSnapshot = await getDocs(servicesQuery);
+          
+          // Convert to Service type with proper validation
+          const services = servicesSnapshot.docs
+            .map((doc: QueryDocumentSnapshot) => {
+              try {
+                const data = doc.data();
+                if (!isValidServiceData(data)) {
+                  console.warn(`Skipping invalid service ${doc.id}: missing required fields`);
+                  return null;
+                }
+
+                return {
+                  id: doc.id,
+                  name: data.name || '',
+                  description: data.description || '',
+                  basePrice: Number(data.price) || 0,
+                  minPrice: Number(data.price) || 0,
+                  priceStep: Number(data.priceStep) || 0,
+                  baseDuration: Number(data.duration) || 0,
+                  minDuration: Number(data.duration) || 0,
+                  duration: Number(data.duration) || 0,
+                  durationStep: Number(data.durationStep) || 0,
+                  categoryId: data.categoryId || '',
+                  imageUrls: Array.isArray(data.media) 
+                    ? data.media.map((m: ServiceMedia) => m?.url || '').filter(Boolean)
+                    : [],
+                  isAvailable: Boolean(data.isPublished),
+                  isBaseService: true,
+                  createdBy: 'admin' as const,
+                  createdAt: data.createdAt || Timestamp.now(),
+                  updatedAt: data.updatedAt || Timestamp.now(),
+                  price: Number(data.price) || 0
+                } as Service;
+              } catch (err) {
+                console.error(`Error processing service ${doc.id}:`, err);
                 return null;
               }
-
-              return {
-                id: doc.id,
-                name: data.name || '',
-                description: data.description || '',
-                basePrice: Number(data.price) || 0,
-                minPrice: Number(data.price) || 0,
-                priceStep: Number(data.priceStep) || 0,
-                baseDuration: Number(data.duration) || 0,
-                minDuration: Number(data.duration) || 0,
-                duration: Number(data.duration) || 0,
-                durationStep: Number(data.durationStep) || 0,
-                categoryId: data.categoryId || '',
-                imageUrls: Array.isArray(data.media) 
-                  ? data.media.map((m: ServiceMedia) => m?.url || '').filter(Boolean)
-                  : [],
-                isAvailable: Boolean(data.isPublished),
-                isBaseService: true,
-                createdBy: 'admin' as const,
-                createdAt: data.createdAt || Timestamp.now(),
-                updatedAt: data.updatedAt || Timestamp.now(),
-                price: Number(data.price) || 0
-              } as Service;
-            } catch (err) {
-              console.error(`Error processing service ${doc.id}:`, err);
-              return null;
-            }
-          })
-          .filter((service): service is Service => service !== null);
-        
-        setServiceDefinitions(services as Service[]);
-        setIsFetchingServices(false);
+            })
+            .filter((service): service is Service => service !== null);
+          
+          setServiceDefinitions(services as Service[]);
+        } catch (serviceError: any) {
+          console.error('Error fetching services:', serviceError);
+          
+          // Check if it's a permission error
+          if (serviceError.toString().includes('permission-denied') || 
+              serviceError.toString().includes('Missing or insufficient permissions')) {
+            console.warn('Permission issue detected. This may be due to missing authentication claims.');
+            setError('Permission issue detected. Please try logging out and logging back in.');
+          } else {
+            setError(serviceError instanceof Error ? serviceError.message : 'Failed to load services');
+          }
+        } finally {
+          setIsFetchingServices(false);
+        }
       } catch (err) {
         console.error('Error loading services:', err);
         setError(err instanceof Error ? err.message : 'Failed to load services');

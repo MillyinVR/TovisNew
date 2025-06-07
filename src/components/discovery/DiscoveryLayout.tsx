@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DiscoveryHeader } from './DiscoveryHeader';
 import { FooterNav } from '../shared/FooterNav';
@@ -6,6 +6,7 @@ import { useDiscoveryData } from '../../hooks/useDiscoveryData';
 import { useAuth } from '../../contexts/AuthContext';
 import { ServiceDefinition, ProfessionalService } from '../../types/service';
 import { DiscoveryCategory, UnifiedService } from '../../hooks/useDiscoveryData';
+import { getProfessionalsByService } from '../../lib/api/services';
 
 function isServiceDefinition(service: UnifiedService): service is ServiceDefinition {
   return (service as ServiceDefinition).basePrice !== undefined;
@@ -51,13 +52,29 @@ const CategoryCard: React.FC<{
 
 export const ProfessionalCard: React.FC<{ professional: ProfessionalService }> = ({ professional }) => {
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
 
   const handleProfileClick = () => {
     navigate(`/professionals/${professional.id}`);
   };
 
   const handleBookNow = () => {
-    navigate(`/book/${professional.id}`);
+    // Use the actual professional's user ID instead of the concatenated ID
+    navigate(`/book/${professional.professionalId}/${professional.baseServiceId}`);
+  };
+
+  const handleMessage = () => {
+    if (!currentUser) {
+      navigate('/login');
+      return;
+    }
+    navigate(`/messages`, { 
+      state: { 
+        recipientId: professional.professionalId,
+        serviceId: professional.baseServiceId,
+        serviceName: professional.name
+      } 
+    });
   };
 
   return (
@@ -72,20 +89,33 @@ export const ProfessionalCard: React.FC<{ professional: ProfessionalService }> =
           </button>
           <div className="flex items-center mt-1">
             <span className="text-yellow-400">★★★★★</span>
-            <span className="text-sm text-gray-500 ml-2">(5.0)</span>
+            <span className="text-sm text-gray-500 ml-2">
+              ({professional.averageRating > 0 ? professional.averageRating.toFixed(1) : '5.0'})
+            </span>
           </div>
         </div>
-        <button 
-          className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors"
-          onClick={handleBookNow}
-        >
-          Book Now
-        </button>
+        <div className="flex space-x-2">
+          <button 
+            className="bg-white border border-indigo-600 text-indigo-600 px-3 py-2 rounded-md hover:bg-indigo-50 transition-colors"
+            onClick={handleMessage}
+          >
+            Message
+          </button>
+          <button 
+            className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors"
+            onClick={handleBookNow}
+          >
+            Book Now
+          </button>
+        </div>
       </div>
       <div className="mt-4 space-y-2">
-        {professional.services?.map((service, index) => (
+        <div className="text-sm text-gray-600">
+          <p>{professional.name}: <span className="font-medium text-indigo-600">${professional.price}</span> for {professional.duration} minutes</p>
+        </div>
+        {professional.customOptions?.map((option, index) => (
           <div key={index} className="text-sm text-gray-600">
-            <p>{service.name}: ${service.price} for {service.duration} minutes</p>
+            <p>{option.name}: ${option.basePrice}</p>
           </div>
         ))}
       </div>
@@ -141,6 +171,30 @@ export const DiscoveryLayout = () => {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState<DiscoveryCategory | null>(null);
   const [selectedService, setSelectedService] = useState<UnifiedService | null>(null);
+  const [professionals, setProfessionals] = useState<ProfessionalService[]>([]);
+  const [loadingProfessionals, setLoadingProfessionals] = useState(false);
+
+  // Fetch professionals when a service is selected
+  useEffect(() => {
+    if (selectedService && isServiceDefinition(selectedService)) {
+      const fetchProfessionals = async () => {
+        try {
+          setLoadingProfessionals(true);
+          const professionalServices = await getProfessionalsByService(selectedService.id);
+          setProfessionals(professionalServices);
+        } catch (error) {
+          console.error('Error fetching professionals:', error);
+          setProfessionals([]);
+        } finally {
+          setLoadingProfessionals(false);
+        }
+      };
+
+      fetchProfessionals();
+    } else {
+      setProfessionals([]);
+    }
+  }, [selectedService]);
 
   const handleCategorySelect = (category: DiscoveryCategory) => {
     navigate(`/discovery/${category.id}/professionals`, { state: { category } });
@@ -279,18 +333,42 @@ export const DiscoveryLayout = () => {
                   <div className="space-y-4">
                     <h3 className="text-xl font-semibold text-gray-900">Available Professionals</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-{selectedCategory.services
-  .filter(service => isProfessionalService(service))
-  .map(service => service as ProfessionalService)
-  .filter(professional => 
-    professional.services?.some((s: { id: string; name: string; duration: number; price: number }) => 
-      s.name.toLowerCase() === selectedService?.name.toLowerCase()
-    )
-  )
-                        .map((professional) => (
-                          <ProfessionalCard key={professional.id} professional={professional} />
-                        ))
-                      }
+                      {(() => {
+                        try {
+                          // If the selected service is a base service definition, fetch professionals who offer it
+                          if (!isProfessionalService(selectedService)) {
+                            // Use the professionals state to display all professionals offering this service
+                            if (!professionals || professionals.length === 0) {
+                              return (
+                                <div className="col-span-full text-center py-8">
+                                  {loadingProfessionals ? (
+                                    <div className="flex justify-center">
+                                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                                    </div>
+                                  ) : (
+                                    <p className="text-gray-500">No professionals available for this service yet</p>
+                                  )}
+                                </div>
+                              );
+                            }
+                            
+                            return professionals.map(professional => (
+                              <ProfessionalCard key={professional.id} professional={professional} />
+                            ));
+                          } else {
+                            // If it's already a professional service, just show that professional
+                            const professional = selectedService as ProfessionalService;
+                            return <ProfessionalCard key={professional.id} professional={professional} />;
+                          }
+                        } catch (error) {
+                          console.error('Error rendering professionals:', error);
+                          return (
+                            <div className="col-span-full text-center py-8">
+                              <p className="text-gray-500">Unable to display professionals at this time</p>
+                            </div>
+                          );
+                        }
+                      })()}
                     </div>
                   </div>
                 ) : (
@@ -305,6 +383,10 @@ export const DiscoveryLayout = () => {
                         ) : selectedCategory.error ? (
                           <div className="bg-red-50 p-4 rounded-md">
                             <p className="text-red-600">{selectedCategory.error}</p>
+                          </div>
+                        ) : selectedCategory.services.length === 0 ? (
+                          <div className="col-span-full text-center py-8">
+                            <p className="text-gray-500">No services available in this category yet</p>
                           </div>
                         ) : (
                           selectedCategory.services.map((service) => {

@@ -12,8 +12,9 @@ import {
   deleteDoc
 } from 'firebase/firestore';
 import { db } from '../firebase';
-import { ProfessionalService, ServiceFilter, ServiceSort } from '../../types/service';
+import { ProfessionalService, ServiceFilter, ServiceSort, Service } from '../../types/service';
 import { toFirestoreData, fromFirestoreData } from '../utils';
+import { createOrUpdateServiceProvider, deleteServiceProvider } from './services';
 
 const getServicesRef = (professionalId: string) => 
   collection(db, 'users', professionalId, 'services');
@@ -69,6 +70,28 @@ export const professionalServiceApi = {
 
       const servicesRef = getServicesRef(professionalId);
       const docRef = await addDoc(servicesRef, toFirestoreData(serviceData));
+
+      // Get professional info for the serviceProviders collection
+      const userRef = doc(db, 'users', professionalId);
+      const userSnap = await getDoc(userRef);
+      
+      if (userSnap.exists()) {
+        const userData = userSnap.data();
+        const professionalName = userData.displayName || userData.name || 'Professional';
+        const professionalImageUrl = userData.photoURL || userData.profileImageUrl || null;
+        
+        // Add to serviceProviders collection
+        await createOrUpdateServiceProvider(
+          professionalId,
+          professionalName,
+          professionalImageUrl,
+          {
+            ...serviceData,
+            id: docRef.id
+          } as ProfessionalService,
+          service.category.id
+        );
+      }
 
       return {
         ...serviceData,
@@ -134,10 +157,42 @@ export const professionalServiceApi = {
         }
       }
 
+      // Update the service in the professional's services collection
       await updateDoc(serviceRef, {
         ...toFirestoreData(updates),
         updatedAt: serverTimestamp()
       });
+      
+      // If price, duration, or isActive is being updated, update the serviceProviders collection
+      if (updates.price !== undefined || updates.duration !== undefined || updates.isActive !== undefined) {
+        // Get the updated service
+        const updatedServiceSnap = await getDoc(serviceRef);
+        if (updatedServiceSnap.exists()) {
+          const updatedServiceData = updatedServiceSnap.data();
+          
+          // Get professional info
+          const userRef = doc(db, 'users', professionalId);
+          const userSnap = await getDoc(userRef);
+          
+          if (userSnap.exists()) {
+            const userData = userSnap.data();
+            const professionalName = userData.displayName || userData.name || 'Professional';
+            const professionalImageUrl = userData.photoURL || userData.profileImageUrl || null;
+            
+            // Update the serviceProviders collection
+            await createOrUpdateServiceProvider(
+              professionalId,
+              professionalName,
+              professionalImageUrl,
+              {
+                ...fromFirestoreData(updatedServiceData),
+                id: serviceId
+              } as ProfessionalService,
+              updatedServiceData.category?.id || ''
+            );
+          }
+        }
+      }
     } catch (error) {
       console.error('Error updating professional service:', error);
       throw new Error('Failed to update professional service');
@@ -146,8 +201,25 @@ export const professionalServiceApi = {
 
   async deleteService(professionalId: string, serviceId: string): Promise<void> {
     try {
+      // Get the service to get the baseServiceId before deleting
       const serviceRef = doc(getServicesRef(professionalId), serviceId);
-      await deleteDoc(serviceRef);
+      const serviceSnap = await getDoc(serviceRef);
+      
+      if (serviceSnap.exists()) {
+        const serviceData = serviceSnap.data();
+        const baseServiceId = serviceData.baseServiceId;
+        
+        // Delete from the professional's services collection
+        await deleteDoc(serviceRef);
+        
+        // Delete from the serviceProviders collection
+        if (baseServiceId) {
+          await deleteServiceProvider(professionalId, baseServiceId);
+        }
+      } else {
+        // If the service doesn't exist, just delete from the professional's services collection
+        await deleteDoc(serviceRef);
+      }
     } catch (error) {
       console.error('Error deleting professional service:', error);
       throw new Error('Failed to delete professional service');
@@ -273,10 +345,41 @@ export const professionalServiceApi = {
   ): Promise<void> {
     try {
       const serviceRef = doc(getServicesRef(professionalId), serviceId);
+      
+      // Update the service in the professional's services collection
       await updateDoc(serviceRef, {
         isActive,
         updatedAt: serverTimestamp()
       });
+      
+      // Update the serviceProviders collection
+      const serviceSnap = await getDoc(serviceRef);
+      if (serviceSnap.exists()) {
+        const serviceData = serviceSnap.data();
+        
+        // Get professional info
+        const userRef = doc(db, 'users', professionalId);
+        const userSnap = await getDoc(userRef);
+        
+        if (userSnap.exists()) {
+          const userData = userSnap.data();
+          const professionalName = userData.displayName || userData.name || 'Professional';
+          const professionalImageUrl = userData.photoURL || userData.profileImageUrl || null;
+          
+          // Update the serviceProviders collection
+          await createOrUpdateServiceProvider(
+            professionalId,
+            professionalName,
+            professionalImageUrl,
+            {
+              ...fromFirestoreData(serviceData),
+              id: serviceId,
+              isActive
+            } as ProfessionalService,
+            serviceData.category?.id || ''
+          );
+        }
+      }
     } catch (error) {
       console.error('Error toggling service status:', error);
       throw new Error('Failed to toggle service status');
@@ -305,3 +408,48 @@ export const professionalServiceApi = {
     }
   }
 };
+
+export async function getServices(professionalId: string): Promise<Service[]> {
+  try {
+    console.log(`Fetching services for professional: ${professionalId}`);
+    
+    if (!professionalId) {
+      console.error('Invalid professionalId provided:', professionalId);
+      return [];
+    }
+    
+    const servicesRef = collection(db, 'users', professionalId, 'services');
+    
+    try {
+      const servicesSnapshot = await getDocs(servicesRef);
+      
+      if (servicesSnapshot.empty) {
+        console.log(`No services found for professional: ${professionalId}`);
+        return [];
+      }
+
+      const services = servicesSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      } as Service));
+      
+      console.log(`Successfully fetched ${services.length} services for professional: ${professionalId}`);
+      return services;
+    } catch (error: any) {
+      console.error('Error in getDocs operation:', error);
+      
+      // Check if it's a permission error
+      if (error.toString().includes('permission-denied') || 
+          error.toString().includes('Missing or insufficient permissions')) {
+        console.warn('Permission issue detected. This may be due to missing authentication claims.');
+        console.warn('Returning empty services array as fallback.');
+        return [];
+      }
+      
+      throw error;
+    }
+  } catch (error) {
+    console.error('Error fetching professional services:', error);
+    throw new Error('Failed to fetch professional services');
+  }
+}

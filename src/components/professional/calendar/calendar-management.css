@@ -1,0 +1,359 @@
+/* Custom styles for react-big-calendar */
+
+/* Mobile-first responsive styles */
+@media (max-width: 768px) {
+  .rbc-toolbar {
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .rbc-toolbar-label {
+    margin: 8px 0;
+    font-size: 1.2rem;
+  }
+  
+  .rbc-btn-group {
+    margin: 5px 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .rbc-btn-group button {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    min-height: 40px; /* Larger touch target */
+    margin: 2px;
+  }
+  
+  .rbc-time-header {
+    min-height: 50px;
+  }
+  
+  .rbc-time-header-content {
+    min-height: 50px;
+  }
+  
+  .rbc-time-view .rbc-header {
+    font-size: 0.8rem;
+    padding: 4px 2px;
+  }
+  
+  .rbc-time-content {
+    font-size: 0.8rem;
+  }
+  
+  .rbc-time-gutter .rbc-timeslot-group {
+    min-height: 40px;
+  }
+  
+  .rbc-timeslot-group {
+    min-height: 40px;
+  }
+  
+  .rbc-event {
+    padding: 4px 5px; /* More padding for better touch */
+    font-size: 0.75rem;
+  }
+  
+  .rbc-event-content {
+    font-size: 0.75rem;
+  }
+  
+  .rbc-time-slot {
+    min-height: 20px;
+  }
+  
+  .rbc-label {
+    font-size: 0.7rem;
+    padding: 0 2px;
+  }
+  
+  /* Increase touch target size for mobile */
+  .pending-approve-btn, 
+  .pending-deny-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+  
+  /* Hide non-working hours label on mobile */
+  .rbc-day-slot .rbc-time-slot::after {
+    display: none;
+  }
+  
+  /* Improve scrolling on mobile */
+  .rbc-time-view {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Adjust day view for mobile */
+  .rbc-day-view .rbc-time-content {
+    min-height: 500px;
+  }
+  
+  /* Month view improvements for mobile */
+  .rbc-month-view {
+    height: auto !important;
+    min-height: 500px !important;
+  }
+  
+  .rbc-month-row {
+    min-height: 80px !important;
+  }
+  
+  .rbc-date-cell {
+    padding: 2px !important;
+    text-align: center !important;
+  }
+  
+  .rbc-date-cell > a {
+    font-size: 0.85rem !important;
+    margin: 0 auto !important;
+    padding: 2px !important;
+    width: 24px !important;
+    height: 24px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  
+  .rbc-row-content {
+    margin-top: 2px !important;
+  }
+  
+  .rbc-month-view .rbc-event {
+    padding: 2px 3px !important;
+    margin: 1px 0 !important;
+  }
+  
+  .rbc-month-view .rbc-event-content {
+    font-size: 0.7rem !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  
+  /* Ensure the calendar container is scrollable on mobile */
+  .calendar-wrapper {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+}
+
+/* Small mobile screens */
+@media (max-width: 375px) {
+  .rbc-toolbar-label {
+    font-size: 1rem;
+  }
+  
+  .rbc-btn-group button {
+    padding: 6px 8px;
+    font-size: 0.75rem;
+  }
+  
+  .rbc-time-view .rbc-header {
+    font-size: 0.7rem;
+  }
+  
+  .rbc-event {
+    padding: 3px 4px;
+  }
+  
+  .rbc-event-content {
+    font-size: 0.7rem;
+  }
+}
+
+/* Non-business hours styling */
+.rbc-day-slot .rbc-time-slot {
+  position: relative;
+}
+
+/* Add a pseudo-element to each time slot to style non-business hours */
+.rbc-day-slot .rbc-time-slot::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none; /* Allow clicks to pass through */
+  z-index: 1;
+}
+
+/* Style for non-business hours (before 9am and after 5pm) */
+.rbc-day-slot .rbc-time-slot[data-time^="00:"]::before,
+.rbc-day-slot .rbc-time-slot[data-time^="01:"]::before,
+.rbc-day-slot .rbc-time-slot[data-time^="02:"]::before,
+.rbc-day-slot .rbc-time-slot[data-time^="03:"]::before,
+.rbc-day-slot .rbc-time-slot[data-time^="04:"]::before,
+.rbc-day-slot .rbc-time-slot[data-time^="05:"]::before,
+.rbc-day-slot .rbc-time-slot[data-time^="06:"]::before,
+.rbc-day-slot .rbc-time-slot[data-time^="07:"]::before,
+.rbc-day-slot .rbc-time-slot[data-time^="08:"]::before,
+.rbc-day-slot .rbc-time-slot[data-time^="17:"]::before,
+.rbc-day-slot .rbc-time-slot[data-time^="18:"]::before,
+.rbc-day-slot .rbc-time-slot[data-time^="19:"]::before,
+.rbc-day-slot .rbc-time-slot[data-time^="20:"]::before,
+.rbc-day-slot .rbc-time-slot[data-time^="21:"]::before,
+.rbc-day-slot .rbc-time-slot[data-time^="22:"]::before,
+.rbc-day-slot .rbc-time-slot[data-time^="23:"]::before {
+  background-color: rgba(209, 213, 219, 0.9);
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    rgba(156, 163, 175, 0.3) 10px,
+    rgba(156, 163, 175, 0.3) 20px
+  );
+  border: 1px dashed rgba(107, 114, 128, 0.5);
+}
+
+/* Weekend days styling - only if they're not working days */
+.rbc-day-slot.rbc-weekend .rbc-time-slot::before {
+  background-color: rgba(209, 213, 219, 0.9);
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    rgba(156, 163, 175, 0.3) 10px,
+    rgba(156, 163, 175, 0.3) 20px
+  );
+  border: 1px dashed rgba(107, 114, 128, 0.5);
+}
+
+/* Add a label to non-business hours */
+.rbc-day-slot .rbc-time-slot[data-time^="00:"]::after,
+.rbc-day-slot .rbc-time-slot[data-time^="04:"]::after,
+.rbc-day-slot .rbc-time-slot[data-time^="08:"]::after,
+.rbc-day-slot .rbc-time-slot[data-time^="17:"]::after,
+.rbc-day-slot .rbc-time-slot[data-time^="21:"]::after {
+  content: 'Non-working hours';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-30deg);
+  color: rgba(107, 114, 128, 0.7);
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Styles for pending appointments */
+.pending-appointment {
+  animation: pulse 2s infinite;
+  position: relative;
+}
+
+/* Add a "PENDING" badge to pending appointments */
+.pending-appointment::before {
+  content: 'PENDING';
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #F59E0B;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 4px;
+  border-radius: 3px;
+  transform: translate(0, -50%);
+  z-index: 3;
+}
+
+/* Pulse animation for pending appointments */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(245, 158, 11, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+  }
+}
+
+/* Pending event container */
+.pending-event-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  padding: 2px 4px;
+}
+
+/* Event title */
+.event-title {
+  font-weight: 600;
+  font-size: 0.8rem;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Client name */
+.client-name {
+  margin: 2px 0;
+  font-size: 0.75rem;
+}
+
+/* Pending event actions */
+.pending-event-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2px;
+}
+
+/* Approve button */
+.pending-approve-btn {
+  background-color: #10B981;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-right: 4px;
+}
+
+/* Deny button */
+.pending-deny-btn {
+  background-color: #EF4444;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Button hover effects */
+.pending-approve-btn:hover {
+  background-color: #059669;
+  transform: scale(1.1);
+}
+
+.pending-deny-btn:hover {
+  background-color: #B91C1C;
+  transform: scale(1.1);
+}

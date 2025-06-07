@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { collection, query, where, onSnapshot } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import { db, auth } from '../lib/firebase';
 import { useAuth } from '../contexts/AuthContext';
-import { Appointment } from '../types/appointment';
+import { Appointment, AppointmentStatus } from '../types/appointment';
+import { updateAppointmentStatus } from '../lib/api/appointments';
 
 export const useAppointments = () => {
   const { currentUser } = useAuth();
@@ -29,5 +30,36 @@ export const useAppointments = () => {
     return () => unsubscribe();
   }, [currentUser]);
 
-  return { appointments, loading };
+  const cancelAppointment = useCallback(async (appointmentId: string, reason?: string) => {
+    try {
+      // Refresh the authentication token before cancelling the appointment
+      if (auth.currentUser) {
+        console.log('Refreshing token before cancelling appointment');
+        try {
+          await auth.currentUser.getIdToken(true);
+          console.log('Token refreshed successfully');
+        } catch (tokenError) {
+          console.error('Error refreshing token:', tokenError);
+          // Continue with the operation even if token refresh fails
+          // The periodic refresh in AuthContext should help in most cases
+        }
+      }
+      
+      await updateAppointmentStatus(
+        appointmentId,
+        AppointmentStatus.CANCELLED,
+        reason || 'Cancelled by client'
+      );
+      return true;
+    } catch (error) {
+      console.error('Error cancelling appointment:', error);
+      throw error;
+    }
+  }, []);
+
+  return { 
+    appointments, 
+    loading,
+    cancelAppointment
+  };
 };

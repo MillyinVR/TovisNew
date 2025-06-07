@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, UserPlus, Menu, X, ChevronRight, Scissors, Star, Info, HelpCircle, Users, PartyPopper } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { AuthHeader } from './shared/AuthHeader';
+import { AuthHeader } from './auth/AuthHeader';
 import { ProviderMap } from './shared/ProviderMap';
 
 export const LandingPage = () => {

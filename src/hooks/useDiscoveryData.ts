@@ -4,8 +4,7 @@ import {
   getServicesByCategory, 
   getProfessionalsByService,
   getProfessionalServicesByProfessional,
-  getProfessionalServicesByCategory,
-  subscribeToServicesUpdates
+  getProfessionalServicesByCategory
 } from '../lib/api/services';
 import { ServiceCategory, ServiceDefinition, ProfessionalService } from '../types/service';
 
@@ -45,35 +44,56 @@ export const useDiscoveryData = (): DiscoveryData => {
         const fetchedCategories = await getCategories();
         
         // Initialize categories with loading states
-        setCategories(fetchedCategories.map(category => ({
+        const initialCategories = fetchedCategories.map(category => ({
           ...category,
           services: [],
-          professionalServices: [],
           loading: true,
           error: null
-        })));
+        }));
+        
+        setCategories(initialCategories);
 
-        // Set up real-time listeners for each category
-        const unsubscribeCallbacks = fetchedCategories.map(category => {
-          return subscribeToServicesUpdates(category.id, (newServices) => {
-            setCategories(prev => prev.map(cat => {
-              if (cat.id === category.id) {
-                return {
-                  ...cat,
-                  services: newServices,
-                  loading: false,
-                  error: null
-                };
-              }
-              return cat;
-            }));
-          });
-        });
-
-        // Cleanup function
-        return () => {
-          unsubscribeCallbacks.forEach(unsubscribe => unsubscribe());
-        };
+        // Fetch services for each category
+        const categoriesWithServices = await Promise.all(
+          fetchedCategories.map(async (category) => {
+            try {
+              // Get base services for this category
+              const baseServices = await getServicesByCategory(category.id);
+              const baseServicesWithFlag = baseServices.map(service => ({
+                ...service,
+                isProfessionalService: false as const
+              }));
+              
+              // Get professional services for this category
+              const professionalServices = await getProfessionalServicesByCategory(category.id);
+              const professionalServicesWithFlag = professionalServices.map(service => ({
+                ...service,
+                isProfessionalService: true as const
+              }));
+              
+              // Combine both types of services
+              const allServices = [...baseServicesWithFlag, ...professionalServicesWithFlag];
+              
+              return {
+                ...category,
+                services: allServices,
+                loading: false,
+                error: null
+              };
+            } catch (err) {
+              console.error(`Error fetching services for category ${category.id}:`, err);
+              return {
+                ...category,
+                services: [],
+                loading: false,
+                error: err instanceof Error ? err.message : 'Failed to fetch services'
+              };
+            }
+          })
+        );
+        
+        setCategories(categoriesWithServices);
+        setLoading(false);
       } catch (err) {
         console.error('Error fetching discovery data:', err);
         setError(err instanceof Error ? err.message : 'Failed to fetch data');
@@ -98,7 +118,6 @@ export const useDiscoveryData = (): DiscoveryData => {
         .slice(0, 4);
 
       setTrendingServices(trending);
-      setLoading(false);
     }
   }, [categories]);
 

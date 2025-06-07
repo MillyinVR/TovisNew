@@ -24,7 +24,6 @@ export const functions = getFunctions(app);
 export const profileImagesRef = (path: string) => ref(storage, `profiles/${path}`);
 export const portfolioImagesRef = (path: string) => ref(storage, `portfolio/${path}`);
 export const productImagesRef = (path: string) => ref(storage, `products/${path}`);
-export const categoryImagesRef = (path: string) => ref(storage, `categories/${path}`);
 export const verificationDocsRef = (userId: string, docType: string) => 
   ref(storage, `verification-documents/${userId}/${docType}`);
 
@@ -44,3 +43,4 @@ export const reviewsRef = collection(db, 'reviews');
 export const createAftercareSummary = httpsCallable(functions, 'createAftercareSummary');
 export const processPayment = httpsCallable(functions, 'processPayment');
 export const sendNotification = httpsCallable(functions, 'sendNotification');
+export const setProfessionalClaim = httpsCallable(functions, 'setProfessionalClaim');

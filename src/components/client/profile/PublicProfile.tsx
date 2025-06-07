@@ -3,7 +3,7 @@ import { Heart, MessageCircle, Share2, MapPin } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { usePortfolio } from '../../../hooks/usePortfolio';
 import { MediaItem } from '../../../types/service';
-import { Button } from '../../ui/button';
+import { Button } from '../../common/Button';
 import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../ui/tabs';
 import MediaGrid from './MediaGrid';

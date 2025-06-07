@@ -8,7 +8,8 @@ import {
   Timestamp,
   orderBy
 } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import { db, auth } from '../lib/firebase';
+import { useAuth } from '../contexts/AuthContext';
 
 export interface ProfessionalMetrics {
   id: string;
@@ -38,9 +39,44 @@ export const useAdminPerformanceMetrics = (timeRange: 'week' | 'month' | 'year' 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
+  const { userProfile } = useAuth();
+
   useEffect(() => {
+    // Only fetch if user is admin
+    if (userProfile?.role !== 'admin') {
+      setLoading(false);
+      return;
+    }
+
     const fetchMetrics = async () => {
       try {
+        // Get fresh ID token and verify admin claim with retries
+        let attempts = 0;
+        const maxAttempts = 5;
+        let claimsVerified = false;
+        
+        while (attempts < maxAttempts && !claimsVerified) {
+          const tokenResult = await auth.currentUser?.getIdTokenResult(true);
+          console.log(`Attempt ${attempts + 1}: Verifying admin claims:`, tokenResult?.claims);
+          
+          if (tokenResult?.claims.admin || tokenResult?.claims.role === 'admin') {
+            claimsVerified = true;
+            console.log('Admin access verified via claims:', tokenResult?.claims);
+          } else {
+            attempts++;
+            console.log(`Admin claims not found in useAdminPerformanceMetrics, attempt ${attempts} of ${maxAttempts}`);
+            if (attempts < maxAttempts) {
+              await new Promise(resolve => setTimeout(resolve, 2000));
+            }
+          }
+        }
+
+        if (!claimsVerified) {
+          console.error('Failed to verify admin claims after multiple attempts in useAdminPerformanceMetrics');
+          setLoading(false);
+          return;
+        }
+
         // Get all professionals
         const professionalsQuery = query(
           collection(db, 'users'),

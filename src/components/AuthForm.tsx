@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { AuthHeader } from './shared/AuthHeader';
+import { AuthHeader } from './auth/AuthHeader';
 import { Menu, X } from 'lucide-react';
 
 interface AuthFormProps {
