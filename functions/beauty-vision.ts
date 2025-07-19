@@ -23,17 +23,13 @@ interface ImageAnalysis {
 const analyzeComposition = (metadata: sharp.Metadata): number => {
   const aspectRatio = (metadata.width || 1) / (metadata.height || 1);
   const idealRatio = 1.5;
-  
+
   return 1 - Math.min(Math.abs(aspectRatio - idealRatio) / idealRatio, 1);
 };
 
 const analyzeFocus = (metadata: sharp.Metadata): number => {
-  const sizeScore = Math.min(
-    (metadata.width || 0) / 1920,
-    (metadata.height || 0) / 1080,
-    1
-  );
-  
+  const sizeScore = Math.min((metadata.width || 0) / 1920, (metadata.height || 0) / 1080, 1);
+
   return sizeScore;
 };
 
@@ -41,11 +37,11 @@ const analyzeBrightness = (stats: sharp.Stats): number => {
   const channels = [stats.channels[0], stats.channels[1], stats.channels[2]];
   const meanBrightness = channels.reduce((sum, channel) => sum + channel.mean, 0) / 3;
   const stdDev = channels.reduce((sum, channel) => sum + channel.stdev, 0) / 3;
-  
+
   const brightnessScore = 1 - Math.abs(meanBrightness - 128) / 128;
   const contrastScore = Math.min(stdDev / 64, 1);
-  
-  return (brightnessScore * 0.6 + contrastScore * 0.4);
+
+  return brightnessScore * 0.6 + contrastScore * 0.4;
 };
 
 const analyzeImage = async (imageBuffer: Buffer): Promise<ImageAnalysis> => {
@@ -63,7 +59,7 @@ const analyzeImage = async (imageBuffer: Buffer): Promise<ImageAnalysis> => {
     lighting,
     composition,
     focus,
-    guidance: []
+    guidance: [],
   };
 };
 
@@ -72,14 +68,14 @@ export const handler: Handler = async (event) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS'
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
   };
 
   // Handle preflight request
   if (event.httpMethod === 'OPTIONS') {
     return {
       statusCode: 204,
-      headers
+      headers,
     };
   }
 
@@ -87,25 +83,25 @@ export const handler: Handler = async (event) => {
     return {
       statusCode: 405,
       headers,
-      body: JSON.stringify({ error: 'Method not allowed' })
+      body: JSON.stringify({ error: 'Method not allowed' }),
     };
   }
 
   try {
     const { imageData, service, subtype } = JSON.parse(event.body || '{}');
-    
+
     if (!imageData) {
       return {
         statusCode: 400,
         headers,
-        body: JSON.stringify({ error: 'No image data provided' })
+        body: JSON.stringify({ error: 'No image data provided' }),
       };
     }
 
     const imageBuffer = Buffer.from(imageData, 'base64');
     const [analysis, colorAnalysis] = await Promise.all([
       analyzeImage(imageBuffer),
-      analyzeLighting(imageBuffer)
+      analyzeLighting(imageBuffer),
     ]);
 
     // If service type is provided, get lighting recommendations
@@ -115,22 +111,22 @@ export const handler: Handler = async (event) => {
         service,
         subtype
       );
-      
+
       return {
         statusCode: 200,
         headers,
         body: JSON.stringify({
           ...analysis,
           guidance: [...analysis.guidance, ...lightingGuidance],
-          lightSettings: settings
-        })
+          lightSettings: settings,
+        }),
       };
     }
 
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify(analysis)
+      body: JSON.stringify(analysis),
     };
   } catch (error) {
     console.error('Error analyzing image:', error);
@@ -139,8 +135,8 @@ export const handler: Handler = async (event) => {
       headers,
       body: JSON.stringify({
         error: 'Failed to analyze image',
-        details: error instanceof Error ? error.message : 'Unknown error'
-      })
+        details: error instanceof Error ? error.message : 'Unknown error',
+      }),
     };
   }
 };

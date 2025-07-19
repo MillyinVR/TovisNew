@@ -29,7 +29,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ isLogin = true }) => {
       email,
       role,
       roleType: typeof role,
-      isProfessional: role === 'professional'
+      isProfessional: role === 'professional',
     });
 
     try {
@@ -81,27 +81,29 @@ export const AuthForm: React.FC<AuthFormProps> = ({ isLogin = true }) => {
       {/* Slide-out Menu */}
       <div className={`fixed inset-0 z-[100] ${isMenuOpen ? 'visible' : 'invisible'}`}>
         {/* Backdrop */}
-        <div 
+        <div
           className={`absolute inset-0 bg-black transition-opacity duration-300 ${
             isMenuOpen ? 'opacity-50' : 'opacity-0'
           }`}
           onClick={() => setIsMenuOpen(false)}
         />
-        
+
         {/* Menu Panel */}
-        <div className={`absolute top-0 left-0 w-[280px] sm:w-96 h-full bg-white transform transition-transform duration-300 ${
-          isMenuOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}>
+        <div
+          className={`absolute top-0 left-0 w-[280px] sm:w-96 h-full bg-white transform transition-transform duration-300 ${
+            isMenuOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
+        >
           <div className="px-4 py-3 flex justify-between items-center border-b">
             <h2 className="text-xl font-semibold">Menu</h2>
-            <button 
+            <button
               onClick={() => setIsMenuOpen(false)}
               className="p-2 hover:bg-gray-100 rounded-full"
             >
               <X className="h-6 w-6" />
             </button>
           </div>
-          
+
           {/* Menu content */}
         </div>
       </div>
@@ -118,7 +120,9 @@ export const AuthForm: React.FC<AuthFormProps> = ({ isLogin = true }) => {
             {isLogin ? 'Welcome Back!' : 'Create Account'}
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            {isLogin ? 'Sign in to continue to your account' : 'Join our community of beauty professionals and clients'}
+            {isLogin
+              ? 'Sign in to continue to your account'
+              : 'Join our community of beauty professionals and clients'}
           </p>
         </div>
 
@@ -174,20 +178,14 @@ export const AuthForm: React.FC<AuthFormProps> = ({ isLogin = true }) => {
                     className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none"
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
-                    {showPassword ? (
-                      <EyeOff className="h-5 w-5" />
-                    ) : (
-                      <Eye className="h-5 w-5" />
-                    )}
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
                 </div>
               </div>
 
               {!isLogin && (
                 <div className="mt-4">
-                  <label className="block text-sm font-medium text-gray-700">
-                    I want to
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700">I want to</label>
                   <div className="mt-2 grid grid-cols-2 gap-3">
                     <button
                       type="button"

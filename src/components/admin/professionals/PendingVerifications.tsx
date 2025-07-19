@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { verificationRef, db, setProfessionalClaim } from '../../../lib/firebase';
 import { collection, query, where, getDocs, doc, updateDoc, onSnapshot } from 'firebase/firestore';
-import { 
-  CheckCircle, 
-  XCircle, 
-  Eye, 
+import {
+  CheckCircle,
+  XCircle,
+  Eye,
   FileText,
   AlertTriangle,
   Clock,
   Calendar,
-  Download
+  Download,
 } from 'lucide-react';
 import { ProfessionalVerification, VerificationDocument } from '../../../types/professional';
 
@@ -23,12 +23,10 @@ export const PendingVerifications: React.FC<PendingVerificationsProps> = ({ comp
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const q = query(
-      verificationRef,
-      where('verificationStatus', '==', 'pending')
-    );
+    const q = query(verificationRef, where('verificationStatus', '==', 'pending'));
 
-    const unsubscribe = onSnapshot(q, 
+    const unsubscribe = onSnapshot(
+      q,
       (snapshot) => {
         const newVerifications: ProfessionalVerification[] = [];
         snapshot.forEach((doc) => {
@@ -47,7 +45,9 @@ export const PendingVerifications: React.FC<PendingVerificationsProps> = ({ comp
     return () => unsubscribe();
   }, []);
 
-  const [selectedVerification, setSelectedVerification] = useState<ProfessionalVerification | null>(null);
+  const [selectedVerification, setSelectedVerification] = useState<ProfessionalVerification | null>(
+    null
+  );
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState<VerificationDocument | null>(null);
   const [showDocumentModal, setShowDocumentModal] = useState(false);
@@ -64,7 +64,7 @@ export const PendingVerifications: React.FC<PendingVerificationsProps> = ({ comp
       await updateDoc(verificationDocRef, {
         verificationStatus: 'verified',
         reviewDate: new Date().toISOString(),
-        reviewedBy: 'admin' // TODO: Replace with actual admin ID
+        reviewedBy: 'admin', // TODO: Replace with actual admin ID
       });
 
       // Update user's profile to reflect verified status
@@ -73,7 +73,7 @@ export const PendingVerifications: React.FC<PendingVerificationsProps> = ({ comp
         'professionalProfile.verification.status': 'verified',
         'professionalProfile.verification.verifiedDate': new Date().toISOString(),
         'professionalProfile.status': 'verified',
-        'role': 'professional'
+        role: 'professional',
       });
 
       // Set professional claim
@@ -99,14 +99,14 @@ export const PendingVerifications: React.FC<PendingVerificationsProps> = ({ comp
         verificationStatus: 'rejected',
         rejectionReason: reason,
         reviewDate: new Date().toISOString(),
-        reviewedBy: 'admin' // TODO: Replace with actual admin ID
+        reviewedBy: 'admin', // TODO: Replace with actual admin ID
       });
 
       // Update user's profile to reflect rejected status
       const userDocRef = doc(db, 'users', userId);
       await updateDoc(userDocRef, {
         'professionalProfile.verification.status': 'rejected',
-        'professionalProfile.verification.rejectionReason': reason
+        'professionalProfile.verification.rejectionReason': reason,
       });
     } catch (error) {
       console.error('Error rejecting verification:', error);
@@ -147,7 +147,9 @@ export const PendingVerifications: React.FC<PendingVerificationsProps> = ({ comp
             <div key={verification.userId} className="flex items-center justify-between">
               <div>
                 <p className="font-medium text-gray-900">{verification.name}</p>
-                <p className="text-sm text-gray-500">{verification.professionalType.replace('_', ' ')}</p>
+                <p className="text-sm text-gray-500">
+                  {verification.professionalType.replace('_', ' ')}
+                </p>
               </div>
               <div className="flex space-x-2">
                 <button
@@ -159,13 +161,13 @@ export const PendingVerifications: React.FC<PendingVerificationsProps> = ({ comp
                 >
                   <Eye className="h-5 w-5" />
                 </button>
-                <button 
+                <button
                   onClick={() => handleApprove(verification.userId)}
                   className="text-green-600 hover:text-green-900"
                 >
                   <CheckCircle className="h-5 w-5" />
                 </button>
-                <button 
+                <button
                   onClick={() => handleReject(verification.userId, 'Documents incomplete')}
                   className="text-red-600 hover:text-red-900"
                 >
@@ -188,7 +190,7 @@ export const PendingVerifications: React.FC<PendingVerificationsProps> = ({ comp
             <p className="text-sm text-gray-500">Review and verify professional credentials</p>
           </div>
           <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
-            {verifications.filter(v => v.verificationStatus === 'pending').length} Pending
+            {verifications.filter((v) => v.verificationStatus === 'pending').length} Pending
           </span>
         </div>
 
@@ -196,13 +198,22 @@ export const PendingVerifications: React.FC<PendingVerificationsProps> = ({ comp
           <table className="min-w-full divide-y divide-gray-300">
             <thead className="bg-gray-50">
               <tr>
-                <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">
+                <th
+                  scope="col"
+                  className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900"
+                >
                   Professional Type
                 </th>
-                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
                   Submission Date
                 </th>
-                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
                   Documents
                 </th>
                 <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
@@ -384,9 +395,7 @@ export const PendingVerifications: React.FC<PendingVerificationsProps> = ({ comp
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-4xl w-full">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-medium text-gray-900">
-                {selectedDocument.name}
-              </h3>
+              <h3 className="text-lg font-medium text-gray-900">{selectedDocument.name}</h3>
               <button
                 onClick={() => {
                   setShowDocumentModal(false);

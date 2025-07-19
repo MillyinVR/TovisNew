@@ -20,7 +20,7 @@ export const SavedServices = () => {
       provider: 'Sarah Johnson',
       price: 75,
       rating: 4.9,
-      duration: '60 min'
+      duration: '60 min',
     },
     {
       id: '2',
@@ -29,7 +29,7 @@ export const SavedServices = () => {
       provider: 'Mike Thompson',
       price: 120,
       rating: 4.8,
-      duration: '90 min'
+      duration: '90 min',
     },
     {
       id: '3',
@@ -38,8 +38,8 @@ export const SavedServices = () => {
       provider: 'Emma Davis',
       price: 90,
       rating: 4.7,
-      duration: '45 min'
-    }
+      duration: '45 min',
+    },
   ];
 
   const handleRemoveService = (serviceId: string) => {
@@ -56,16 +56,12 @@ export const SavedServices = () => {
     <div className="space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {services.map((service) => (
-          <div 
+          <div
             key={service.id}
             className="bg-white rounded-lg shadow overflow-hidden hover:shadow-md transition-shadow"
           >
             <div className="aspect-w-16 aspect-h-9 relative">
-              <img
-                src={service.image}
-                alt={service.title}
-                className="w-full h-48 object-cover"
-              />
+              <img src={service.image} alt={service.title} className="w-full h-48 object-cover" />
             </div>
             <div className="p-4">
               <div className="flex justify-between items-start">
@@ -80,18 +76,16 @@ export const SavedServices = () => {
                   <Trash2 className="h-5 w-5" />
                 </button>
               </div>
-              
+
               <div className="mt-2 flex items-center text-sm text-gray-500">
                 <Star className="h-4 w-4 text-yellow-400 mr-1" />
                 <span>{service.rating}</span>
                 <span className="mx-2">•</span>
                 <span>{service.duration}</span>
               </div>
-              
+
               <div className="mt-4 flex items-center justify-between">
-                <span className="text-lg font-semibold text-gray-900">
-                  ${service.price}
-                </span>
+                <span className="text-lg font-semibold text-gray-900">${service.price}</span>
                 <button
                   onClick={() => handleBookService(service.id)}
                   className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"

@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 import { Star, Users, Calendar, TrendingUp, Loader2 } from 'lucide-react';
 import { useAdminPerformanceMetrics } from '../../../hooks/useAdminPerformanceMetrics';
 
@@ -26,14 +34,18 @@ export const PerformanceMetrics = () => {
   }
 
   // Calculate aggregate metrics
-  const averageRating = metrics.reduce((sum, m) => sum + m.metrics.averageRating, 0) / metrics.length;
+  const averageRating =
+    metrics.reduce((sum, m) => sum + m.metrics.averageRating, 0) / metrics.length;
   const totalProfessionals = metrics.length;
   const totalBookings = metrics.reduce((sum, m) => sum + m.metrics.totalBookings, 0);
-  const averageResponseRate = metrics.reduce((sum, m) => sum + m.metrics.responseRate, 0) / metrics.length;
+  const averageResponseRate =
+    metrics.reduce((sum, m) => sum + m.metrics.responseRate, 0) / metrics.length;
 
   // Calculate average trends
-  const avgBookingsGrowth = metrics.reduce((sum, m) => sum + m.trends.bookingsGrowth, 0) / metrics.length;
-  const avgRevenueGrowth = metrics.reduce((sum, m) => sum + m.trends.revenueGrowth, 0) / metrics.length;
+  const avgBookingsGrowth =
+    metrics.reduce((sum, m) => sum + m.trends.bookingsGrowth, 0) / metrics.length;
+  const avgRevenueGrowth =
+    metrics.reduce((sum, m) => sum + m.trends.revenueGrowth, 0) / metrics.length;
   const avgRatingTrend = metrics.reduce((sum, m) => sum + m.trends.ratingTrend, 0) / metrics.length;
 
   const summaryMetrics = [
@@ -42,48 +54,53 @@ export const PerformanceMetrics = () => {
       value: averageRating.toFixed(1),
       change: `${avgRatingTrend >= 0 ? '+' : ''}${avgRatingTrend.toFixed(1)}%`,
       icon: Star,
-      color: 'text-yellow-500'
+      color: 'text-yellow-500',
     },
     {
       label: 'Active Professionals',
       value: totalProfessionals.toString(),
-      change: `${metrics.filter(m => m.metrics.totalBookings > 0).length} active`,
+      change: `${metrics.filter((m) => m.metrics.totalBookings > 0).length} active`,
       icon: Users,
-      color: 'text-blue-500'
+      color: 'text-blue-500',
     },
     {
       label: 'Monthly Bookings',
       value: totalBookings.toLocaleString(),
       change: `${avgBookingsGrowth >= 0 ? '+' : ''}${avgBookingsGrowth.toFixed(1)}%`,
       icon: Calendar,
-      color: 'text-green-500'
+      color: 'text-green-500',
     },
     {
       label: 'Response Rate',
       value: `${averageResponseRate.toFixed(0)}%`,
       change: `${avgRevenueGrowth >= 0 ? '+' : ''}${avgRevenueGrowth.toFixed(1)}%`,
       icon: TrendingUp,
-      color: 'text-purple-500'
-    }
+      color: 'text-purple-500',
+    },
   ];
 
   // Prepare chart data
-  const chartData = metrics.reduce((acc, professional) => {
-    const month = new Date(professional.lastUpdated).toLocaleString('default', { month: 'short' });
-    const existingMonth = acc.find(d => d.month === month);
-    
-    if (existingMonth) {
-      existingMonth.bookings += professional.metrics.totalBookings;
-      existingMonth.retention = (existingMonth.retention + professional.metrics.responseRate) / 2;
-    } else {
-      acc.push({
-        month,
-        bookings: professional.metrics.totalBookings,
-        retention: professional.metrics.responseRate
+  const chartData = metrics.reduce(
+    (acc, professional) => {
+      const month = new Date(professional.lastUpdated).toLocaleString('default', {
+        month: 'short',
       });
-    }
-    return acc;
-  }, [] as Array<{ month: string; bookings: number; retention: number }>);
+      const existingMonth = acc.find((d) => d.month === month);
+
+      if (existingMonth) {
+        existingMonth.bookings += professional.metrics.totalBookings;
+        existingMonth.retention = (existingMonth.retention + professional.metrics.responseRate) / 2;
+      } else {
+        acc.push({
+          month,
+          bookings: professional.metrics.totalBookings,
+          retention: professional.metrics.responseRate,
+        });
+      }
+      return acc;
+    },
+    [] as Array<{ month: string; bookings: number; retention: number }>
+  );
 
   return (
     <div className="bg-white rounded-lg shadow">
@@ -109,9 +126,11 @@ export const PerformanceMetrics = () => {
               <div key={metric.label} className="bg-gray-50 p-4 rounded-lg">
                 <div className="flex items-center justify-between">
                   <Icon className={`h-5 w-5 ${metric.color}`} />
-                  <span className={`text-xs font-medium ${
-                    isPositiveChange ? 'text-green-600' : 'text-red-600'
-                  }`}>
+                  <span
+                    className={`text-xs font-medium ${
+                      isPositiveChange ? 'text-green-600' : 'text-red-600'
+                    }`}
+                  >
                     {metric.change}
                   </span>
                 </div>

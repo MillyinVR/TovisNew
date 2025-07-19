@@ -4,12 +4,12 @@ import { useAuth } from '../../contexts/AuthContext';
 import { verificationDocsRef, verificationRef, storage } from '../../lib/firebase';
 import { uploadBytes, getDownloadURL } from 'firebase/storage';
 import { doc, setDoc } from 'firebase/firestore';
-import { 
-  PROFESSIONAL_TYPES, 
-  US_STATES, 
+import {
+  PROFESSIONAL_TYPES,
+  US_STATES,
   ProfessionalType,
   MAKEUP_ARTIST_VERIFICATION_TYPES,
-  MakeupArtistVerificationType
+  MakeupArtistVerificationType,
 } from '../../types/professional';
 import { Upload, Calendar, FileText, MapPin, Camera, Info } from 'lucide-react';
 
@@ -24,14 +24,16 @@ export const ProfessionalRegistration = () => {
   const [licenseExpiration, setLicenseExpiration] = useState('');
   const [licenseFile, setLicenseFile] = useState<File | null>(null);
   const [idFile, setIdFile] = useState<File | null>(null);
-  const [verificationTypeOne, setVerificationTypeOne] = useState<MakeupArtistVerificationType>('union_card');
-  const [verificationTypeTwo, setVerificationTypeTwo] = useState<MakeupArtistVerificationType>('editorial_credit');
+  const [verificationTypeOne, setVerificationTypeOne] =
+    useState<MakeupArtistVerificationType>('union_card');
+  const [verificationTypeTwo, setVerificationTypeTwo] =
+    useState<MakeupArtistVerificationType>('editorial_credit');
   const [verificationFileOne, setVerificationFileOne] = useState<File | null>(null);
   const [verificationFileTwo, setVerificationFileTwo] = useState<File | null>(null);
 
   const uploadDocument = async (file: File, docType: string) => {
     if (!currentUser?.uid || !file) return null;
-    
+
     const storageRef = verificationDocsRef(currentUser.uid, docType);
     const snapshot = await uploadBytes(storageRef, file);
     return getDownloadURL(snapshot.ref);
@@ -39,7 +41,7 @@ export const ProfessionalRegistration = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!idFile) {
       setError('Please upload your ID document');
       return;
@@ -64,7 +66,7 @@ export const ProfessionalRegistration = () => {
     try {
       setLoading(true);
       setError('');
-      
+
       // Upload documents
       if (!idFile) {
         throw new Error('ID document is required');
@@ -94,7 +96,8 @@ export const ProfessionalRegistration = () => {
         uploadPromises.push(Promise.resolve(null));
       }
 
-      const [idUrl, licenseUrl, verificationOneUrl, verificationTwoUrl] = await Promise.all(uploadPromises);
+      const [idUrl, licenseUrl, verificationOneUrl, verificationTwoUrl] =
+        await Promise.all(uploadPromises);
 
       if (!idUrl) {
         throw new Error('Failed to upload ID document');
@@ -116,7 +119,7 @@ export const ProfessionalRegistration = () => {
         verificationImageTwo: verificationTwoUrl,
         identificationImageUrl: idUrl,
         verificationStatus: 'pending',
-        submissionDate: new Date().toISOString()
+        submissionDate: new Date().toISOString(),
       };
 
       if (currentUser?.uid) {
@@ -132,8 +135,8 @@ export const ProfessionalRegistration = () => {
             licenseExpirationDate: licenseExpiration,
             verificationTypeOne,
             verificationTypeTwo,
-            submissionDate: new Date().toISOString()
-          }
+            submissionDate: new Date().toISOString(),
+          },
         });
 
         // Redirect to pending dashboard
@@ -223,7 +226,10 @@ export const ProfessionalRegistration = () => {
 
                 {/* License Number */}
                 <div>
-                  <label htmlFor="licenseNumber" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="licenseNumber"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     License Number
                   </label>
                   <div className="mt-1 relative rounded-md shadow-sm">
@@ -244,7 +250,10 @@ export const ProfessionalRegistration = () => {
 
                 {/* License Expiration */}
                 <div>
-                  <label htmlFor="licenseExpiration" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="licenseExpiration"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     License Expiration Date
                   </label>
                   <div className="mt-1 relative rounded-md shadow-sm">
@@ -271,7 +280,10 @@ export const ProfessionalRegistration = () => {
                     <div className="space-y-1 text-center">
                       <Upload className="mx-auto h-12 w-12 text-gray-400" />
                       <div className="flex text-sm text-gray-600">
-                        <label htmlFor="license-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                        <label
+                          htmlFor="license-upload"
+                          className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
+                        >
                           <span>Upload license</span>
                           <input
                             id="license-upload"
@@ -293,13 +305,18 @@ export const ProfessionalRegistration = () => {
               <>
                 {/* Makeup Artist Verification Type One */}
                 <div>
-                  <label htmlFor="verificationTypeOne" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="verificationTypeOne"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     First Form of Verification
                   </label>
                   <select
                     id="verificationTypeOne"
                     value={verificationTypeOne}
-                    onChange={(e) => setVerificationTypeOne(e.target.value as MakeupArtistVerificationType)}
+                    onChange={(e) =>
+                      setVerificationTypeOne(e.target.value as MakeupArtistVerificationType)
+                    }
                     className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                     required
                   >
@@ -320,7 +337,10 @@ export const ProfessionalRegistration = () => {
                     <div className="space-y-1 text-center">
                       <Upload className="mx-auto h-12 w-12 text-gray-400" />
                       <div className="flex text-sm text-gray-600">
-                        <label htmlFor="verification-one-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                        <label
+                          htmlFor="verification-one-upload"
+                          className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
+                        >
                           <span>Upload document</span>
                           <input
                             id="verification-one-upload"
@@ -340,13 +360,18 @@ export const ProfessionalRegistration = () => {
 
                 {/* Makeup Artist Verification Type Two */}
                 <div>
-                  <label htmlFor="verificationTypeTwo" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="verificationTypeTwo"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     Second Form of Verification
                   </label>
                   <select
                     id="verificationTypeTwo"
                     value={verificationTypeTwo}
-                    onChange={(e) => setVerificationTypeTwo(e.target.value as MakeupArtistVerificationType)}
+                    onChange={(e) =>
+                      setVerificationTypeTwo(e.target.value as MakeupArtistVerificationType)
+                    }
                     className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
                     required
                   >
@@ -367,7 +392,10 @@ export const ProfessionalRegistration = () => {
                     <div className="space-y-1 text-center">
                       <Upload className="mx-auto h-12 w-12 text-gray-400" />
                       <div className="flex text-sm text-gray-600">
-                        <label htmlFor="verification-two-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                        <label
+                          htmlFor="verification-two-upload"
+                          className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
+                        >
                           <span>Upload document</span>
                           <input
                             id="verification-two-upload"
@@ -396,7 +424,10 @@ export const ProfessionalRegistration = () => {
                 <div className="space-y-1 text-center">
                   <Upload className="mx-auto h-12 w-12 text-gray-400" />
                   <div className="flex text-sm text-gray-600">
-                    <label htmlFor="id-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                    <label
+                      htmlFor="id-upload"
+                      className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
+                    >
                       <span>Upload ID</span>
                       <input
                         id="id-upload"
@@ -422,9 +453,25 @@ export const ProfessionalRegistration = () => {
               >
                 {loading ? (
                   <span className="flex items-center">
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <svg
+                      className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
                     </svg>
                     Submitting...
                   </span>

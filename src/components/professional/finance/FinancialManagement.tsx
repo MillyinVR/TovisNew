@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { 
-  DollarSign, 
-  CreditCard, 
-  FileText, 
+import {
+  DollarSign,
+  CreditCard,
+  FileText,
   Download,
   TrendingUp,
   Calendar,
   Filter,
-  Search
+  Search,
 } from 'lucide-react';
 
 interface Transaction {
@@ -31,7 +31,7 @@ export const FinancialManagement = () => {
       status: 'completed',
       description: 'Bridal Makeup Service',
       client: 'Emma Wilson',
-      service: 'Bridal Makeup'
+      service: 'Bridal Makeup',
     },
     {
       id: 'tx2',
@@ -39,7 +39,7 @@ export const FinancialManagement = () => {
       type: 'payout',
       amount: 450,
       status: 'completed',
-      description: 'Weekly payout'
+      description: 'Weekly payout',
     },
     {
       id: 'tx3',
@@ -49,8 +49,8 @@ export const FinancialManagement = () => {
       status: 'completed',
       description: 'Partial refund',
       client: 'Sarah Johnson',
-      service: 'Natural Glam'
-    }
+      service: 'Natural Glam',
+    },
   ]);
 
   const [selectedPeriod, setSelectedPeriod] = useState('week');
@@ -61,7 +61,7 @@ export const FinancialManagement = () => {
     revenue: 15780,
     pending: 450,
     nextPayout: 1250,
-    payoutDate: '2024-03-20'
+    payoutDate: '2024-03-20',
   };
 
   return (
@@ -76,12 +76,8 @@ export const FinancialManagement = () => {
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    Total Revenue
-                  </dt>
-                  <dd className="text-2xl font-semibold text-gray-900">
-                    ${stats.revenue}
-                  </dd>
+                  <dt className="text-sm font-medium text-gray-500 truncate">Total Revenue</dt>
+                  <dd className="text-2xl font-semibold text-gray-900">${stats.revenue}</dd>
                 </dl>
               </div>
             </div>
@@ -96,12 +92,8 @@ export const FinancialManagement = () => {
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    Pending Payments
-                  </dt>
-                  <dd className="text-2xl font-semibold text-gray-900">
-                    ${stats.pending}
-                  </dd>
+                  <dt className="text-sm font-medium text-gray-500 truncate">Pending Payments</dt>
+                  <dd className="text-2xl font-semibold text-gray-900">${stats.pending}</dd>
                 </dl>
               </div>
             </div>
@@ -116,12 +108,8 @@ export const FinancialManagement = () => {
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    Next Payout
-                  </dt>
-                  <dd className="text-2xl font-semibold text-gray-900">
-                    ${stats.nextPayout}
-                  </dd>
+                  <dt className="text-sm font-medium text-gray-500 truncate">Next Payout</dt>
+                  <dd className="text-2xl font-semibold text-gray-900">${stats.nextPayout}</dd>
                 </dl>
               </div>
             </div>
@@ -136,9 +124,7 @@ export const FinancialManagement = () => {
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    Next Payout Date
-                  </dt>
+                  <dt className="text-sm font-medium text-gray-500 truncate">Next Payout Date</dt>
                   <dd className="text-2xl font-semibold text-gray-900">
                     {new Date(stats.payoutDate).toLocaleDateString()}
                   </dd>
@@ -217,19 +203,34 @@ export const FinancialManagement = () => {
                   <table className="min-w-full divide-y divide-gray-300">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
+                        <th
+                          scope="col"
+                          className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                        >
                           Date
                         </th>
-                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                        <th
+                          scope="col"
+                          className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                        >
                           Type
                         </th>
-                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                        <th
+                          scope="col"
+                          className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                        >
                           Description
                         </th>
-                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                        <th
+                          scope="col"
+                          className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                        >
                           Amount
                         </th>
-                        <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                        <th
+                          scope="col"
+                          className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                        >
                           Status
                         </th>
                         <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
@@ -244,13 +245,15 @@ export const FinancialManagement = () => {
                             {new Date(transaction.date).toLocaleDateString()}
                           </td>
                           <td className="whitespace-nowrap px-3 py-4 text-sm">
-                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                              transaction.type === 'payment'
-                                ? 'bg-green-100 text-green-800'
-                                : transaction.type === 'refund'
-                                ? 'bg-red-100 text-red-800'
-                                : 'bg-blue-100 text-blue-800'
-                            }`}>
+                            <span
+                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                transaction.type === 'payment'
+                                  ? 'bg-green-100 text-green-800'
+                                  : transaction.type === 'refund'
+                                    ? 'bg-red-100 text-red-800'
+                                    : 'bg-blue-100 text-blue-800'
+                              }`}
+                            >
                               {transaction.type}
                             </span>
                           </td>
@@ -258,18 +261,24 @@ export const FinancialManagement = () => {
                             {transaction.description}
                           </td>
                           <td className="whitespace-nowrap px-3 py-4 text-sm">
-                            <span className={transaction.type === 'refund' ? 'text-red-600' : 'text-gray-900'}>
+                            <span
+                              className={
+                                transaction.type === 'refund' ? 'text-red-600' : 'text-gray-900'
+                              }
+                            >
                               ${transaction.amount}
                             </span>
                           </td>
                           <td className="whitespace-nowrap px-3 py-4 text-sm">
-                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                              transaction.status === 'completed'
-                                ? 'bg-green-100 text-green-800'
-                                : transaction.status === 'pending'
-                                ? 'bg-yellow-100 text-yellow-800'
-                                : 'bg-red-100 text-red-800'
-                            }`}>
+                            <span
+                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                transaction.status === 'completed'
+                                  ? 'bg-green-100 text-green-800'
+                                  : transaction.status === 'pending'
+                                    ? 'bg-yellow-100 text-yellow-800'
+                                    : 'bg-red-100 text-red-800'
+                              }`}
+                            >
                               {transaction.status}
                             </span>
                           </td>

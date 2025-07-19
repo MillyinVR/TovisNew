@@ -5,12 +5,12 @@ import { Clock, DollarSign, Edit2, Trash2 } from 'lucide-react';
 import type { ProfessionalService } from '@/types/service';
 import { ServiceSetupModal } from '@/components/professional/services/ServiceSetupModal';
 
-const ServiceCard = ({ 
+const ServiceCard = ({
   service,
   permissions,
   onEdit,
-  onDelete 
-}: { 
+  onDelete,
+}: {
   service: ProfessionalService;
   permissions: { canEdit: boolean };
   onEdit: () => void;
@@ -22,15 +22,14 @@ const ServiceCard = ({
         <h3 className="text-xl font-semibold text-gray-900">{service.name}</h3>
         <p className="text-sm text-gray-500 mt-1">{service.category.name}</p>
         <p className="mt-2 text-gray-700">{service.description}</p>
-        
+
         <div className="mt-4 flex items-center gap-4">
           <div className="flex items-center text-gray-700">
             <Clock className="h-5 w-5 mr-2 text-indigo-600" />
             {service.baseDuration} minutes
           </div>
           <div className="flex items-center text-gray-700">
-            <DollarSign className="h-5 w-5 mr-2 text-green-600" />
-            ${service.basePrice}
+            <DollarSign className="h-5 w-5 mr-2 text-green-600" />${service.basePrice}
           </div>
         </div>
 
@@ -38,7 +37,7 @@ const ServiceCard = ({
           <div className="mt-4">
             <h4 className="text-sm font-medium text-gray-700 mb-2">Custom Options:</h4>
             <div className="space-y-2">
-              {service.customOptions.map(option => (
+              {service.customOptions.map((option) => (
                 <div key={option.id} className="flex items-center justify-between text-sm">
                   <span>{option.name}</span>
                   <span className="text-gray-600">+${option.basePrice}</span>
@@ -50,8 +49,8 @@ const ServiceCard = ({
       </div>
 
       {service.imageUrls?.[0] && (
-        <img 
-          src={service.imageUrls[0]} 
+        <img
+          src={service.imageUrls[0]}
           alt={service.name}
           className="w-24 h-24 rounded-lg object-cover ml-4"
         />
@@ -60,17 +59,14 @@ const ServiceCard = ({
 
     {permissions.canEdit && (
       <div className="mt-4 flex gap-3 pt-4 border-t">
-        <button 
+        <button
           onClick={onEdit}
           className="flex items-center text-indigo-600 hover:text-indigo-800"
         >
           <Edit2 className="h-4 w-4 mr-1" />
           Edit
         </button>
-        <button 
-          onClick={onDelete}
-          className="flex items-center text-red-600 hover:text-red-800"
-        >
+        <button onClick={onDelete} className="flex items-center text-red-600 hover:text-red-800">
           <Trash2 className="h-4 w-4 mr-1" />
           Delete
         </button>
@@ -99,27 +95,24 @@ interface ServicesSectionProps {
   };
 }
 
-export const ServicesSection: React.FC<ServicesSectionProps> = ({
-  profileId,
-  permissions
-}) => {
+export const ServicesSection: React.FC<ServicesSectionProps> = ({ profileId, permissions }) => {
   const [showServiceSetup, setShowServiceSetup] = useState(false);
   const [serviceToEdit, setServiceToEdit] = useState<ProfessionalService | null>(null);
 
-  const { 
+  const {
     professionalServices = [],
     loading,
     error,
-    deleteProfessionalService
+    deleteProfessionalService,
   } = useServiceManagement();
 
-  const activeServices = professionalServices.filter(service => 
-    service.isActive && service.category
+  const activeServices = professionalServices.filter(
+    (service) => service.isActive && service.category
   );
 
   const handleDeleteService = async (serviceId: string) => {
     if (!window.confirm('Are you sure you want to delete this service?')) return;
-    
+
     try {
       await deleteProfessionalService(serviceId);
     } catch (err) {
@@ -160,7 +153,7 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
         </div>
       ) : (
         <div className="space-y-4">
-          {activeServices.map(service => (
+          {activeServices.map((service) => (
             <ServiceCard
               key={service.id}
               service={service}
@@ -179,10 +172,10 @@ export const ServicesSection: React.FC<ServicesSectionProps> = ({
 
       {/* Edit Service Modal */}
       {serviceToEdit && (
-        <ServiceSetupModal 
-          onClose={() => setServiceToEdit(null)} 
-          mode="edit" 
-          serviceId={serviceToEdit.baseServiceId} 
+        <ServiceSetupModal
+          onClose={() => setServiceToEdit(null)}
+          mode="edit"
+          serviceId={serviceToEdit.baseServiceId}
         />
       )}
     </div>

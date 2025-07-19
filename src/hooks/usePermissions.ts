@@ -9,8 +9,7 @@ export const usePermissions = () => {
 
     const rolePermissions = ROLES[userProfile.role].permissions;
     return rolePermissions.some(
-      (permission: Permission) =>
-        permission.action === action && permission.resource === resource
+      (permission: Permission) => permission.action === action && permission.resource === resource
     );
   };
 

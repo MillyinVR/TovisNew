@@ -20,10 +20,10 @@ const ServiceAvailability: React.FC = () => {
   const { currentUser, userProfile } = useAuth();
   const { professionalData } = useProfessionalData({
     professionalId: professionalId,
-    includeServices: true
+    includeServices: true,
   });
   // Using default working hours and random availability for simplicity
-  
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [professional, setProfessional] = useState<any>(null);
@@ -31,11 +31,11 @@ const ServiceAvailability: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string | null>(null);
-  
+
   // Generate dates for the next 7 days
   const startDate = startOfWeek(new Date(), { weekStartsOn: 1 });
   const dates = Array.from({ length: 14 }, (_, i) => addDays(startDate, i));
-  
+
   useEffect(() => {
     const fetchData = async () => {
       if (!professionalId || !serviceId) {
@@ -43,37 +43,41 @@ const ServiceAvailability: React.FC = () => {
         setLoading(false);
         return;
       }
-      
+
       try {
         if (professionalData) {
           setProfessional(professionalData);
-          
+
           // Debug the services data
           console.log('Professional Data:', professionalData);
           console.log('Services:', professionalData.services);
           console.log('Looking for serviceId:', serviceId);
-          
+
           // Find the specific service with more flexible matching
           const serviceData = professionalData.services?.find((s: any) => {
             console.log('Checking service:', s);
-            return s.id === serviceId || 
-                   s.baseServiceId === serviceId || 
-                   (s.baseService && s.baseService.id === serviceId);
+            return (
+              s.id === serviceId ||
+              s.baseServiceId === serviceId ||
+              (s.baseService && s.baseService.id === serviceId)
+            );
           });
-          
+
           if (!serviceData) {
             // If service not found, try to fetch it directly from the services collection
-            console.log('Service not found in professional services, fetching from services collection');
-            
+            console.log(
+              'Service not found in professional services, fetching from services collection'
+            );
+
             try {
               // First try to get the service from the professional's services collection
               const serviceRef = doc(db, 'users', professionalId, 'services', serviceId);
               const serviceDoc = await getDoc(serviceRef);
-              
+
               if (serviceDoc.exists()) {
                 const fetchedService = {
                   id: serviceDoc.id,
-                  ...serviceDoc.data()
+                  ...serviceDoc.data(),
                 };
                 console.log('Found service in professional services collection:', fetchedService);
                 setService(fetchedService);
@@ -81,25 +85,33 @@ const ServiceAvailability: React.FC = () => {
                 // If not found, try to get the base service from the services collection
                 const baseServiceRef = doc(db, 'services', serviceId);
                 const baseServiceDoc = await getDoc(baseServiceRef);
-                
+
                 if (baseServiceDoc.exists()) {
                   const baseService = {
                     id: baseServiceDoc.id,
-                    ...baseServiceDoc.data()
+                    ...baseServiceDoc.data(),
                   } as any;
                   console.log('Found base service:', baseService);
-                  
+
                   // Now try to find the professional's version of this service
-                  const professionalServicesRef = collection(db, 'users', professionalId, 'services');
+                  const professionalServicesRef = collection(
+                    db,
+                    'users',
+                    professionalId,
+                    'services'
+                  );
                   const q = query(professionalServicesRef, where('baseServiceId', '==', serviceId));
                   const querySnapshot = await getDocs(q);
-                  
+
                   if (!querySnapshot.empty) {
                     const professionalService = {
                       id: querySnapshot.docs[0].id,
-                      ...querySnapshot.docs[0].data()
+                      ...querySnapshot.docs[0].data(),
                     };
-                    console.log('Found professional service by baseServiceId:', professionalService);
+                    console.log(
+                      'Found professional service by baseServiceId:',
+                      professionalService
+                    );
                     setService(professionalService);
                   } else {
                     // Use the base service with the professional's price if available
@@ -108,7 +120,7 @@ const ServiceAvailability: React.FC = () => {
                       ...baseService,
                       name: baseService.name || 'Service',
                       price: baseService.basePrice || baseService.price || 0,
-                      duration: baseService.baseDuration || baseService.duration || 60
+                      duration: baseService.baseDuration || baseService.duration || 60,
                     });
                   }
                 } else {
@@ -119,7 +131,7 @@ const ServiceAvailability: React.FC = () => {
                     name: 'Service',
                     description: 'Service description',
                     price: 0,
-                    duration: 60
+                    duration: 60,
                   };
                   setService(defaultService);
                 }
@@ -132,14 +144,14 @@ const ServiceAvailability: React.FC = () => {
                 name: 'Service',
                 description: 'Service description',
                 price: 0,
-                duration: 60
+                duration: 60,
               };
               setService(defaultService);
             }
           } else {
             setService(serviceData);
           }
-          
+
           // Generate available time slots
           generateTimeSlots(selectedDate, professionalId);
         }
@@ -150,26 +162,26 @@ const ServiceAvailability: React.FC = () => {
         setLoading(false);
       }
     };
-    
+
     fetchData();
   }, [professionalId, serviceId, professionalData]);
-  
+
   useEffect(() => {
     if (professionalId) {
       generateTimeSlots(selectedDate, professionalId);
     }
   }, [selectedDate, professionalId]);
-  
+
   const generateTimeSlots = async (date: Date, profId: string) => {
     try {
       setLoading(true);
-      
+
       const dayOfWeek = format(date, 'EEEE').toLowerCase();
       const dateStr = format(date, 'yyyy-MM-dd');
-      
+
       // Define the type for working hours
       type DaySettings = { start: string; end: string; enabled: boolean };
-      
+
       // Fetch professional's working hours using the client API
       let workingHours: WorkingHours;
       try {
@@ -189,15 +201,17 @@ const ServiceAvailability: React.FC = () => {
           thursday: { start: '09:00', end: '17:00', enabled: true },
           friday: { start: '09:00', end: '17:00', enabled: true },
           saturday: { start: '10:00', end: '15:00', enabled: false },
-          sunday: { start: '10:00', end: '15:00', enabled: false }
+          sunday: { start: '10:00', end: '15:00', enabled: false },
         };
       }
-      
+
       // Check for custom working hours for this specific date
       let customHours = null;
       try {
         // Safely construct the URL with query parameters
-        const customHoursUrl = `/api/professionals/${profId}/custom-working-hours?date=${encodeURIComponent(dateStr)}`;
+        const customHoursUrl = `/api/professionals/${profId}/custom-working-hours?date=${encodeURIComponent(
+          dateStr
+        )}`;
         const customHoursRef = await fetch(customHoursUrl);
         if (customHoursRef.ok) {
           const data = await customHoursRef.json();
@@ -208,12 +222,12 @@ const ServiceAvailability: React.FC = () => {
       } catch (error) {
         console.error('Error fetching custom hours, using regular hours:', error);
       }
-      
+
       // Determine start and end times
       let startTime = '09:00';
       let endTime = '17:00';
       let isWorkingDay = true;
-      
+
       // Use custom hours for this date if available
       if (customHours && customHours.enabled) {
         startTime = customHours.start;
@@ -231,25 +245,27 @@ const ServiceAvailability: React.FC = () => {
           }
         }
       }
-      
+
       if (!isWorkingDay) {
         setTimeSlots([]);
         setLoading(false);
         return;
       }
-      
+
       // Generate time slots in 30-minute increments
       const slots: TimeSlot[] = [];
       const [startHour, startMinute] = startTime.split(':').map(Number);
       const [endHour, endMinute] = endTime.split(':').map(Number);
-      
+
       let currentHour = startHour;
       let currentMinute = startMinute;
-      
+
       // Fetch existing appointments for this professional on this date
       let bookedSlots: string[] = [];
       try {
-        const appointmentsRef = await fetch(`/api/professionals/${profId}/appointments?date=${dateStr}`);
+        const appointmentsRef = await fetch(
+          `/api/professionals/${profId}/appointments?date=${dateStr}`
+        );
         if (appointmentsRef.ok) {
           const appointments = await appointmentsRef.json();
           // Extract start times of all appointments
@@ -261,24 +277,23 @@ const ServiceAvailability: React.FC = () => {
       } catch (error) {
         console.error('Error fetching appointments:', error);
       }
-      
+
       // Generate all possible time slots within working hours
-      while (
-        currentHour < endHour || 
-        (currentHour === endHour && currentMinute < endMinute)
-      ) {
-        const timeString = `${currentHour.toString().padStart(2, '0')}:${currentMinute.toString().padStart(2, '0')}`;
+      while (currentHour < endHour || (currentHour === endHour && currentMinute < endMinute)) {
+        const timeString = `${currentHour.toString().padStart(2, '0')}:${currentMinute
+          .toString()
+          .padStart(2, '0')}`;
         const fullTimeString = `${dateStr}T${timeString}:00`;
-        
+
         // Check if this time slot is already booked
         const isBooked = bookedSlots.includes(timeString);
-        
+
         slots.push({
           time: fullTimeString,
           available: !isBooked,
-          formattedTime: format(parseISO(fullTimeString), 'h:mm a')
+          formattedTime: format(parseISO(fullTimeString), 'h:mm a'),
         });
-        
+
         // Increment by 30 minutes
         currentMinute += 30;
         if (currentMinute >= 60) {
@@ -286,7 +301,7 @@ const ServiceAvailability: React.FC = () => {
           currentMinute = 0;
         }
       }
-      
+
       setTimeSlots(slots);
     } catch (err) {
       console.error('Error generating time slots:', err);
@@ -295,21 +310,21 @@ const ServiceAvailability: React.FC = () => {
       setLoading(false);
     }
   };
-  
+
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date);
     setSelectedTimeSlot(null);
   };
-  
+
   const handleTimeSelect = (time: string) => {
     setSelectedTimeSlot(time);
   };
-  
+
   const handleBookAppointment = () => {
     if (!selectedTimeSlot || !currentUser) {
       return;
     }
-    
+
     // Ensure we have valid data for the booking
     const bookingData = {
       professionalId: professionalId || '',
@@ -318,22 +333,22 @@ const ServiceAvailability: React.FC = () => {
       servicePrice: service?.price || 0,
       serviceDuration: service?.duration || 60,
       appointmentTime: selectedTimeSlot,
-      professionalName: professional?.displayName || 'Professional'
+      professionalName: professional?.displayName || 'Professional',
     };
-    
+
     // Log the booking data for debugging
     console.log('Booking appointment with data:', bookingData);
-    
+
     // Navigate to confirmation page with all the necessary details
     navigate(`/book/confirm`, {
-      state: bookingData
+      state: bookingData,
     });
   };
-  
+
   const handleBack = () => {
     navigate(-1);
   };
-  
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 pb-16">
@@ -346,14 +361,14 @@ const ServiceAvailability: React.FC = () => {
       </div>
     );
   }
-  
+
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center py-12">
             <p className="text-red-600 mb-4">{error}</p>
-            <button 
+            <button
               onClick={handleBack}
               className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
             >
@@ -365,7 +380,7 @@ const ServiceAvailability: React.FC = () => {
       </div>
     );
   }
-  
+
   return (
     <div className="min-h-screen bg-gray-50 pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -387,10 +402,10 @@ const ServiceAvailability: React.FC = () => {
           </svg>
           Back
         </button>
-        
+
         <div className="bg-white rounded-lg shadow-sm p-6">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Book Appointment</h1>
-          
+
           {professional && service && (
             <div className="mb-6">
               <h2 className="text-lg font-semibold text-gray-800">{service.name}</h2>
@@ -401,7 +416,7 @@ const ServiceAvailability: React.FC = () => {
               </div>
             </div>
           )}
-          
+
           <div className="mb-8">
             <h3 className="text-lg font-semibold text-gray-800 mb-4">Select a Date</h3>
             <div className="flex overflow-x-auto pb-4 space-x-2 scrollbar-hide">
@@ -416,15 +431,19 @@ const ServiceAvailability: React.FC = () => {
                   }`}
                 >
                   <div className="text-center">
-                    <p className={`text-xs font-medium ${
-                      isSameDay(date, selectedDate) ? 'text-indigo-100' : 'text-gray-500'
-                    }`}>
+                    <p
+                      className={`text-xs font-medium ${
+                        isSameDay(date, selectedDate) ? 'text-indigo-100' : 'text-gray-500'
+                      }`}
+                    >
                       {format(date, 'EEE')}
                     </p>
                     <p className="text-lg font-semibold">{format(date, 'd')}</p>
-                    <p className={`text-xs ${
-                      isSameDay(date, selectedDate) ? 'text-indigo-100' : 'text-gray-500'
-                    }`}>
+                    <p
+                      className={`text-xs ${
+                        isSameDay(date, selectedDate) ? 'text-indigo-100' : 'text-gray-500'
+                      }`}
+                    >
                       {format(date, 'MMM')}
                     </p>
                   </div>
@@ -432,7 +451,7 @@ const ServiceAvailability: React.FC = () => {
               ))}
             </div>
           </div>
-          
+
           <div className="mb-8">
             <h3 className="text-lg font-semibold text-gray-800 mb-4">Select a Time</h3>
             {timeSlots.length > 0 ? (
@@ -446,8 +465,8 @@ const ServiceAvailability: React.FC = () => {
                       selectedTimeSlot === slot.time
                         ? 'bg-indigo-600 text-white border-indigo-600'
                         : slot.available
-                        ? 'bg-white text-gray-700 border-gray-200 hover:border-indigo-300'
-                        : 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+                          ? 'bg-white text-gray-700 border-gray-200 hover:border-indigo-300'
+                          : 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
                     }`}
                   >
                     {slot.formattedTime}
@@ -455,10 +474,12 @@ const ServiceAvailability: React.FC = () => {
                 ))}
               </div>
             ) : (
-              <p className="text-gray-500 text-center py-4">No available time slots for this date</p>
+              <p className="text-gray-500 text-center py-4">
+                No available time slots for this date
+              </p>
             )}
           </div>
-          
+
           <div className="flex justify-end">
             <button
               onClick={handleBookAppointment}

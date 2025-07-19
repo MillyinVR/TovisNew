@@ -16,7 +16,7 @@ The database structure is organized around separate collections for different us
     - displayName
     - role (admin, professional, client)
     - basic shared fields
-    
+
 /professionals (collection) - Professional-specific data
   /{professionalId} (document)
     - uid (same as userId)
@@ -26,19 +26,19 @@ The database structure is organized around separate collections for different us
     - expertise
     - yearsOfExperience
     - etc.
-    
+
     /workingHours (subcollection)
       /{day} (document)
-    
+
     /timeOff (subcollection)
       /{timeOffId} (document)
-    
+
     /services (subcollection)
       /{serviceId} (document)
-    
+
     /portfolio (subcollection)
       /{itemId} (document)
-    
+
     /licenses (subcollection)
       /{licenseId} (document)
 
@@ -68,7 +68,7 @@ The database structure is organized around separate collections for different us
     - location
     - views/likes/comments
     - engagementScore
-    
+
     /comments (subcollection)
       /{commentId} (document)
 
@@ -144,7 +144,7 @@ The database structure is organized around separate collections for different us
     - participants
     - lastMessage
     - lastMessageTime
-    
+
     /messages (subcollection)
       /{messageId} (document)
 ```

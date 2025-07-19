@@ -30,9 +30,7 @@ export const ServiceFlow: React.FC<ServiceFlowProps> = ({ onServiceStateChange }
   const [afterImage, setAfterImage] = useState<ImageData | null>(null);
 
   const today = format(new Date(), 'yyyy-MM-dd');
-  const todaysAppointments = appointments?.filter(
-    (appt) => appt.date === today
-  );
+  const todaysAppointments = appointments?.filter((appt) => appt.date === today);
 
   useEffect(() => {
     if (serviceState === 'initial' && onServiceStateChange) {
@@ -81,10 +79,7 @@ export const ServiceFlow: React.FC<ServiceFlowProps> = ({ onServiceStateChange }
     <div className="flex flex-col min-h-screen">
       <header className="sticky top-0 bg-white z-10 border-b">
         <div className="container mx-auto px-4 py-2 flex items-center">
-          <button 
-            onClick={handleBack}
-            className="p-2 hover:bg-gray-100 rounded-full"
-          >
+          <button onClick={handleBack} className="p-2 hover:bg-gray-100 rounded-full">
             <ArrowLeft className="h-5 w-5" />
           </button>
           <h1 className="ml-2 text-xl font-bold">
@@ -110,12 +105,11 @@ export const ServiceFlow: React.FC<ServiceFlowProps> = ({ onServiceStateChange }
                     <h4 className="font-medium">AI Consultation Notes:</h4>
                     <p className="text-sm text-gray-600">{appt.notes || 'No notes available'}</p>
                     <h4 className="font-medium">Previous Products Used:</h4>
-                    <p className="text-sm text-gray-600">{appt.productsUsed?.join(', ') || 'No product history'}</p>
+                    <p className="text-sm text-gray-600">
+                      {appt.productsUsed?.join(', ') || 'No product history'}
+                    </p>
                   </div>
-                  <Button 
-                    className="mt-4 w-full"
-                    onClick={() => handleStartService(appt)}
-                  >
+                  <Button className="mt-4 w-full" onClick={() => handleStartService(appt)}>
                     START SERVICE
                   </Button>
                 </div>
@@ -139,7 +133,7 @@ export const ServiceFlow: React.FC<ServiceFlowProps> = ({ onServiceStateChange }
                 <p>{selectedAppointment?.productsUsed?.join(', ')}</p>
               </div>
             </div>
-            <BeautyCapture 
+            <BeautyCapture
               onCapture={handleBeforeImage}
               instructions="Take a before photo of the client"
             />
@@ -149,7 +143,7 @@ export const ServiceFlow: React.FC<ServiceFlowProps> = ({ onServiceStateChange }
         {serviceState === 'after' && (
           <div className="space-y-4">
             <h2 className="text-xl font-bold">After Service</h2>
-            <BeautyCapture 
+            <BeautyCapture
               onCapture={handleAfterImage}
               instructions="Take an after photo of the client"
             />
@@ -157,7 +151,7 @@ export const ServiceFlow: React.FC<ServiceFlowProps> = ({ onServiceStateChange }
         )}
 
         {serviceState === 'summary' && (
-          <AftercareSummary 
+          <AftercareSummary
             appointment={selectedAppointment}
             beforeImage={beforeImage}
             afterImage={afterImage}
@@ -165,8 +159,8 @@ export const ServiceFlow: React.FC<ServiceFlowProps> = ({ onServiceStateChange }
         )}
       </main>
 
-      <FooterNav 
-        userType="professional" 
+      <FooterNav
+        userType="professional"
         serviceState={serviceState === 'initial' ? 'idle' : 'started'}
         onServiceAction={() => setServiceState('before')}
       />

@@ -27,7 +27,7 @@ export const useAdminServiceManagement = () => {
 
         // Fetch all services grouped by category
         const servicesByCategory = await Promise.all(
-          fetchedCategories.map(async cat => {
+          fetchedCategories.map(async (cat) => {
             const services = await serviceApi.admin.getServices({ category: cat.id });
             return services;
           })
@@ -52,10 +52,10 @@ export const useAdminServiceManagement = () => {
     try {
       setLoading(true);
       setError(null);
-      const categoryId = await serviceApi.admin.createCategory({ 
-        name, 
+      const categoryId = await serviceApi.admin.createCategory({
+        name,
         description,
-        services: [] 
+        services: [],
       });
       const newCategory: ServiceCategory = {
         id: categoryId,
@@ -63,9 +63,9 @@ export const useAdminServiceManagement = () => {
         description,
         services: [],
         createdAt: Timestamp.fromDate(new Date()),
-        updatedAt: Timestamp.fromDate(new Date())
+        updatedAt: Timestamp.fromDate(new Date()),
       };
-      setCategories(prev => [...prev, newCategory]);
+      setCategories((prev) => [...prev, newCategory]);
       return categoryId;
     } catch (err) {
       console.error('Failed to create category:', err);
@@ -85,11 +85,13 @@ export const useAdminServiceManagement = () => {
       setLoading(true);
       setError(null);
       await serviceApi.admin.updateCategory(categoryId, updates);
-      setCategories(prev => prev.map(cat => 
-        cat.id === categoryId 
-          ? { ...cat, ...updates, updatedAt: Timestamp.fromDate(new Date()) }
-          : cat
-      ));
+      setCategories((prev) =>
+        prev.map((cat) =>
+          cat.id === categoryId
+            ? { ...cat, ...updates, updatedAt: Timestamp.fromDate(new Date()) }
+            : cat
+        )
+      );
     } catch (err) {
       console.error('Failed to update category:', err);
       setError(err instanceof Error ? err.message : 'Failed to update category');
@@ -108,7 +110,7 @@ export const useAdminServiceManagement = () => {
       setLoading(true);
       setError(null);
       await serviceApi.admin.deleteCategory(categoryId);
-      setCategories(prev => prev.filter(cat => cat.id !== categoryId));
+      setCategories((prev) => prev.filter((cat) => cat.id !== categoryId));
     } catch (err) {
       console.error('Failed to delete category:', err);
       setError(err instanceof Error ? err.message : 'Failed to delete category');
@@ -151,7 +153,7 @@ export const useAdminServiceManagement = () => {
       const newService = await serviceApi.admin.createService(serviceData);
       console.log('Service created successfully:', newService);
 
-      setServices(prev => [...prev, newService]);
+      setServices((prev) => [...prev, newService]);
       return newService.id;
     } catch (err) {
       console.error('Failed to create service:', err);
@@ -171,16 +173,18 @@ export const useAdminServiceManagement = () => {
       setLoading(true);
       setError(null);
       await serviceApi.admin.updateService(serviceId, updates);
-      setServices(prev => prev.map(service => {
-        if (service.id === serviceId) {
-          return {
-            ...service,
-            ...updates,
-            updatedAt: Timestamp.now()
-          };
-        }
-        return service;
-      }));
+      setServices((prev) =>
+        prev.map((service) => {
+          if (service.id === serviceId) {
+            return {
+              ...service,
+              ...updates,
+              updatedAt: Timestamp.now(),
+            };
+          }
+          return service;
+        })
+      );
     } catch (err) {
       console.error('Failed to update service:', err);
       setError(err instanceof Error ? err.message : 'Failed to update service');
@@ -199,7 +203,7 @@ export const useAdminServiceManagement = () => {
       setLoading(true);
       setError(null);
       await serviceApi.admin.deleteService(serviceId);
-      setServices(prev => prev.filter(service => service.id !== serviceId));
+      setServices((prev) => prev.filter((service) => service.id !== serviceId));
     } catch (err) {
       console.error('Failed to delete service:', err);
       setError(err instanceof Error ? err.message : 'Failed to delete service');
@@ -219,6 +223,6 @@ export const useAdminServiceManagement = () => {
     removeCategory,
     addService,
     editService,
-    removeService
+    removeService,
   };
 };

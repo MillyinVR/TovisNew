@@ -24,7 +24,7 @@ export const UpcomingAppointments = () => {
       time: '10:00 AM',
       location: 'New York, NY',
       status: 'upcoming',
-      rating: 4.9
+      rating: 4.9,
     },
     {
       id: '2',
@@ -35,8 +35,8 @@ export const UpcomingAppointments = () => {
       time: '2:30 PM',
       location: 'Los Angeles, CA',
       status: 'upcoming',
-      rating: 4.8
-    }
+      rating: 4.8,
+    },
   ];
 
   const handleReschedule = (appointmentId: string) => {
@@ -53,12 +53,8 @@ export const UpcomingAppointments = () => {
     <div className="space-y-6">
       <div className="bg-white shadow overflow-hidden sm:rounded-lg">
         <div className="px-4 py-5 sm:px-6">
-          <h3 className="text-lg leading-6 font-medium text-gray-900">
-            Upcoming Appointments
-          </h3>
-          <p className="mt-1 max-w-2xl text-sm text-gray-500">
-            Your scheduled beauty services
-          </p>
+          <h3 className="text-lg leading-6 font-medium text-gray-900">Upcoming Appointments</h3>
+          <p className="mt-1 max-w-2xl text-sm text-gray-500">Your scheduled beauty services</p>
         </div>
         <div className="border-t border-gray-200">
           <ul className="divide-y divide-gray-200">
@@ -72,12 +68,8 @@ export const UpcomingAppointments = () => {
                       className="h-12 w-12 rounded-full object-cover"
                     />
                     <div>
-                      <h4 className="text-lg font-medium text-gray-900">
-                        {appointment.service}
-                      </h4>
-                      <p className="text-sm text-gray-500">
-                        with {appointment.professionalName}
-                      </p>
+                      <h4 className="text-lg font-medium text-gray-900">{appointment.service}</h4>
+                      <p className="text-sm text-gray-500">with {appointment.professionalName}</p>
                       <div className="mt-1 flex items-center text-sm text-gray-500">
                         <Star className="h-4 w-4 text-yellow-400 mr-1" />
                         {appointment.rating}

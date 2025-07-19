@@ -23,22 +23,20 @@ interface FormValues {
 const serviceSchema = yup.object({
   serviceName: yup.string().required('Service name is required'),
   description: yup.string().required('Description is required'),
-  basePrice: yup.number()
-    .required('Base price is required')
-    .min(0, 'Price must be positive'),
-  categoryId: yup.string().required('Category is required')
+  basePrice: yup.number().required('Base price is required').min(0, 'Price must be positive'),
+  categoryId: yup.string().required('Category is required'),
 });
 
 const categorySchema = yup.object({
   name: yup.string().required('Category name is required'),
-  imageUrl: yup.string().url('Invalid image URL').required('Image is required')
+  imageUrl: yup.string().url('Invalid image URL').required('Image is required'),
 });
 
 export const ServiceManagement = () => {
-  const { 
+  const {
     categories: initialCategories,
     services: initialServices,
-    loading: initialLoading
+    loading: initialLoading,
   } = useAdminServiceManagement();
 
   const [categories, setCategories] = useState<ServiceCategory[]>(initialCategories || []);
@@ -49,22 +47,22 @@ export const ServiceManagement = () => {
   const [categoryImage, setCategoryImage] = useState<string | null>(null);
   const [serviceImages, setServiceImages] = useState<string[]>([]);
 
-  const { 
-    register, 
-    handleSubmit, 
+  const {
+    register,
+    handleSubmit,
     reset,
-    formState: { errors } 
+    formState: { errors },
   } = useForm<FormValues>({
-    resolver: yupResolver(serviceSchema)
+    resolver: yupResolver(serviceSchema),
   });
 
-  const { 
+  const {
     register: registerCategory,
     handleSubmit: handleSubmitCategory,
     reset: resetCategory,
-    formState: { errors: errorsCategory }
+    formState: { errors: errorsCategory },
   } = useForm({
-    resolver: yupResolver(categorySchema)
+    resolver: yupResolver(categorySchema),
   });
 
   const storage = getStorage();
@@ -90,7 +88,7 @@ export const ServiceManagement = () => {
       const storageRef = ref(storage, `services/${filename}`);
       const snapshot = await uploadBytes(storageRef, file);
       const downloadURL = await getDownloadURL(snapshot.ref);
-      setServiceImages(prev => [...prev, downloadURL]);
+      setServiceImages((prev) => [...prev, downloadURL]);
       return downloadURL;
     } catch (error) {
       console.error('Failed to upload service image:', error);
@@ -110,16 +108,19 @@ export const ServiceManagement = () => {
       const newCategory = {
         name: data.name,
         imageUrl: categoryImage,
-        services: []
+        services: [],
       };
 
       const categoryId = await serviceApi.admin.createCategory(newCategory);
-      setCategories(prev => [...prev, {
-        ...newCategory,
-        id: categoryId,
-        createdAt: Timestamp.fromDate(new Date()),
-        updatedAt: Timestamp.fromDate(new Date())
-      }]);
+      setCategories((prev) => [
+        ...prev,
+        {
+          ...newCategory,
+          id: categoryId,
+          createdAt: Timestamp.fromDate(new Date()),
+          updatedAt: Timestamp.fromDate(new Date()),
+        },
+      ]);
 
       resetCategory();
       setCategoryImage(null);
@@ -136,7 +137,7 @@ export const ServiceManagement = () => {
     try {
       setLoadingCategory(true);
       await serviceApi.admin.deleteCategory(id);
-      setCategories(prev => prev.filter(c => c.id !== id));
+      setCategories((prev) => prev.filter((c) => c.id !== id));
       toast.success('Category deleted successfully');
     } catch (error) {
       console.error('Failed to delete category:', error);
@@ -149,7 +150,7 @@ export const ServiceManagement = () => {
   const onSubmit = async (data: FormValues) => {
     try {
       setLoading(true);
-      
+
       if (serviceImages.length === 0) {
         toast.error('At least one service image is required');
         return;
@@ -166,23 +167,23 @@ export const ServiceManagement = () => {
         rating: 0,
         status: 'active',
         isPublished: true,
-        media: serviceImages.map(url => ({ url, type: 'image' as const })),
+        media: serviceImages.map((url) => ({ url, type: 'image' as const })),
         professionalId: '',
-        availability: undefined
+        availability: undefined,
       };
 
       if (selectedService) {
         await serviceApi.admin.updateService(selectedService.id, serviceData);
-        setServices(prev => prev.map(s => 
-          s.id === selectedService.id ? { ...s, ...serviceData } : s
-        ));
+        setServices((prev) =>
+          prev.map((s) => (s.id === selectedService.id ? { ...s, ...serviceData } : s))
+        );
         toast.success('Service updated successfully');
       } else {
         const newService = await serviceApi.admin.createService(serviceData);
-        setServices(prev => [...prev, newService]);
+        setServices((prev) => [...prev, newService]);
         toast.success('Service created successfully');
       }
-      
+
       reset();
       setSelectedService(null);
       setServiceImages([]);
@@ -197,7 +198,7 @@ export const ServiceManagement = () => {
   const handleDeleteService = async (service: AdminService) => {
     try {
       await serviceApi.admin.deleteService(service.id);
-      setServices(prev => prev.filter(s => s.id !== service.id));
+      setServices((prev) => prev.filter((s) => s.id !== service.id));
       toast.success('Service deleted successfully');
     } catch (error) {
       console.error('Failed to delete service:', error);
@@ -213,19 +214,16 @@ export const ServiceManagement = () => {
   return (
     <div className="max-w-4xl mx-auto p-6">
       <h2 className="text-2xl font-bold mb-6">Manage Services</h2>
-      
+
       <div className="grid grid-cols-2 gap-6">
         {/* Category Management */}
         <div className="border rounded-lg p-4">
           <h3 className="text-lg font-semibold mb-4">Manage Categories</h3>
-          
+
           <form onSubmit={handleSubmitCategory(handleCreateCategory)} className="space-y-4">
             <div className="space-y-2">
               <div className="font-medium">Category Name</div>
-              <Input
-                {...registerCategory('name')}
-                placeholder="Enter category name"
-              />
+              <Input {...registerCategory('name')} placeholder="Enter category name" />
               {errorsCategory.name && (
                 <p className="text-sm text-red-500">{errorsCategory.name.message}</p>
               )}
@@ -233,10 +231,7 @@ export const ServiceManagement = () => {
 
             <div className="space-y-2">
               <div className="font-medium">Category Image</div>
-              <FileUpload
-                onFileUpload={handleCategoryImageUpload}
-                accept="image/*"
-              />
+              <FileUpload onFileUpload={handleCategoryImageUpload} accept="image/*" />
               {errorsCategory.imageUrl && (
                 <p className="text-sm text-red-500">{errorsCategory.imageUrl.message}</p>
               )}
@@ -249,10 +244,13 @@ export const ServiceManagement = () => {
 
           <div className="mt-6 space-y-2">
             {categories.map((category) => (
-              <div key={category.id} className="flex items-center justify-between p-2 border rounded">
+              <div
+                key={category.id}
+                className="flex items-center justify-between p-2 border rounded"
+              >
                 <div className="flex items-center gap-2">
                   {category.imageUrl && (
-                    <img 
+                    <img
                       src={category.imageUrl}
                       alt={category.name}
                       className="w-8 h-8 rounded object-cover"
@@ -275,14 +273,11 @@ export const ServiceManagement = () => {
         {/* Service Management */}
         <div className="border rounded-lg p-4">
           <h3 className="text-lg font-semibold mb-4">Manage Services</h3>
-          
+
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
               <div className="font-medium">Service Name</div>
-              <Input
-                {...register('serviceName')}
-                placeholder="Enter service name"
-              />
+              <Input {...register('serviceName')} placeholder="Enter service name" />
               {errors.serviceName && (
                 <p className="text-sm text-red-500">{errors.serviceName.message}</p>
               )}
@@ -290,10 +285,7 @@ export const ServiceManagement = () => {
 
             <div className="space-y-2">
               <div className="font-medium">Description</div>
-              <Input
-                {...register('description')}
-                placeholder="Enter description"
-              />
+              <Input {...register('description')} placeholder="Enter description" />
               {errors.description && (
                 <p className="text-sm text-red-500">{errors.description.message}</p>
               )}
@@ -301,10 +293,7 @@ export const ServiceManagement = () => {
 
             <div className="space-y-2">
               <div className="font-medium">Base Price ($)</div>
-              <Input
-                type="number"
-                {...register('basePrice')}
-              />
+              <Input type="number" {...register('basePrice')} />
               {errors.basePrice && (
                 <p className="text-sm text-red-500">{errors.basePrice.message}</p>
               )}
@@ -312,10 +301,7 @@ export const ServiceManagement = () => {
 
             <div className="space-y-2">
               <div className="font-medium">Category</div>
-              <select
-                {...register('categoryId')}
-                className="w-full p-2 border rounded"
-              >
+              <select {...register('categoryId')} className="w-full p-2 border rounded">
                 <option value="">Select category</option>
                 {categories.map((category) => (
                   <option key={category.id} value={category.id}>
@@ -330,24 +316,22 @@ export const ServiceManagement = () => {
 
             <div className="space-y-2">
               <div className="font-medium">Service Images</div>
-              <FileUpload
-                multiple
-                onFileUpload={handleServiceImageUpload}
-                accept="image/*"
-              />
+              <FileUpload multiple onFileUpload={handleServiceImageUpload} accept="image/*" />
               {serviceImages.length > 0 && (
                 <div className="flex gap-2 mt-2">
                   {serviceImages.map((url, index) => (
                     <div key={index} className="relative">
-                      <img 
-                        src={url} 
+                      <img
+                        src={url}
                         alt={`Service image ${index + 1}`}
                         className="w-16 h-16 rounded object-cover"
                       />
                       <button
                         type="button"
                         className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1"
-                        onClick={() => setServiceImages(prev => prev.filter((_, i) => i !== index))}
+                        onClick={() =>
+                          setServiceImages((prev) => prev.filter((_, i) => i !== index))
+                        }
                       >
                         <X className="w-3 h-3" />
                       </button>
@@ -379,7 +363,7 @@ export const ServiceManagement = () => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   {service.media?.[0] && (
-                    <img 
+                    <img
                       src={service.media[0].url}
                       alt={service.name}
                       className="w-16 h-16 rounded object-cover"
@@ -391,7 +375,7 @@ export const ServiceManagement = () => {
                     <div className="flex gap-4 mt-1 text-sm">
                       <span>${service.price}</span>
                       <span className="text-blue-600">
-                        {categories.find(c => c.id === service.categoryId)?.name}
+                        {categories.find((c) => c.id === service.categoryId)?.name}
                       </span>
                     </div>
                   </div>
@@ -402,12 +386,12 @@ export const ServiceManagement = () => {
                     size="sm"
                     onClick={() => {
                       setSelectedService(service);
-                      setServiceImages(service.media?.map(m => m.url) || []);
+                      setServiceImages(service.media?.map((m) => m.url) || []);
                       reset({
                         serviceName: service.name,
                         description: service.description,
                         basePrice: service.price,
-                        categoryId: service.categoryId
+                        categoryId: service.categoryId,
                       });
                     }}
                   >

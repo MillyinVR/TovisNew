@@ -15,20 +15,11 @@ export const TrendingVideos: React.FC<TrendingVideosProps> = ({ videos }) => {
       <h2 className="text-xl font-semibold mb-4">Trending Videos</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {videos.map((video) => (
-          <VideoCard
-            key={video.id}
-            video={video}
-            onVideoClick={() => setSelectedVideo(video)}
-          />
+          <VideoCard key={video.id} video={video} onVideoClick={() => setSelectedVideo(video)} />
         ))}
       </div>
 
-      {selectedVideo && (
-        <VideoModal
-          video={selectedVideo}
-          onClose={() => setSelectedVideo(null)}
-        />
-      )}
+      {selectedVideo && <VideoModal video={selectedVideo} onClose={() => setSelectedVideo(null)} />}
     </section>
   );
 };

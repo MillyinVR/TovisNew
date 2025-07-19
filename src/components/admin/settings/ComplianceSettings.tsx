@@ -47,18 +47,14 @@ export const ComplianceSettings = () => {
           <h4 className="text-sm font-medium text-gray-900 mb-4">Privacy Policy</h4>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Last Updated
-              </label>
+              <label className="block text-sm font-medium text-gray-700">Last Updated</label>
               <input
                 type="date"
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Policy Version
-              </label>
+              <label className="block text-sm font-medium text-gray-700">Policy Version</label>
               <input
                 type="text"
                 defaultValue="1.0.0"

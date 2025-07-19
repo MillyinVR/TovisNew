@@ -22,7 +22,7 @@ export const SupportTickets = () => {
       priority: 'high',
       status: 'open',
       createdAt: '2024-03-15T10:30:00Z',
-      lastUpdated: '2024-03-15T10:30:00Z'
+      lastUpdated: '2024-03-15T10:30:00Z',
     },
     {
       id: '2',
@@ -32,8 +32,8 @@ export const SupportTickets = () => {
       priority: 'medium',
       status: 'in_progress',
       createdAt: '2024-03-14T15:45:00Z',
-      lastUpdated: '2024-03-14T16:30:00Z'
-    }
+      lastUpdated: '2024-03-14T16:30:00Z',
+    },
   ]);
 
   return (
@@ -50,13 +50,15 @@ export const SupportTickets = () => {
                   <span className="text-sm text-gray-500">{ticket.clientName}</span>
                 </div>
               </div>
-              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                ticket.priority === 'high'
-                  ? 'bg-red-100 text-red-800'
-                  : ticket.priority === 'medium'
-                  ? 'bg-yellow-100 text-yellow-800'
-                  : 'bg-green-100 text-green-800'
-              }`}>
+              <span
+                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                  ticket.priority === 'high'
+                    ? 'bg-red-100 text-red-800'
+                    : ticket.priority === 'medium'
+                      ? 'bg-yellow-100 text-yellow-800'
+                      : 'bg-green-100 text-green-800'
+                }`}
+              >
                 {ticket.priority}
               </span>
             </div>
@@ -66,13 +68,15 @@ export const SupportTickets = () => {
                   <Clock className="h-4 w-4 mr-1" />
                   {new Date(ticket.lastUpdated).toLocaleDateString()}
                 </span>
-                <span className={`flex items-center text-sm ${
-                  ticket.status === 'resolved'
-                    ? 'text-green-600'
-                    : ticket.status === 'in_progress'
-                    ? 'text-blue-600'
-                    : 'text-yellow-600'
-                }`}>
+                <span
+                  className={`flex items-center text-sm ${
+                    ticket.status === 'resolved'
+                      ? 'text-green-600'
+                      : ticket.status === 'in_progress'
+                        ? 'text-blue-600'
+                        : 'text-yellow-600'
+                  }`}
+                >
                   {ticket.status === 'resolved' && <CheckCircle className="h-4 w-4 mr-1" />}
                   {ticket.status === 'in_progress' && <MessageSquare className="h-4 w-4 mr-1" />}
                   {ticket.status}

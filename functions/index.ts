@@ -6,7 +6,7 @@ import {
   updateGeoIndex,
   updateContentEngagement,
   createUserActivity,
-  createUserRecommendations
+  createUserRecommendations,
 } from './src/dbStructure';
 import { sendNotification, sendNotificationHttp } from './src/notifications';
 

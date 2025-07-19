@@ -18,7 +18,7 @@ export const CommissionTracking = () => {
       amount: 450,
       bookings: 15,
       period: 'March 2024',
-      status: 'pending'
+      status: 'pending',
     },
     {
       id: 'COM-124',
@@ -26,8 +26,8 @@ export const CommissionTracking = () => {
       amount: 380,
       bookings: 12,
       period: 'March 2024',
-      status: 'pending'
-    }
+      status: 'pending',
+    },
   ];
 
   return (
@@ -35,7 +35,10 @@ export const CommissionTracking = () => {
       <h3 className="text-lg font-medium text-gray-900 mb-6">Commission Tracking</h3>
       <div className="space-y-4">
         {commissions.map((commission) => (
-          <div key={commission.id} className="flex items-center justify-between p-4 border rounded-lg">
+          <div
+            key={commission.id}
+            className="flex items-center justify-between p-4 border rounded-lg"
+          >
             <div>
               <p className="font-medium text-gray-900">{commission.professionalName}</p>
               <div className="mt-1 flex items-center space-x-4 text-sm text-gray-500">

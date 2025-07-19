@@ -24,7 +24,8 @@ export const AIConsultations = () => {
           <h3 className="mt-2 text-sm font-medium text-gray-900">AI Consultations Coming Soon</h3>
           <p className="mt-1 text-sm text-gray-500">
             Our AI-powered consultation system will help streamline your client onboarding process,
-            gather important information, and provide personalized recommendations before the appointment.
+            gather important information, and provide personalized recommendations before the
+            appointment.
           </p>
           <div className="mt-6 flex justify-center space-x-4">
             <div className="text-left">

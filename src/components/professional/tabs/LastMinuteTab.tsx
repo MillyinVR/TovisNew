@@ -19,7 +19,7 @@ export const LastMinuteTab = () => {
       service: 'Soft Glam Makeup',
       originalPrice: 120,
       discount: 20,
-      waitlistCount: 3
+      waitlistCount: 3,
     },
     {
       id: '2',
@@ -27,7 +27,7 @@ export const LastMinuteTab = () => {
       service: 'Natural Makeup',
       originalPrice: 100,
       discount: 10,
-      waitlistCount: 1
+      waitlistCount: 1,
     },
     {
       id: '3',
@@ -35,8 +35,8 @@ export const LastMinuteTab = () => {
       service: 'Editorial Makeup',
       originalPrice: 200,
       discount: 10,
-      waitlistCount: 5
-    }
+      waitlistCount: 5,
+    },
   ]);
 
   const handleOptIn = (slotId: string) => {
@@ -57,9 +57,7 @@ export const LastMinuteTab = () => {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg font-medium text-gray-900">Last Minute Bookings</h2>
-            <p className="text-sm text-gray-500">
-              Fill your empty slots with automatic discounts
-            </p>
+            <p className="text-sm text-gray-500">Fill your empty slots with automatic discounts</p>
           </div>
           <button className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
             <Bell className="h-4 w-4 mr-2" />
@@ -69,10 +67,15 @@ export const LastMinuteTab = () => {
 
         <div className="mt-6 space-y-4">
           {openSlots.map((slot) => {
-            const hoursUntil = Math.round((slot.startTime.getTime() - new Date().getTime()) / (1000 * 60 * 60));
-            
+            const hoursUntil = Math.round(
+              (slot.startTime.getTime() - new Date().getTime()) / (1000 * 60 * 60)
+            );
+
             return (
-              <div key={slot.id} className="border rounded-lg p-4 hover:border-indigo-500 transition-colors">
+              <div
+                key={slot.id}
+                className="border rounded-lg p-4 hover:border-indigo-500 transition-colors"
+              >
                 <div className="flex items-center justify-between">
                   <div className="flex items-start space-x-4">
                     <div className="p-3 bg-indigo-50 rounded-lg">
@@ -92,9 +95,11 @@ export const LastMinuteTab = () => {
                           {slot.waitlistCount} on waitlist
                         </span>
                         <span className="inline-flex items-center text-sm text-green-600">
-                          <DollarSign className="h-4 w-4 mr-1" />
-                          ${slot.originalPrice * (1 - slot.discount / 100)} 
-                          <span className="ml-1 text-gray-500 line-through">${slot.originalPrice}</span>
+                          <DollarSign className="h-4 w-4 mr-1" />$
+                          {slot.originalPrice * (1 - slot.discount / 100)}
+                          <span className="ml-1 text-gray-500 line-through">
+                            ${slot.originalPrice}
+                          </span>
                         </span>
                       </div>
                     </div>
@@ -124,7 +129,9 @@ export const LastMinuteTab = () => {
           <div className="flex items-center justify-between">
             <div>
               <h4 className="text-sm font-medium text-gray-900">Automatic Discounts</h4>
-              <p className="text-sm text-gray-500">Enable automatic discounts for last-minute bookings</p>
+              <p className="text-sm text-gray-500">
+                Enable automatic discounts for last-minute bookings
+              </p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" className="sr-only peer" defaultChecked />
@@ -134,7 +141,9 @@ export const LastMinuteTab = () => {
           <div className="flex items-center justify-between">
             <div>
               <h4 className="text-sm font-medium text-gray-900">Waitlist Notifications</h4>
-              <p className="text-sm text-gray-500">Notify waitlisted clients about available slots</p>
+              <p className="text-sm text-gray-500">
+                Notify waitlisted clients about available slots
+              </p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input type="checkbox" className="sr-only peer" defaultChecked />

@@ -16,13 +16,13 @@ export const PortfolioManager = () => {
   const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && tagInput.trim()) {
       e.preventDefault();
-      setTags(prev => [...prev, tagInput.trim()]);
+      setTags((prev) => [...prev, tagInput.trim()]);
       setTagInput('');
     }
   };
 
   const handleRemoveTag = (tagToRemove: string) => {
-    setTags(prev => prev.filter(tag => tag !== tagToRemove));
+    setTags((prev) => prev.filter((tag) => tag !== tagToRemove));
   };
 
   const handleUpload = async (e: React.FormEvent) => {
@@ -33,7 +33,7 @@ export const PortfolioManager = () => {
       setUploadLoading(true);
       await uploadMedia({
         serviceId: 'current-service', // TODO: replace with actual service id
-        media: [{ file: selectedFile, caption }]
+        media: [{ file: selectedFile, caption }],
       });
       resetUploadForm();
     } catch (err) {
@@ -139,7 +139,10 @@ export const PortfolioManager = () => {
                 {tags.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-2">
                     {tags.map((tag) => (
-                      <span key={tag} className="flex items-center bg-indigo-100 text-indigo-800 text-xs font-medium rounded-full px-2.5 py-0.5">
+                      <span
+                        key={tag}
+                        className="flex items-center bg-indigo-100 text-indigo-800 text-xs font-medium rounded-full px-2.5 py-0.5"
+                      >
                         {tag}
                         <button
                           type="button"
@@ -168,4 +171,3 @@ export const PortfolioManager = () => {
     </div>
   );
 };
-

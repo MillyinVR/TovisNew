@@ -19,9 +19,7 @@ export default function ServiceHistoryItem({ service, onAddMedia }: ServiceHisto
               {[...Array(5)].map((_, i) => (
                 <StarIcon
                   key={i}
-                  className={`h-4 w-4 ${
-                    i < service.rating! ? 'text-yellow-400' : 'text-gray-300'
-                  }`}
+                  className={`h-4 w-4 ${i < service.rating! ? 'text-yellow-400' : 'text-gray-300'}`}
                 />
               ))}
             </div>
@@ -67,15 +65,9 @@ export default function ServiceHistoryItem({ service, onAddMedia }: ServiceHisto
                     className="rounded-lg w-full h-auto max-w-[150px]"
                   />
                 ) : (
-                  <video
-                    src={media.url}
-                    controls
-                    className="rounded-lg"
-                  />
+                  <video src={media.url} controls className="rounded-lg" />
                 )}
-                {media.caption && (
-                  <p className="text-xs text-gray-600 mt-1">{media.caption}</p>
-                )}
+                {media.caption && <p className="text-xs text-gray-600 mt-1">{media.caption}</p>}
               </div>
             ))}
           </div>

@@ -1,7 +1,13 @@
 export type UserRole = 'admin' | 'professional' | 'client' | 'pending_professional';
 
 export type PermissionAction = 'create' | 'read' | 'update' | 'delete';
-export type PermissionResource = 'users' | 'bookings' | 'services' | 'settings' | 'profiles' | 'verifications';
+export type PermissionResource =
+  | 'users'
+  | 'bookings'
+  | 'services'
+  | 'settings'
+  | 'profiles'
+  | 'verifications';
 
 export interface Permission {
   action: PermissionAction;

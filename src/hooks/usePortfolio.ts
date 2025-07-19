@@ -10,7 +10,11 @@ interface MediaUpload {
 
 interface UsePortfolioReturn {
   portfolioItems: PortfolioItem[];
-  uploadMedia: (params: { serviceId: string; media: MediaUpload[]; userId: string }) => Promise<PortfolioItem[]>;
+  uploadMedia: (params: {
+    serviceId: string;
+    media: MediaUpload[];
+    userId: string;
+  }) => Promise<PortfolioItem[]>;
   isLoading: boolean;
   isUploading: boolean;
   error: Error | null;
@@ -43,12 +47,12 @@ export const usePortfolio = (userId: string, serviceId?: string): UsePortfolioRe
     if (!userId) return;
 
     const portfolioRef = collection(db, 'portfolio');
-    const q = serviceId 
+    const q = serviceId
       ? query(portfolioRef, where('userId', '==', userId), where('serviceId', '==', serviceId))
       : query(portfolioRef, where('userId', '==', userId));
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const items = snapshot.docs.map(doc => {
+      const items = snapshot.docs.map((doc) => {
         const data = doc.data();
         return {
           id: doc.id,
@@ -61,7 +65,7 @@ export const usePortfolio = (userId: string, serviceId?: string): UsePortfolioRe
           createdAt: data.createdAt || new Date().toISOString(),
           size: data.size || 0,
           serviceId: data.serviceId || '',
-          userId: data.userId || ''
+          userId: data.userId || '',
         };
       });
       setPortfolioItems(items);
@@ -77,17 +81,17 @@ export const usePortfolio = (userId: string, serviceId?: string): UsePortfolioRe
   }) => {
     setIsUploading(true);
     setError(null);
-    
+
     try {
       const results = await uploadFiles({
         serviceId: params.serviceId,
-        files: params.media.map(m => ({
+        files: params.media.map((m) => ({
           file: m.file,
           metadata: {
-            caption: m.caption
-          }
+            caption: m.caption,
+          },
         })),
-        userId: params.userId
+        userId: params.userId,
       });
       return results;
     } catch (err) {
@@ -103,6 +107,6 @@ export const usePortfolio = (userId: string, serviceId?: string): UsePortfolioRe
     uploadMedia,
     isLoading,
     isUploading,
-    error
+    error,
   };
 };

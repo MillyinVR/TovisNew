@@ -19,7 +19,7 @@ export const CustomWorkingHoursModal: React.FC<CustomWorkingHoursModalProps> = (
   isOpen,
   onClose,
   onSave,
-  existingHours = []
+  existingHours = [],
 }) => {
   const [customHours, setCustomHours] = useState<CustomWorkingHours[]>(existingHours);
 
@@ -29,8 +29,8 @@ export const CustomWorkingHoursModal: React.FC<CustomWorkingHoursModalProps> = (
       {
         date: format(addDays(new Date(), 1), 'yyyy-MM-dd'),
         start: '09:00',
-        end: '17:00'
-      }
+        end: '17:00',
+      },
     ]);
   };
 
@@ -39,9 +39,9 @@ export const CustomWorkingHoursModal: React.FC<CustomWorkingHoursModalProps> = (
   };
 
   const updateCustomHours = (index: number, field: keyof CustomWorkingHours, value: string) => {
-    setCustomHours(customHours.map((hours, i) => 
-      i === index ? { ...hours, [field]: value } : hours
-    ));
+    setCustomHours(
+      customHours.map((hours, i) => (i === index ? { ...hours, [field]: value } : hours))
+    );
   };
 
   if (!isOpen) return null;
@@ -51,10 +51,7 @@ export const CustomWorkingHoursModal: React.FC<CustomWorkingHoursModalProps> = (
       <div className="bg-white rounded-lg p-6 max-w-2xl w-full">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-medium text-gray-900">Custom Working Hours</h3>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-500"
-          >
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-500">
             <X className="h-5 w-5" />
           </button>
         </div>

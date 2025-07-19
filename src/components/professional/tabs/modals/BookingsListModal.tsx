@@ -19,15 +19,15 @@ const mockClientData = {
       date: '2024-01-15',
       service: 'Hair Coloring',
       professional: 'Emma Thompson',
-      notes: 'Client prefers natural looking highlights'
+      notes: 'Client prefers natural looking highlights',
     },
     {
       id: '2',
       date: '2024-01-01',
       service: 'Makeup',
       professional: 'Sarah Wilson',
-      notes: 'Allergic to certain brands, check notes before service'
-    }
+      notes: 'Allergic to certain brands, check notes before service',
+    },
   ],
   ratings: [
     {
@@ -35,17 +35,17 @@ const mockClientData = {
       rating: 5,
       comment: 'Great client, always on time',
       professional: 'Emma Thompson',
-      date: '2024-01-15'
+      date: '2024-01-15',
     },
     {
       id: '2',
       rating: 4,
       comment: 'Pleasant to work with',
       professional: 'Sarah Wilson',
-      date: '2024-01-01'
-    }
+      date: '2024-01-01',
+    },
   ],
-  averageRating: 4.5
+  averageRating: 4.5,
 };
 
 interface BookingsListModalProps {
@@ -65,14 +65,14 @@ export const BookingsListModal: React.FC<BookingsListModalProps> = ({
   bookings: initialBookings,
   type,
   onApprove = () => {},
-  onDeny = () => {}
+  onDeny = () => {},
 }) => {
   const [selectedClient, setSelectedClient] = useState<{
     id: string;
     name: string;
   } | null>(null);
   const [bookings, setBookings] = useState<Booking[]>(initialBookings);
-  
+
   // Update bookings when initialBookings changes
   React.useEffect(() => {
     setBookings(initialBookings);
@@ -82,7 +82,10 @@ export const BookingsListModal: React.FC<BookingsListModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex min-h-screen items-center justify-center px-2 sm:px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={onClose} />
+        <div
+          className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+          onClick={onClose}
+        />
 
         <div className="inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-3xl sm:align-middle w-full mx-2 sm:mx-auto">
           <div className="bg-white px-3 sm:px-4 pt-4 sm:pt-5 pb-3 sm:pb-4 sm:p-6 sm:pb-4">
@@ -95,10 +98,12 @@ export const BookingsListModal: React.FC<BookingsListModalProps> = ({
                 <X className="h-5 w-5 sm:h-6 sm:w-6" />
               </button>
             </div>
-            
+
             <div className="mt-2 space-y-3 sm:space-y-4">
               {bookings.length === 0 ? (
-                <p className="text-center text-gray-500 text-sm sm:text-base">No bookings to display</p>
+                <p className="text-center text-gray-500 text-sm sm:text-base">
+                  No bookings to display
+                </p>
               ) : (
                 bookings.map((booking) => (
                   <div
@@ -108,7 +113,9 @@ export const BookingsListModal: React.FC<BookingsListModalProps> = ({
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between">
                       <div className="mb-2 sm:mb-0">
                         <button
-                          onClick={() => setSelectedClient({ id: booking.clientId, name: booking.clientName })}
+                          onClick={() =>
+                            setSelectedClient({ id: booking.clientId, name: booking.clientName })
+                          }
                           className="group flex items-center"
                         >
                           <h4 className="font-medium text-gray-900 group-hover:text-indigo-600 flex items-center text-sm sm:text-base">
@@ -126,7 +133,7 @@ export const BookingsListModal: React.FC<BookingsListModalProps> = ({
                               onClick={() => {
                                 onApprove(booking.id);
                                 // Remove the booking from the list
-                                setBookings(bookings.filter(b => b.id !== booking.id));
+                                setBookings(bookings.filter((b) => b.id !== booking.id));
                               }}
                               className="inline-flex items-center rounded-full p-1 text-green-600 hover:bg-green-50"
                               title="Approve Request"
@@ -137,7 +144,7 @@ export const BookingsListModal: React.FC<BookingsListModalProps> = ({
                               onClick={() => {
                                 onDeny(booking.id);
                                 // Remove the booking from the list
-                                setBookings(bookings.filter(b => b.id !== booking.id));
+                                setBookings(bookings.filter((b) => b.id !== booking.id));
                               }}
                               className="inline-flex items-center rounded-full p-1 text-red-600 hover:bg-red-50"
                               title="Deny Request"
@@ -151,8 +158,8 @@ export const BookingsListModal: React.FC<BookingsListModalProps> = ({
                             booking.status === 'confirmed'
                               ? 'bg-green-100 text-green-800'
                               : booking.status === 'pending'
-                              ? 'bg-yellow-100 text-yellow-800'
-                              : 'bg-red-100 text-red-800'
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : 'bg-red-100 text-red-800'
                           }`}
                         >
                           {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
@@ -164,7 +171,7 @@ export const BookingsListModal: React.FC<BookingsListModalProps> = ({
               )}
             </div>
           </div>
-          
+
           <div className="bg-gray-50 px-3 sm:px-4 py-2 sm:py-3 sm:flex sm:flex-row-reverse sm:px-6">
             <button
               type="button"

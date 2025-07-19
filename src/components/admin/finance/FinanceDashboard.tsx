@@ -10,7 +10,7 @@ export const FinanceDashboard = () => {
     revenue: 15780,
     pending: 450,
     nextPayout: 1250,
-    payoutDate: '2024-03-20'
+    payoutDate: '2024-03-20',
   };
 
   return (
@@ -25,12 +25,8 @@ export const FinanceDashboard = () => {
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    Total Revenue
-                  </dt>
-                  <dd className="text-2xl font-semibold text-gray-900">
-                    ${stats.revenue}
-                  </dd>
+                  <dt className="text-sm font-medium text-gray-500 truncate">Total Revenue</dt>
+                  <dd className="text-2xl font-semibold text-gray-900">${stats.revenue}</dd>
                 </dl>
               </div>
             </div>
@@ -45,12 +41,8 @@ export const FinanceDashboard = () => {
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    Pending Payments
-                  </dt>
-                  <dd className="text-2xl font-semibold text-gray-900">
-                    ${stats.pending}
-                  </dd>
+                  <dt className="text-sm font-medium text-gray-500 truncate">Pending Payments</dt>
+                  <dd className="text-2xl font-semibold text-gray-900">${stats.pending}</dd>
                 </dl>
               </div>
             </div>
@@ -65,12 +57,8 @@ export const FinanceDashboard = () => {
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    Next Payout
-                  </dt>
-                  <dd className="text-2xl font-semibold text-gray-900">
-                    ${stats.nextPayout}
-                  </dd>
+                  <dt className="text-sm font-medium text-gray-500 truncate">Next Payout</dt>
+                  <dd className="text-2xl font-semibold text-gray-900">${stats.nextPayout}</dd>
                 </dl>
               </div>
             </div>
@@ -85,9 +73,7 @@ export const FinanceDashboard = () => {
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
-                    Next Payout Date
-                  </dt>
+                  <dt className="text-sm font-medium text-gray-500 truncate">Next Payout Date</dt>
                   <dd className="text-2xl font-semibold text-gray-900">
                     {new Date(stats.payoutDate).toLocaleDateString()}
                   </dd>

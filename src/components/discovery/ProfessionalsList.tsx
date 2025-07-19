@@ -25,7 +25,7 @@ const ProfessionalsList = () => {
         }
 
         // Fallback to finding category in categories list
-        const foundCategory = categories.find(c => c.id === categoryId);
+        const foundCategory = categories.find((c) => c.id === categoryId);
         if (foundCategory) {
           setCategory(foundCategory);
         } else {
@@ -106,9 +106,7 @@ const ProfessionalsList = () => {
             Back to Categories
           </button>
 
-          <h2 className="text-2xl font-bold text-gray-900">
-            Professionals for {category.name}
-          </h2>
+          <h2 className="text-2xl font-bold text-gray-900">Professionals for {category.name}</h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {category.professionals?.length > 0 ? (

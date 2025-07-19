@@ -1,0 +1,23 @@
+# Build outputs
+dist/
+build/
+lib/
+*.min.js
+*.min.css
+
+# Dependencies
+node_modules/
+
+# Generated files
+*.generated.*
+*.d.ts
+
+# Logs
+*.log
+
+# Environment files
+.env*
+
+# Other
+coverage/
+.netlify/

@@ -12,10 +12,12 @@ export const ClientManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [newNote, setNewNote] = useState('');
-  const [noteType, setNoteType] = useState<'general' | 'medical' | 'preference' | 'warning'>('general');
+  const [noteType, setNoteType] = useState<'general' | 'medical' | 'preference' | 'warning'>(
+    'general'
+  );
   const [noteVisibility, setNoteVisibility] = useState<'private' | 'shared'>('private');
 
-  const filteredClients = clients.filter(client =>
+  const filteredClients = clients.filter((client) =>
     client.displayName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -37,7 +39,7 @@ export const ClientManagement = () => {
       professionalNotes: [...selectedClient.professionalNotes, note],
     };
 
-    setClients(prev => prev.map(c => (c.id === selectedClient.id ? updatedClient : c)));
+    setClients((prev) => prev.map((c) => (c.id === selectedClient.id ? updatedClient : c)));
     setSelectedClient(updatedClient);
     setNewNote('');
   };
@@ -85,11 +87,15 @@ export const ClientManagement = () => {
       {/* Client List */}
       <div className="bg-white shadow rounded-md overflow-hidden">
         <ul className="divide-y divide-gray-200">
-          {filteredClients.map(client => (
+          {filteredClients.map((client) => (
             <li key={client.id} className="px-4 py-4 flex justify-between items-center sm:px-6">
               <div className="flex items-center">
                 {client.photoURL ? (
-                  <img src={client.photoURL} alt="" className="h-12 w-12 rounded-full object-cover" />
+                  <img
+                    src={client.photoURL}
+                    alt=""
+                    className="h-12 w-12 rounded-full object-cover"
+                  />
                 ) : (
                   <div className="h-12 w-12 bg-gray-200 flex items-center justify-center rounded-full">
                     <User className="h-6 w-6 text-gray-400" />

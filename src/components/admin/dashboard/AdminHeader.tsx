@@ -32,13 +32,11 @@ export const AdminHeader = ({ onMenuClick }: AdminHeaderProps) => {
               <Menu className="h-6 w-6" />
             </button>
             <div className="ml-4">
-            <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-            <p className="mt-1 text-sm text-gray-500">
-              Welcome back, {userProfile?.displayName}
-            </p>
+              <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+              <p className="mt-1 text-sm text-gray-500">Welcome back, {userProfile?.displayName}</p>
             </div>
           </div>
-          
+
           {/* Search Bar */}
           <div className="flex-1 max-w-lg mx-8">
             <div className="relative">

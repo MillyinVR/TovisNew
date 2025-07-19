@@ -14,11 +14,11 @@ const Bookings: React.FC = () => {
   const groupedAppointments = {
     requested: appointments.filter((a: Appointment) => a.status === AppointmentStatus.REQUESTED),
     prebooked: appointments.filter((a: Appointment) => a.status === AppointmentStatus.PREBOOKED),
-    scheduled: appointments.filter((a: Appointment) => a.status === AppointmentStatus.SCHEDULED)
+    scheduled: appointments.filter((a: Appointment) => a.status === AppointmentStatus.SCHEDULED),
   };
 
   const statusBadge = (status: AppointmentStatus): JSX.Element | null => {
-    switch(status) {
+    switch (status) {
       case AppointmentStatus.REQUESTED:
         return <Badge variant="secondary">Requested</Badge>;
       case AppointmentStatus.PREBOOKED:
@@ -33,7 +33,7 @@ const Bookings: React.FC = () => {
   return (
     <div className="relative min-h-screen">
       <div className="p-4 space-y-6 pb-24">
-        <button 
+        <button
           onClick={() => navigate(-1)}
           className="flex items-center text-sm text-gray-500 hover:text-gray-700 mb-4"
         >
@@ -41,7 +41,7 @@ const Bookings: React.FC = () => {
           Back
         </button>
         <h1 className="text-2xl font-bold">Your Bookings</h1>
-        
+
         {loading ? (
           <div>Loading...</div>
         ) : (
@@ -69,7 +69,9 @@ const Bookings: React.FC = () => {
                     <div>
                       <h3 className="font-medium">{appointment.serviceName}</h3>
                       <p className="text-sm text-gray-500">{appointment.professionalName}</p>
-                      <p className="text-sm">{format(new Date(appointment.date), 'MMM d, yyyy h:mm a')}</p>
+                      <p className="text-sm">
+                        {format(new Date(appointment.date), 'MMM d, yyyy h:mm a')}
+                      </p>
                     </div>
                     {statusBadge(appointment.status)}
                   </div>
@@ -85,7 +87,9 @@ const Bookings: React.FC = () => {
                     <div>
                       <h3 className="font-medium">{appointment.serviceName}</h3>
                       <p className="text-sm text-gray-500">{appointment.professionalName}</p>
-                      <p className="text-sm">{format(new Date(appointment.date), 'MMM d, yyyy h:mm a')}</p>
+                      <p className="text-sm">
+                        {format(new Date(appointment.date), 'MMM d, yyyy h:mm a')}
+                      </p>
                     </div>
                     {statusBadge(appointment.status)}
                   </div>
@@ -95,7 +99,7 @@ const Bookings: React.FC = () => {
           </>
         )}
       </div>
-      
+
       <div className="fixed bottom-0 left-0 right-0">
         <FooterNav userType="client" />
       </div>

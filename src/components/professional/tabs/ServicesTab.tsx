@@ -11,10 +11,7 @@ export const ServicesTab = () => {
 
   return (
     <div className="space-y-6">
-      <ServicesSection 
-        profileId={userProfile.uid} 
-        permissions={{ canEdit: true }} 
-      />
+      <ServicesSection profileId={userProfile.uid} permissions={{ canEdit: true }} />
     </div>
   );
 };

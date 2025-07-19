@@ -22,7 +22,7 @@ export const SavedProfessionals = () => {
       avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330',
       rating: 4.9,
       location: 'New York, NY',
-      specialties: ['Nails', 'Nail Art', 'Manicure']
+      specialties: ['Nails', 'Nail Art', 'Manicure'],
     },
     {
       id: '2',
@@ -31,8 +31,8 @@ export const SavedProfessionals = () => {
       avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e',
       rating: 4.8,
       location: 'Los Angeles, CA',
-      specialties: ['Hair', 'Color', 'Style']
-    }
+      specialties: ['Hair', 'Color', 'Style'],
+    },
   ];
 
   const handleRemoveProfessional = (professionalId: string) => {
@@ -60,9 +60,7 @@ export const SavedProfessionals = () => {
                   className="h-12 w-12 rounded-full object-cover"
                 />
                 <div>
-                  <h3 className="text-lg font-medium text-gray-900">
-                    {professional.name}
-                  </h3>
+                  <h3 className="text-lg font-medium text-gray-900">{professional.name}</h3>
                   <p className="text-sm text-gray-500">{professional.handle}</p>
                 </div>
               </div>
@@ -73,7 +71,7 @@ export const SavedProfessionals = () => {
                 <Trash2 className="h-5 w-5" />
               </button>
             </div>
-            
+
             <div className="mt-4">
               <div className="flex items-center text-sm text-gray-500">
                 <MapPin className="h-4 w-4 mr-1" />
@@ -82,7 +80,7 @@ export const SavedProfessionals = () => {
                 <Star className="h-4 w-4 text-yellow-400 mr-1" />
                 {professional.rating}
               </div>
-              
+
               <div className="mt-2 flex flex-wrap gap-2">
                 {professional.specialties.map((specialty) => (
                   <span

@@ -11,7 +11,11 @@ export const useProfessionalProfile = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const updateProfile = async (data: ProfileUpdateData, profileImage?: File | null, services?: any[]) => {
+  const updateProfile = async (
+    data: ProfileUpdateData,
+    profileImage?: File | null,
+    services?: any[]
+  ) => {
     if (!userProfile?.uid) {
       throw new Error('User profile not found');
     }
@@ -21,7 +25,7 @@ export const useProfessionalProfile = () => {
       if (!Array.isArray(services)) {
         throw new Error('Services must be an array');
       }
-      services.forEach(service => {
+      services.forEach((service) => {
         if (!service.name || !service.description || !service.price) {
           throw new Error('Each service must have name, description and price');
         }
@@ -44,43 +48,48 @@ export const useProfessionalProfile = () => {
         console.log('Starting image upload...');
         const fileName = `${Date.now()}_${profileImage.name}`;
         const imageRef = profileImagesRef(`${userProfile.uid}/${fileName}`);
-        
+
         // Set timeout for image upload (60 seconds)
         const uploadPromise = uploadBytes(imageRef, profileImage);
-        const timeoutPromise = new Promise((_, reject) => 
+        const timeoutPromise = new Promise((_, reject) =>
           setTimeout(() => reject(new Error('Image upload timed out after 60 seconds')), 60000)
         );
 
         try {
-          const uploadResult = await Promise.race([uploadPromise, timeoutPromise]) as { ref: any };
+          const uploadResult = (await Promise.race([uploadPromise, timeoutPromise])) as {
+            ref: any;
+          };
           photoURL = await getDownloadURL(uploadResult.ref);
           console.log('Image upload successful:', photoURL);
-          
+
           // Update auth profile
           if (auth.currentUser) {
             await updateAuthProfile(auth.currentUser, {
               photoURL: photoURL || '',
-              displayName: data.displayName
+              displayName: data.displayName,
             });
           }
         } catch (err) {
           console.error('Image upload failed:', err);
-          throw new Error(`Image upload failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
+          throw new Error(
+            `Image upload failed: ${err instanceof Error ? err.message : 'Unknown error'}`
+          );
         }
       }
 
       const userRef = doc(db, 'users', userProfile.uid);
       // Ensure location data is properly structured
-      const location = data.location && typeof data.location === 'object'
-        ? {
-            address: (data.location as LocationData).address,
-            placeId: (data.location as LocationData).placeId,
-            coordinates: {
-              lat: (data.location as LocationData).coordinates.lat,
-              lng: (data.location as LocationData).coordinates.lng
-            }
-          } as LocationData
-        : data.location;
+      const location =
+        data.location && typeof data.location === 'object'
+          ? ({
+              address: (data.location as LocationData).address,
+              placeId: (data.location as LocationData).placeId,
+              coordinates: {
+                lat: (data.location as LocationData).coordinates.lat,
+                lng: (data.location as LocationData).coordinates.lng,
+              },
+            } as LocationData)
+          : data.location;
 
       const updateData: Partial<User> = {
         ...data,
@@ -91,10 +100,10 @@ export const useProfessionalProfile = () => {
           ...userProfile?.professionalProfile,
           ...data.professionalProfile,
           location, // Also add location in professionalProfile
-          services: services || userProfile?.professionalProfile?.services || []
-        }
+          services: services || userProfile?.professionalProfile?.services || [],
+        },
       };
-      
+
       // Update Firestore document
       await updateDoc(userRef, updateData);
 
@@ -102,7 +111,7 @@ export const useProfessionalProfile = () => {
       if (auth.currentUser) {
         await updateAuthProfile(auth.currentUser, {
           photoURL: photoURL || '',
-          displayName: data.displayName
+          displayName: data.displayName,
         });
       }
 
@@ -110,14 +119,13 @@ export const useProfessionalProfile = () => {
       await updateUserProfile({
         ...updateData,
         photoURL,
-        displayName: data.displayName
+        displayName: data.displayName,
       });
 
-      return { 
-        success: true, 
-        photoURL
+      return {
+        success: true,
+        photoURL,
       };
-
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update profile');
       throw err;
@@ -129,6 +137,6 @@ export const useProfessionalProfile = () => {
   return {
     loading,
     error,
-    updateProfile
+    updateProfile,
   };
 };

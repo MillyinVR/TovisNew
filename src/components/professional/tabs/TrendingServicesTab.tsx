@@ -13,50 +13,50 @@ interface TrendingService {
 
 const trendingServices: TrendingService[] = [
   {
-    id: "chrome-girl-nails",
-    title: "Chrome Girl Nails",
-    description: "3D chrome powder with iridescent finish, trending on social media",
-    category: "Nails",
-    difficulty: "Intermediate",
+    id: 'chrome-girl-nails',
+    title: 'Chrome Girl Nails',
+    description: '3D chrome powder with iridescent finish, trending on social media',
+    category: 'Nails',
+    difficulty: 'Intermediate',
     growth: 92,
-    views: "4.2M"
+    views: '4.2M',
   },
   {
-    id: "velvet-glazed-nails",
-    title: "Velvet Glazed Nails",
-    description: "Soft matte finish with velvet-like texture and glazed overlay",
-    category: "Nails",
-    difficulty: "Advanced",
+    id: 'velvet-glazed-nails',
+    title: 'Velvet Glazed Nails',
+    description: 'Soft matte finish with velvet-like texture and glazed overlay',
+    category: 'Nails',
+    difficulty: 'Advanced',
     growth: 78,
-    views: "3.1M"
+    views: '3.1M',
   },
   {
-    id: "butterfly-bob-haircut",
-    title: "Butterfly Bob Haircut",
-    description: "Layered bob with face-framing pieces, inspired by butterfly wings",
-    category: "Hair Cut",
-    difficulty: "Intermediate",
+    id: 'butterfly-bob-haircut',
+    title: 'Butterfly Bob Haircut',
+    description: 'Layered bob with face-framing pieces, inspired by butterfly wings',
+    category: 'Hair Cut',
+    difficulty: 'Intermediate',
     growth: 65,
-    views: "2.8M"
+    views: '2.8M',
   },
   {
-    id: "glazed-donut-skin",
-    title: "Glazed Donut Skin",
-    description: "Dewy, glossy skin finish with a radiant glow",
-    category: "Makeup",
-    difficulty: "Beginner",
+    id: 'glazed-donut-skin',
+    title: 'Glazed Donut Skin',
+    description: 'Dewy, glossy skin finish with a radiant glow',
+    category: 'Makeup',
+    difficulty: 'Beginner',
     growth: 88,
-    views: "5.6M"
+    views: '5.6M',
   },
   {
-    id: "korean-cloud-skin",
-    title: "Korean Cloud Skin",
-    description: "Soft, diffused complexion with a matte-meets-dewy finish",
-    category: "Makeup",
-    difficulty: "Intermediate",
+    id: 'korean-cloud-skin',
+    title: 'Korean Cloud Skin',
+    description: 'Soft, diffused complexion with a matte-meets-dewy finish',
+    category: 'Makeup',
+    difficulty: 'Intermediate',
     growth: 72,
-    views: "3.9M"
-  }
+    views: '3.9M',
+  },
 ];
 
 export const TrendingServicesTab = () => {
@@ -65,9 +65,12 @@ export const TrendingServicesTab = () => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedService, setSelectedService] = useState<TrendingService | null>(null);
 
-  const filteredServices = activeCategory === 'all'
-    ? trendingServices
-    : trendingServices.filter(service => service.category.toLowerCase() === activeCategory.toLowerCase());
+  const filteredServices =
+    activeCategory === 'all'
+      ? trendingServices
+      : trendingServices.filter(
+          (service) => service.category.toLowerCase() === activeCategory.toLowerCase()
+        );
 
   const handleAddService = (service: TrendingService) => {
     setSelectedService(service);
@@ -76,7 +79,7 @@ export const TrendingServicesTab = () => {
 
   const confirmAddService = () => {
     if (selectedService) {
-      setAddedServices(prev => [...prev, selectedService.id]);
+      setAddedServices((prev) => [...prev, selectedService.id]);
       setShowAddModal(false);
       setSelectedService(null);
     }
@@ -111,11 +114,15 @@ export const TrendingServicesTab = () => {
                   <h3 className="text-lg font-semibold text-gray-900">{service.title}</h3>
                   <p className="mt-1 text-sm text-gray-500">{service.description}</p>
                 </div>
-                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                  service.difficulty === 'Beginner' ? 'bg-green-100 text-green-800' :
-                  service.difficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-800' :
-                  'bg-red-100 text-red-800'
-                }`}>
+                <span
+                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                    service.difficulty === 'Beginner'
+                      ? 'bg-green-100 text-green-800'
+                      : service.difficulty === 'Intermediate'
+                        ? 'bg-yellow-100 text-yellow-800'
+                        : 'bg-red-100 text-red-800'
+                  }`}
+                >
                   {service.difficulty}
                 </span>
               </div>
@@ -123,8 +130,7 @@ export const TrendingServicesTab = () => {
               <div className="mt-4 flex items-center justify-between">
                 <div className="flex items-center space-x-4">
                   <span className="flex items-center text-sm text-green-600">
-                    <TrendingUp className="h-4 w-4 mr-1" />
-                    +{service.growth}%
+                    <TrendingUp className="h-4 w-4 mr-1" />+{service.growth}%
                   </span>
                   <span className="flex items-center text-sm text-gray-500">
                     <Users className="h-4 w-4 mr-1" />
@@ -177,7 +183,7 @@ export const TrendingServicesTab = () => {
                 <X className="h-6 w-6" />
               </button>
             </div>
-            
+
             <p className="text-gray-600 mb-4">
               Are you sure you want to add {selectedService.title} to your services?
             </p>

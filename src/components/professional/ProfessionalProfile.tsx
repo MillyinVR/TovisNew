@@ -5,9 +5,14 @@ import { usePortfolio } from '../../hooks/usePortfolio';
 import { useProfessionalData } from '../../hooks/useProfessionalData';
 import { useServiceManagement } from '../../hooks/useServiceManagement';
 import { FooterNav } from '../shared/FooterNav';
-import { ProfessionalService, Review, ProfessionalProfile as ProfessionalProfileType, PortfolioItem } from '../../types/professional';
+import {
+  ProfessionalService,
+  Review,
+  ProfessionalProfile as ProfessionalProfileType,
+  PortfolioItem,
+} from '../../types/professional';
 import { ServicesSection } from './profile/sections/ServicesSections';
-import { 
+import {
   Star,
   Share2,
   Heart,
@@ -23,7 +28,7 @@ import {
   Edit,
   Plus,
   X,
-  Upload
+  Upload,
 } from 'lucide-react';
 
 interface TabProps {
@@ -52,7 +57,13 @@ export const ProfessionalProfile = () => {
   const { userProfile } = useAuth();
   const navigate = useNavigate();
   const { id } = useParams();
-  const { profile, reviews, services, loading: profileLoading, error: profileError } = useProfessionalData(id || '');
+  const {
+    profile,
+    reviews,
+    services,
+    loading: profileLoading,
+    error: profileError,
+  } = useProfessionalData(id || '');
   const [activeTab, setActiveTab] = useState<TabType>('portfolio');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedItem, setSelectedItem] = useState<PortfolioItem | null>(null);
@@ -69,13 +80,18 @@ export const ProfessionalProfile = () => {
   const isProfessionalViewingOwnProfile = userProfile?.uid === id;
   const professionalProfile = profile?.professionalProfile || {};
 
-  const { portfolioItems, isLoading: portfolioLoading, uploadMedia, error: portfolioError } = usePortfolio(id || '');
+  const {
+    portfolioItems,
+    isLoading: portfolioLoading,
+    uploadMedia,
+    error: portfolioError,
+  } = usePortfolio(id || '');
   const { loading: servicesLoading } = useServiceManagement();
 
   const stats = {
     rating: professionalProfile?.rating || 0,
     reviews: reviews?.length || 0,
-    favorites: professionalProfile?.favoriteCount || 0
+    favorites: professionalProfile?.favoriteCount || 0,
   };
 
   const isLoading = portfolioLoading || profileLoading;
@@ -89,11 +105,10 @@ export const ProfessionalProfile = () => {
         </button>
         <h1 className="text-xl font-semibold">{profile?.displayName || ''}</h1>
         <div className="flex items-center space-x-2">
-          <button 
-            onClick={() => setIsFavorited(!isFavorited)}
-            className="p-2"
-          >
-            <Heart className={`h-6 w-6 ${isFavorited ? 'fill-red-500 text-red-500' : 'text-gray-400'}`} />
+          <button onClick={() => setIsFavorited(!isFavorited)} className="p-2">
+            <Heart
+              className={`h-6 w-6 ${isFavorited ? 'fill-red-500 text-red-500' : 'text-gray-400'}`}
+            />
           </button>
           <button className="p-2">
             <Bell className="h-6 w-6" />
@@ -112,16 +127,18 @@ export const ProfessionalProfile = () => {
             />
             <div className="absolute bottom-0 right-0 bg-green-500 w-4 h-4 rounded-full border-2 border-white"></div>
           </div>
-          
+
           <h2 className="mt-4 text-xl font-semibold">{profile?.displayName || ''}</h2>
           <p className="text-gray-600">{professionalProfile?.bio || ''}</p>
-          
+
           <div className="flex items-center mt-2 text-gray-500 text-sm">
             <MapPin className="h-4 w-4 mr-1" />
-            <a 
+            <a
               href={
                 typeof professionalProfile?.location === 'string'
-                  ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(professionalProfile.location)}`
+                  ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                      professionalProfile.location
+                    )}`
                   : professionalProfile?.location?.coordinates
                     ? `https://www.google.com/maps?q=${professionalProfile.location.coordinates.lat},${professionalProfile.location.coordinates.lng}`
                     : '#'
@@ -130,8 +147,8 @@ export const ProfessionalProfile = () => {
               rel="noopener noreferrer"
               className="hover:text-indigo-600 hover:underline"
             >
-              {typeof professionalProfile?.location === 'string' 
-                ? professionalProfile.location 
+              {typeof professionalProfile?.location === 'string'
+                ? professionalProfile.location
                 : professionalProfile?.location?.address || ''}
             </a>
           </div>
@@ -161,13 +178,13 @@ export const ProfessionalProfile = () => {
               Chat
             </button>
             <div className="relative">
-              <button 
+              <button
                 onClick={() => setShowSocialMenu(!showSocialMenu)}
                 className="bg-indigo-600 text-white p-1.5 rounded-full hover:bg-indigo-700"
               >
                 <ChevronDown className="h-5 w-5" />
               </button>
-              
+
               {/* Social Menu Dropdown */}
               {showSocialMenu && (
                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-[60]">
@@ -175,17 +192,25 @@ export const ProfessionalProfile = () => {
                     <Share2 className="h-4 w-4 mr-3" />
                     Share Profile
                   </button>
-                  <a href="#" className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  <a
+                    href="#"
+                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
                     <Instagram className="h-4 w-4 mr-3" />
                     Instagram
                   </a>
-                  <a href="#" className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  <a
+                    href="#"
+                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
                     <Youtube className="h-4 w-4 mr-3" />
                     YouTube
                   </a>
-                  <a href="#" className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                    <Twitter className="h-4 w-4 mr-3" />
-                    X (Twitter)
+                  <a
+                    href="#"
+                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    <Twitter className="h-4 w-4 mr-3" />X (Twitter)
                   </a>
                 </div>
               )}
@@ -193,7 +218,7 @@ export const ProfessionalProfile = () => {
           </div>
 
           {isProfessionalViewingOwnProfile && (
-            <button 
+            <button
               onClick={() => navigate('/professional/profile/edit')}
               className="mt-4 px-4 py-2 border border-gray-300 rounded-full flex items-center"
             >
@@ -276,10 +301,10 @@ export const ProfessionalProfile = () => {
                 <div className="flex">
                   <div className="ml-3">
                     <p className="text-sm text-red-700">
-                      {typeof portfolioError === 'string' 
-                        ? portfolioError 
-                        : portfolioError instanceof Error 
-                          ? portfolioError.message 
+                      {typeof portfolioError === 'string'
+                        ? portfolioError
+                        : portfolioError instanceof Error
+                          ? portfolioError.message
                           : 'An error occurred'}
                     </p>
                   </div>
@@ -291,7 +316,10 @@ export const ProfessionalProfile = () => {
               {portfolioItems?.map((item, index) => {
                 const portfolioItem = item as PortfolioItem;
                 return (
-                  <div key={portfolioItem.id} className={viewMode === 'grid' ? 'aspect-square' : 'w-full'}>
+                  <div
+                    key={portfolioItem.id}
+                    className={viewMode === 'grid' ? 'aspect-square' : 'w-full'}
+                  >
                     <img
                       src={portfolioItem.url}
                       alt={portfolioItem.caption || `Portfolio item ${index + 1}`}
@@ -319,9 +347,9 @@ export const ProfessionalProfile = () => {
         )}
 
         {activeTab === 'services' && (
-          <ServicesSection 
-            profileId={id || ''} 
-            permissions={{ canEdit: isProfessionalViewingOwnProfile }} 
+          <ServicesSection
+            profileId={id || ''}
+            permissions={{ canEdit: isProfessionalViewingOwnProfile }}
           />
         )}
 
@@ -345,12 +373,15 @@ export const ProfessionalProfile = () => {
               </div>
             ) : profileError ? (
               <div className="text-center text-red-500">
-                Error loading reviews: {profileError instanceof Error ? profileError.message : typeof profileError === 'string' ? profileError : 'Unknown error'}
+                Error loading reviews:{' '}
+                {profileError instanceof Error
+                  ? profileError.message
+                  : typeof profileError === 'string'
+                    ? profileError
+                    : 'Unknown error'}
               </div>
             ) : reviews.length === 0 ? (
-              <div className="text-center text-gray-500">
-                No reviews available
-              </div>
+              <div className="text-center text-gray-500">No reviews available</div>
             ) : (
               reviews.map((review: Review) => (
                 <div key={review.id} className="bg-white rounded-lg shadow p-4">
@@ -369,9 +400,7 @@ export const ProfessionalProfile = () => {
                       </div>
                     </div>
                   </div>
-                  <p className="mt-2 text-gray-600 text-sm">
-                    {review.comment}
-                  </p>
+                  <p className="mt-2 text-gray-600 text-sm">{review.comment}</p>
                   {review.response && (
                     <div className="mt-2 pl-4 border-l-2 border-gray-200">
                       <p className="text-sm text-gray-500">
@@ -392,12 +421,8 @@ export const ProfessionalProfile = () => {
 
       {/* Click outside handler for social menu */}
       {showSocialMenu && (
-        <div 
-          className="fixed inset-0 z-0"
-          onClick={() => setShowSocialMenu(false)}
-        />
+        <div className="fixed inset-0 z-0" onClick={() => setShowSocialMenu(false)} />
       )}
-
 
       {/* Portfolio Upload Modal */}
       {showUploadModal && (
@@ -413,36 +438,39 @@ export const ProfessionalProfile = () => {
               </button>
             </div>
 
-            <form onSubmit={async (e) => {
-    e.preventDefault();
-    if (!selectedFile || !userProfile?.uid) return;
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                if (!selectedFile || !userProfile?.uid) return;
 
-    try {
-      setUploadLoading(true);
-      await uploadMedia({
-        serviceId: 'current-service', // TODO: Replace with actual service ID
-        media: [{
-          file: selectedFile,
-          caption: caption
-        }],
-        userId: userProfile.uid
-      });
-      setShowUploadModal(false);
-      setSelectedFile(null);
-      setCaption('');
-      setCategory('');
-      setTags([]);
-    } catch (error) {
-      console.error('Failed to upload portfolio item:', error);
-    } finally {
-      setUploadLoading(false);
-    }
-            }} className="space-y-4">
+                try {
+                  setUploadLoading(true);
+                  await uploadMedia({
+                    serviceId: 'current-service', // TODO: Replace with actual service ID
+                    media: [
+                      {
+                        file: selectedFile,
+                        caption: caption,
+                      },
+                    ],
+                    userId: userProfile.uid,
+                  });
+                  setShowUploadModal(false);
+                  setSelectedFile(null);
+                  setCaption('');
+                  setCategory('');
+                  setTags([]);
+                } catch (error) {
+                  console.error('Failed to upload portfolio item:', error);
+                } finally {
+                  setUploadLoading(false);
+                }
+              }}
+              className="space-y-4"
+            >
               {/* Image Upload */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Image
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Image</label>
                 <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
                   <div className="space-y-1 text-center">
                     {selectedFile ? (
@@ -550,7 +578,7 @@ export const ProfessionalProfile = () => {
                         <button
                           onClick={() => {
                             const tagToRemove = tag;
-                            setTags(tags.filter(t => t !== tagToRemove));
+                            setTags(tags.filter((t) => t !== tagToRemove));
                           }}
                           className="ml-1 text-indigo-600 hover:text-indigo-900"
                           aria-label={`Remove tag ${tag}`}

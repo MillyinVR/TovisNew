@@ -1,7 +1,16 @@
 import React, { useState } from 'react';
 import { AftercareSummary } from '../../../types/aftercare';
 import { Appointment } from '../../../types/appointment';
-import { Clock, Star, ShoppingCart, Calendar, ChevronRight, Check, AlertCircle, Loader } from 'lucide-react';
+import {
+  Clock,
+  Star,
+  ShoppingCart,
+  Calendar,
+  ChevronRight,
+  Check,
+  AlertCircle,
+  Loader,
+} from 'lucide-react';
 import { format } from 'date-fns';
 import { useAftercare } from '../../../hooks/useAftercare';
 import { useOrders } from '../../../hooks/useOrders';
@@ -24,10 +33,8 @@ export const AftercareSummaries = () => {
   const [showReviewModal, setShowReviewModal] = useState(false);
 
   const handleProductSelect = (productId: string) => {
-    setSelectedProducts(prev => 
-      prev.includes(productId) 
-        ? prev.filter(id => id !== productId)
-        : [...prev, productId]
+    setSelectedProducts((prev) =>
+      prev.includes(productId) ? prev.filter((id) => id !== productId) : [...prev, productId]
     );
   };
 
@@ -36,20 +43,20 @@ export const AftercareSummaries = () => {
 
     try {
       setError(null);
-      
+
       const products = selectedSummary.recommendedProducts
-        .filter(product => selectedProducts.includes(product.id))
-        .map(product => ({
+        .filter((product) => selectedProducts.includes(product.id))
+        .map((product) => ({
           id: product.id,
           name: product.name,
           price: product.price,
-          quantity: 1
+          quantity: 1,
         }));
 
       await placeOrder({
         professionalId: selectedSummary.professionalId,
         products,
-        aftercareSummaryId: selectedSummary.id
+        aftercareSummaryId: selectedSummary.id,
       });
 
       setSelectedSummary(null);
@@ -72,12 +79,12 @@ export const AftercareSummaries = () => {
 
     try {
       setError(null);
-      
+
       const service = summary.services[0]; // Book for first service
       if (!service) throw new Error('No service found');
 
       const startTime = new Date();
-      startTime.setDate(startTime.getDate() + (service.nextAppointmentRecommendation.timeframe * 7));
+      startTime.setDate(startTime.getDate() + service.nextAppointmentRecommendation.timeframe * 7);
 
       // Get professional's data
       const professionalData = await getUserData(summary.professionalId);
@@ -95,10 +102,10 @@ export const AftercareSummaries = () => {
           end.setHours(end.getHours() + 1); // Default 1 hour
           return end.toISOString();
         })(),
-        notes: `Follow-up appointment for ${service.name} (Aftercare Summary: ${summary.id})`
+        notes: `Follow-up appointment for ${service.name} (Aftercare Summary: ${summary.id})`,
       });
 
-      setSelectedSummary(prev => prev ? { ...prev, nextAppointmentBooked: true } : null);
+      setSelectedSummary((prev) => (prev ? { ...prev, nextAppointmentBooked: true } : null));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to book appointment');
     }
@@ -109,7 +116,7 @@ export const AftercareSummaries = () => {
 
     try {
       setError(null);
-      
+
       await createReview({
         clientId: userProfile.id,
         clientName: userProfile.displayName || 'Client',
@@ -119,10 +126,10 @@ export const AftercareSummaries = () => {
         service: selectedSummary.services[0]?.name || 'Service',
         images: [selectedSummary.beforeImages[0], selectedSummary.afterImages[0]],
         likes: 0,
-        verified: true
+        verified: true,
       });
 
-      setSelectedSummary(prev => prev ? { ...prev, reviewSubmitted: true } : null);
+      setSelectedSummary((prev) => (prev ? { ...prev, reviewSubmitted: true } : null));
       setShowReviewModal(false);
     } catch (err) {
       throw err;
@@ -201,7 +208,8 @@ export const AftercareSummaries = () => {
                   <div>
                     <p className="font-medium">{service.name}</p>
                     <p className="text-sm text-gray-500">
-                      Next appointment recommended in {service.nextAppointmentRecommendation.timeframe} weeks
+                      Next appointment recommended in{' '}
+                      {service.nextAppointmentRecommendation.timeframe} weeks
                     </p>
                   </div>
                   <p className="font-medium">${service.price}</p>
@@ -214,7 +222,10 @@ export const AftercareSummaries = () => {
               <h3 className="text-lg font-medium mb-4">Recommended Products</h3>
               <div className="space-y-4">
                 {selectedSummary.recommendedProducts.map((product) => (
-                  <div key={product.id} className="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
+                  <div
+                    key={product.id}
+                    className="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg"
+                  >
                     <img
                       src={product.image}
                       alt={product.name}
@@ -251,7 +262,9 @@ export const AftercareSummaries = () => {
               <h3 className="text-lg font-medium mb-4">Aftercare Instructions</h3>
               <ul className="list-disc list-inside space-y-2">
                 {selectedSummary.aftercareInstructions.map((instruction, index) => (
-                  <li key={index} className="text-gray-600">{instruction}</li>
+                  <li key={index} className="text-gray-600">
+                    {instruction}
+                  </li>
                 ))}
               </ul>
             </div>
@@ -264,22 +277,22 @@ export const AftercareSummaries = () => {
               </div>
             )}
 
-        {/* Error Message */}
-        {error && (
-          <div className="mb-4 p-4 bg-red-50 rounded-md">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <AlertCircle className="h-5 w-5 text-red-400" />
+            {/* Error Message */}
+            {error && (
+              <div className="mb-4 p-4 bg-red-50 rounded-md">
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <AlertCircle className="h-5 w-5 text-red-400" />
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm text-red-700">{error}</p>
+                  </div>
+                </div>
               </div>
-              <div className="ml-3">
-                <p className="text-sm text-red-700">{error}</p>
-              </div>
-            </div>
-          </div>
-        )}
+            )}
 
-        {/* Action Buttons */}
-        <div className="flex justify-between items-center mt-8">
+            {/* Action Buttons */}
+            <div className="flex justify-between items-center mt-8">
               <div className="space-x-4">
                 {selectedProducts.length > 0 && (
                   <button
@@ -324,7 +337,7 @@ export const AftercareSummaries = () => {
                 <div className="flex justify-between items-start">
                   <div>
                     <h3 className="text-lg font-medium">
-                      {summary.services.map(s => s.name).join(', ')}
+                      {summary.services.map((s) => s.name).join(', ')}
                     </h3>
                     <p className="text-sm text-gray-500">
                       {format(new Date(summary.date), 'MMM d, yyyy')}

@@ -1,14 +1,5 @@
 import React, { useState } from 'react';
-import { 
-  Award, 
-  Gift, 
-  Star, 
-  Crown, 
-  TrendingUp, 
-  Clock,
-  Calendar,
-  DollarSign
-} from 'lucide-react';
+import { Award, Gift, Star, Crown, TrendingUp, Clock, Calendar, DollarSign } from 'lucide-react';
 
 interface LoyaltyTier {
   name: string;
@@ -38,11 +29,7 @@ export const LoyaltyProgram: React.FC = () => {
       icon: Star,
       points: 0,
       color: 'text-amber-600',
-      benefits: [
-        'Earn 1 point per $1 spent',
-        'Birthday reward',
-        'Member-only promotions'
-      ]
+      benefits: ['Earn 1 point per $1 spent', 'Birthday reward', 'Member-only promotions'],
     },
     {
       name: 'Silver',
@@ -53,8 +40,8 @@ export const LoyaltyProgram: React.FC = () => {
         'Earn 1.5 points per $1 spent',
         'Free birthday service',
         'Priority booking',
-        'Exclusive events access'
-      ]
+        'Exclusive events access',
+      ],
     },
     {
       name: 'Gold',
@@ -66,9 +53,9 @@ export const LoyaltyProgram: React.FC = () => {
         'VIP treatment',
         'Dedicated concierge',
         'Free monthly service',
-        'Early access to new services'
-      ]
-    }
+        'Early access to new services',
+      ],
+    },
   ];
 
   const availableRewards: Reward[] = [
@@ -78,7 +65,7 @@ export const LoyaltyProgram: React.FC = () => {
       description: 'Get $25 off your next service',
       pointsCost: 500,
       expiresAt: '2024-12-31',
-      image: '/api/placeholder/400/320'
+      image: '/api/placeholder/400/320',
     },
     {
       id: '2',
@@ -86,8 +73,8 @@ export const LoyaltyProgram: React.FC = () => {
       description: 'Add a complimentary service to your next booking',
       pointsCost: 750,
       expiresAt: '2024-12-31',
-      image: '/api/placeholder/400/320'
-    }
+      image: '/api/placeholder/400/320',
+    },
   ];
 
   return (

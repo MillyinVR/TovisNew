@@ -88,7 +88,7 @@ export interface User {
 
 export interface LocationData {
   address: string;
-  placeId?: string;  // Make placeId optional
+  placeId?: string; // Make placeId optional
   coordinates: {
     lat: number;
     lng: number;
@@ -96,10 +96,7 @@ export interface LocationData {
 }
 
 import { Service } from '@/types/service';
-import { 
-  ProfessionalType,
-  MakeupArtistVerificationType
-} from './professional';
+import { ProfessionalType, MakeupArtistVerificationType } from './professional';
 
 export interface ProfileUpdateData {
   displayName?: string;

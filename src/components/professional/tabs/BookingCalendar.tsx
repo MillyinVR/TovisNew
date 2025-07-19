@@ -4,13 +4,13 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { format, addMinutes } from 'date-fns';
-import { 
-  Clock, 
-  Calendar as CalendarIcon, 
+import {
+  Clock,
+  Calendar as CalendarIcon,
   Plus,
   Settings,
   Users,
-  AlertTriangle
+  AlertTriangle,
 } from 'lucide-react';
 import { TimeSlot } from '../../../types/calendar';
 import { useWorkingHours } from '../../../hooks/useWorkingHours';
@@ -27,7 +27,6 @@ import { ClientProfileModal } from './modals/ClientProfileModal';
 import { CalendarManagement } from '../../professional/calendar/CalendarManagement';
 import './calendar.css';
 
-
 export const BookingCalendar = () => {
   const { currentUser } = useAuth();
   const calendarRef = useRef<any>(null);
@@ -39,20 +38,20 @@ export const BookingCalendar = () => {
   const [showClientProfileModal, setShowClientProfileModal] = useState(false);
   const [selectedClientId, setSelectedClientId] = useState<string>('');
   const [selectedClientName, setSelectedClientName] = useState<string>('');
-  
+
   // Custom hooks
-  const { 
-    workingHours, 
-    customWorkingHours, 
+  const {
+    workingHours,
+    customWorkingHours,
     blockedTimeSlots,
-    updateWorkingHours, 
+    updateWorkingHours,
     updateCustomWorkingHours,
     addBlockedTimeSlot,
     editBlockedTimeSlot,
     removeBlockedTimeSlot,
-    loading: workingHoursLoading
+    loading: workingHoursLoading,
   } = useWorkingHours();
-  
+
   const {
     appointments,
     todayAppointments,
@@ -61,14 +60,14 @@ export const BookingCalendar = () => {
     approveAppointment,
     cancelAppointment,
     refreshAppointments,
-    loading: appointmentsLoading
+    loading: appointmentsLoading,
   } = useProfessionalAppointments();
-  
+
   const { getClientProfile } = useClientData();
-  
+
   // Combine blocked time slots and appointments into events
   const [events, setEvents] = useState<TimeSlot[]>([]);
-  
+
   // Refresh token when component mounts to ensure permissions are up to date
   useEffect(() => {
     const refreshToken = async () => {
@@ -82,12 +81,12 @@ export const BookingCalendar = () => {
         console.error('Error refreshing token in BookingCalendar:', error);
       }
     };
-    
+
     refreshToken();
-    
+
     // Add a global error handler for Firestore errors
     const originalConsoleError = console.error;
-    console.error = function(...args) {
+    console.error = function (...args) {
       if (args[0] && typeof args[0] === 'string' && args[0].includes('@firebase/firestore')) {
         console.log('FIRESTORE ERROR DETAILS:', args);
         // Try to extract more information about the error
@@ -100,7 +99,7 @@ export const BookingCalendar = () => {
       }
       originalConsoleError.apply(console, args);
     };
-    
+
     return () => {
       console.error = originalConsoleError;
     };
@@ -110,21 +109,25 @@ export const BookingCalendar = () => {
     // Combine blocked time slots and calendar events
     // Note: calendarEvents already filters out cancelled appointments in useProfessionalAppointments
     const combinedEvents = [
-      ...calendarEvents.map(event => {
+      ...calendarEvents.map((event) => {
         // Convert AppointmentStatus enum to TimeSlot status string
         let status: 'confirmed' | 'pending' | 'cancelled' | 'scheduled' = 'scheduled';
-        
+
         // Normalize the status to uppercase for consistent comparison
         const normalizedStatus = String(event.status).toUpperCase();
-        
-        if (normalizedStatus === 'SCHEDULED' || normalizedStatus === 'CONFIRMED' || normalizedStatus === 'COMPLETED') {
+
+        if (
+          normalizedStatus === 'SCHEDULED' ||
+          normalizedStatus === 'CONFIRMED' ||
+          normalizedStatus === 'COMPLETED'
+        ) {
           status = 'scheduled';
         } else if (normalizedStatus === 'PENDING' || normalizedStatus === 'REQUESTED') {
           status = 'pending';
         } else if (normalizedStatus === 'CANCELLED') {
           status = 'cancelled';
         }
-        
+
         // Format the title based on status
         let title = event.title;
         if (normalizedStatus === 'REQUESTED' || normalizedStatus === 'PENDING') {
@@ -136,7 +139,7 @@ export const BookingCalendar = () => {
           // Remove [PENDING] prefix if present
           title = title.replace('[PENDING] ', '');
         }
-        
+
         return {
           ...event,
           title,
@@ -144,18 +147,21 @@ export const BookingCalendar = () => {
           extendedProps: {
             ...event.extendedProps,
             clientId: event.extendedProps?.clientId,
-            originalStatus: event.status // Store the original status for reference
-          }
+            originalStatus: event.status, // Store the original status for reference
+          },
         } as TimeSlot;
       }),
-      ...blockedTimeSlots.map(slot => ({
-        ...slot,
-        type: 'blocked' as const,
-        service: '',
-        status: 'scheduled' as const
-      } as TimeSlot))
+      ...blockedTimeSlots.map(
+        (slot) =>
+          ({
+            ...slot,
+            type: 'blocked' as const,
+            service: '',
+            status: 'scheduled' as const,
+          }) as TimeSlot
+      ),
     ];
-    
+
     setEvents(combinedEvents as TimeSlot[]);
   }, [calendarEvents, blockedTimeSlots]);
   const [showOutOfHoursWarning, setShowOutOfHoursWarning] = useState(false);
@@ -163,12 +169,11 @@ export const BookingCalendar = () => {
   const [showPendingRequestsModal, setShowPendingRequestsModal] = useState(false);
   const [showAftercareSummaryModal, setShowAftercareSummaryModal] = useState(false);
 
-
   // Handle approve/deny actions
   const handleApproveRequest = async (bookingId: string) => {
     try {
       console.log('Approving appointment:', bookingId);
-      
+
       // Refresh the authentication token to ensure it doesn't expire during the process
       try {
         if (auth.currentUser) {
@@ -180,12 +185,12 @@ export const BookingCalendar = () => {
         console.error('Error refreshing token:', tokenError);
         // Continue with the operation even if token refresh fails
       }
-      
+
       await approveAppointment(bookingId);
-      
+
       // Update the local events state to reflect the change
-      setEvents(prevEvents => 
-        prevEvents.map(event => {
+      setEvents((prevEvents) =>
+        prevEvents.map((event) => {
           if (event.id === bookingId) {
             return {
               ...event,
@@ -193,14 +198,14 @@ export const BookingCalendar = () => {
               status: 'scheduled',
               extendedProps: {
                 ...event.extendedProps,
-                originalStatus: 'SCHEDULED'
-              }
+                originalStatus: 'SCHEDULED',
+              },
             };
           }
           return event;
         })
       );
-      
+
       // Explicitly refresh appointments
       refreshAppointments();
     } catch (error) {
@@ -211,7 +216,7 @@ export const BookingCalendar = () => {
   const handleDenyRequest = async (bookingId: string) => {
     try {
       console.log('Denying appointment:', bookingId);
-      
+
       // Refresh the authentication token to ensure it doesn't expire during the process
       try {
         if (auth.currentUser) {
@@ -223,26 +228,26 @@ export const BookingCalendar = () => {
         console.error('Error refreshing token:', tokenError);
         // Continue with the operation even if token refresh fails
       }
-      
+
       await cancelAppointment(bookingId, 'Appointment request denied by professional');
-      
+
       // Update the local events state to reflect the change
-      setEvents(prevEvents => 
-        prevEvents.map(event => {
+      setEvents((prevEvents) =>
+        prevEvents.map((event) => {
           if (event.id === bookingId) {
             return {
               ...event,
               status: 'cancelled',
               extendedProps: {
                 ...event.extendedProps,
-                originalStatus: 'CANCELLED'
-              }
+                originalStatus: 'CANCELLED',
+              },
             };
           }
           return event;
         })
       );
-      
+
       // Explicitly refresh appointments
       refreshAppointments();
     } catch (error) {
@@ -271,9 +276,9 @@ export const BookingCalendar = () => {
   const handleEventClick = (clickInfo: any) => {
     try {
       console.log('Event clicked:', clickInfo);
-      
+
       let eventId: string | undefined;
-      
+
       // Determine the event ID based on the structure of clickInfo
       if (clickInfo.id) {
         // Direct ID from CalendarManagement component
@@ -285,19 +290,19 @@ export const BookingCalendar = () => {
         // ID from extendedProps
         eventId = clickInfo.extendedProps.appointmentId;
       }
-      
+
       if (!eventId) {
         console.error('Could not determine event ID from click info:', clickInfo);
         return;
       }
-      
+
       // Find the event in our events array
-      const event = events.find(e => e.id === eventId);
+      const event = events.find((e) => e.id === eventId);
       if (event) {
         console.log('Found event in events array:', event);
         setSelectedEvent(event);
         setShowEventModal(true);
-        
+
         // Store client info for potential profile view
         if (event.clientName && event.extendedProps?.clientId) {
           console.log('Setting client info:', event.extendedProps.clientId, event.clientName);
@@ -306,16 +311,18 @@ export const BookingCalendar = () => {
         }
       } else {
         console.log('Event not found in events array for ID:', eventId);
-        
+
         // Try to extract information directly from the clickInfo object
         if (clickInfo.title && (clickInfo.start || clickInfo.event?.start)) {
           const start = clickInfo.start || clickInfo.event?.start;
           const end = clickInfo.end || clickInfo.event?.end;
           const status = clickInfo.status || clickInfo.event?.extendedProps?.status;
           const clientName = clickInfo.clientName || clickInfo.event?.extendedProps?.clientName;
-          const clientId = clickInfo.extendedProps?.clientId || clickInfo.event?.extendedProps?.clientId;
-          const service = clickInfo.service || clickInfo.event?.extendedProps?.service || clickInfo.title;
-          
+          const clientId =
+            clickInfo.extendedProps?.clientId || clickInfo.event?.extendedProps?.clientId;
+          const service =
+            clickInfo.service || clickInfo.event?.extendedProps?.service || clickInfo.title;
+
           // Create a temporary event object
           const tempEvent: TimeSlot = {
             id: eventId,
@@ -328,14 +335,14 @@ export const BookingCalendar = () => {
             clientName: clientName,
             extendedProps: {
               clientId: clientId,
-              appointmentId: eventId
-            }
+              appointmentId: eventId,
+            },
           };
-          
+
           console.log('Created temporary event from click info:', tempEvent);
           setSelectedEvent(tempEvent);
           setShowEventModal(true);
-          
+
           if (clientName && clientId) {
             setSelectedClientId(clientId);
             setSelectedClientName(clientName);
@@ -369,12 +376,12 @@ export const BookingCalendar = () => {
         setShowOutOfHoursWarning(true);
       }
 
-      const updatedEvents = events.map(event => {
+      const updatedEvents = events.map((event) => {
         if (event.id === dropInfo.event.id) {
           return {
             ...event,
             start: dropInfo.event.start.toISOString(),
-            end: dropInfo.event.end.toISOString()
+            end: dropInfo.event.end.toISOString(),
           };
         }
         return event;
@@ -387,18 +394,19 @@ export const BookingCalendar = () => {
 
   const handleEventResize = (resizeInfo: any) => {
     try {
-      const isOutsideWorkingHours = checkIfOutsideWorkingHours(resizeInfo.event.start) || 
-                                   checkIfOutsideWorkingHours(resizeInfo.event.end);
+      const isOutsideWorkingHours =
+        checkIfOutsideWorkingHours(resizeInfo.event.start) ||
+        checkIfOutsideWorkingHours(resizeInfo.event.end);
       if (isOutsideWorkingHours) {
         setShowOutOfHoursWarning(true);
       }
 
-      const updatedEvents = events.map(event => {
+      const updatedEvents = events.map((event) => {
         if (event.id === resizeInfo.event.id) {
           return {
             ...event,
             start: resizeInfo.event.start.toISOString(),
-            end: resizeInfo.event.end.toISOString()
+            end: resizeInfo.event.end.toISOString(),
           };
         }
         return event;
@@ -414,9 +422,9 @@ export const BookingCalendar = () => {
       const dayOfWeek = format(date, 'EEEE').toLowerCase();
       const timeStr = format(date, 'HH:mm');
       const dateStr = format(date, 'yyyy-MM-dd');
-      
+
       // Check custom hours first
-      const customHours = customWorkingHours.find(hours => hours.date === dateStr);
+      const customHours = customWorkingHours.find((hours) => hours.date === dateStr);
       if (customHours) {
         return timeStr < customHours.start || timeStr > customHours.end;
       }
@@ -436,17 +444,21 @@ export const BookingCalendar = () => {
       const regularHours = Object.entries(workingHours)
         .filter(([_, hours]) => hours.enabled)
         .map(([day, hours]) => ({
-          daysOfWeek: [['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'].indexOf(day)],
+          daysOfWeek: [
+            ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'].indexOf(
+              day
+            ),
+          ],
           startTime: hours.start,
           endTime: hours.end,
-          display: 'auto'
+          display: 'auto',
         }));
 
-      const customHours = customWorkingHours.map(hours => ({
+      const customHours = customWorkingHours.map((hours) => ({
         startTime: hours.start,
         endTime: hours.end,
         startRecur: hours.date,
-        endRecur: hours.date
+        endRecur: hours.date,
       }));
 
       const businessHours = [...regularHours, ...customHours];
@@ -465,9 +477,9 @@ export const BookingCalendar = () => {
       await addBlockedTimeSlot({
         title: eventData.title || 'Blocked Time',
         start: selectedDate,
-        end: addMinutes(selectedDate, 60)
+        end: addMinutes(selectedDate, 60),
       });
-      
+
       setShowEventModal(false);
       setSelectedDate(null);
       setShowOutOfHoursWarning(false);
@@ -485,10 +497,10 @@ export const BookingCalendar = () => {
         await editBlockedTimeSlot(selectedEvent.id, {
           title: eventData.title,
           start: eventData.start,
-          end: eventData.end
+          end: eventData.end,
         });
       }
-      
+
       setShowEventModal(false);
       setSelectedEvent(null);
       setShowOutOfHoursWarning(false);
@@ -500,7 +512,7 @@ export const BookingCalendar = () => {
   const handleDeleteEvent = async (eventId: string) => {
     try {
       if (!currentUser?.uid) return;
-      
+
       // Refresh the authentication token to ensure it doesn't expire during the process
       try {
         if (auth.currentUser) {
@@ -512,21 +524,21 @@ export const BookingCalendar = () => {
         console.error('Error refreshing token:', tokenError);
         // Continue with the operation even if token refresh fails
       }
-      
+
       // Check if this is a blocked time slot or an appointment
-      const event = events.find(e => e.id === eventId);
-      
+      const event = events.find((e) => e.id === eventId);
+
       if (event?.type === 'blocked') {
         // Delete blocked time slot
         await removeBlockedTimeSlot(eventId);
       } else if (event?.type === 'booking') {
         // Cancel appointment
         await cancelAppointment(eventId, 'Cancelled by professional');
-        
+
         // Explicitly refresh appointments
         refreshAppointments();
       }
-      
+
       setShowEventModal(false);
       setSelectedEvent(null);
       setShowOutOfHoursWarning(false);
@@ -539,23 +551,23 @@ export const BookingCalendar = () => {
     setSelectedClientId(clientId);
     setSelectedClientName(clientName);
     setShowClientProfileModal(true);
-    
+
     // Close the event modal if it's open
     if (showEventModal) {
       setShowEventModal(false);
     }
   };
-  
+
   // Function to handle client profile link click from EventModal
   useEffect(() => {
     // Define a global function to handle client profile opening
     const handleClientProfileClick = (clientId: string, clientName: string) => {
       handleClientSelect(clientId, clientName);
     };
-    
+
     // Attach to window for EventModal to access
     (window as any).openClientProfile = handleClientProfileClick;
-    
+
     // Cleanup
     return () => {
       delete (window as any).openClientProfile;
@@ -569,9 +581,7 @@ export const BookingCalendar = () => {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0">
           <div>
             <h2 className="text-lg font-medium text-white">Calendar Management</h2>
-            <p className="text-sm text-gray-400">
-              Manage your availability and appointments
-            </p>
+            <p className="text-sm text-gray-400">Manage your availability and appointments</p>
           </div>
           <div className="flex flex-col sm:flex-row w-full sm:w-auto space-y-2 sm:space-y-0 sm:space-x-4">
             <button
@@ -605,7 +615,9 @@ export const BookingCalendar = () => {
               <Users className="h-5 w-5 sm:h-6 sm:w-6 text-indigo-400" />
               <div className="ml-3 sm:ml-4">
                 <p className="text-xs sm:text-sm font-medium text-gray-400">Today's Bookings</p>
-                <h3 className="text-base sm:text-lg font-semibold text-white">{todayAppointments.length}</h3>
+                <h3 className="text-base sm:text-lg font-semibold text-white">
+                  {todayAppointments.length}
+                </h3>
               </div>
             </div>
           </button>
@@ -626,7 +638,9 @@ export const BookingCalendar = () => {
               <AlertTriangle className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-400" />
               <div className="ml-3 sm:ml-4">
                 <p className="text-xs sm:text-sm font-medium text-gray-400">Pending Requests</p>
-                <h3 className="text-base sm:text-lg font-semibold text-white">{pendingAppointments.length}</h3>
+                <h3 className="text-base sm:text-lg font-semibold text-white">
+                  {pendingAppointments.length}
+                </h3>
               </div>
             </div>
           </button>
@@ -645,8 +659,8 @@ export const BookingCalendar = () => {
       {/* Calendar */}
       <div className="calendar-wrapper bg-white p-3 sm:p-4 rounded-lg shadow-sm mt-4 sm:mt-6 flex-grow overflow-hidden">
         <div className="w-full overflow-x-auto -mx-3 px-3 pb-2 h-full">
-          <CalendarManagement 
-            appointments={appointments} 
+          <CalendarManagement
+            appointments={appointments}
             onEventSelect={handleEventClick}
             onClientSelect={handleClientSelect}
             onRefresh={refreshAppointments}
@@ -696,13 +710,16 @@ export const BookingCalendar = () => {
         isOpen={showTodayBookingsModal}
         onClose={() => setShowTodayBookingsModal(false)}
         title="Today's Bookings"
-        bookings={todayAppointments.map(appt => ({
+        bookings={todayAppointments.map((appt) => ({
           id: appt.id,
           clientId: appt.clientId,
           clientName: appt.clientName,
           service: appt.serviceName,
-          time: new Date(appt.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          status: 'confirmed'
+          time: new Date(appt.startTime).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+          }),
+          status: 'confirmed',
         }))}
         type="today"
         onApprove={handleApproveRequest}
@@ -713,19 +730,19 @@ export const BookingCalendar = () => {
         isOpen={showPendingRequestsModal}
         onClose={() => setShowPendingRequestsModal(false)}
         title="Pending Requests"
-        bookings={pendingAppointments.map(appt => ({
+        bookings={pendingAppointments.map((appt) => ({
           id: appt.id,
           clientId: appt.clientId,
           clientName: appt.clientName,
           service: appt.serviceName,
-          time: new Date(appt.startTime).toLocaleString([], { 
+          time: new Date(appt.startTime).toLocaleString([], {
             weekday: 'short',
-            month: 'short', 
+            month: 'short',
             day: 'numeric',
-            hour: '2-digit', 
-            minute: '2-digit'
+            hour: '2-digit',
+            minute: '2-digit',
           }),
-          status: 'pending'
+          status: 'pending',
         }))}
         type="pending"
         onApprove={handleApproveRequest}
@@ -735,13 +752,15 @@ export const BookingCalendar = () => {
       <AftercareSummaryModal
         isOpen={showAftercareSummaryModal}
         onClose={() => setShowAftercareSummaryModal(false)}
-        todayClients={todayAppointments.map(appt => ({
+        todayClients={todayAppointments.map((appt) => ({
           id: appt.clientId,
           name: appt.clientName,
-          services: [{
-            id: appt.id,
-            name: appt.serviceName
-          }]
+          services: [
+            {
+              id: appt.id,
+              name: appt.serviceName,
+            },
+          ],
         }))}
       />
 

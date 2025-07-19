@@ -20,9 +20,9 @@ export const RoleManagement = () => {
         { action: 'create', resource: 'users' },
         { action: 'read', resource: 'users' },
         { action: 'update', resource: 'users' },
-        { action: 'delete', resource: 'users' }
+        { action: 'delete', resource: 'users' },
       ],
-      userCount: 2
+      userCount: 2,
     },
     {
       id: '2',
@@ -30,10 +30,10 @@ export const RoleManagement = () => {
       description: 'Professional and service management',
       permissions: [
         { action: 'read', resource: 'users' },
-        { action: 'update', resource: 'users' }
+        { action: 'update', resource: 'users' },
       ],
-      userCount: 5
-    }
+      userCount: 5,
+    },
   ]);
 
   const [showRoleModal, setShowRoleModal] = useState(false);
@@ -43,7 +43,7 @@ export const RoleManagement = () => {
   const permissionResources: PermissionResource[] = ['users', 'bookings', 'services', 'settings'];
 
   const handleDeleteRole = (roleId: string) => {
-    setRoles(roles.filter(role => role.id !== roleId));
+    setRoles(roles.filter((role) => role.id !== roleId));
   };
 
   return (
@@ -52,9 +52,7 @@ export const RoleManagement = () => {
         <div className="flex justify-between items-center mb-6">
           <div>
             <h3 className="text-lg font-medium text-gray-900">Role Management</h3>
-            <p className="mt-1 text-sm text-gray-500">
-              Manage system roles and permissions
-            </p>
+            <p className="mt-1 text-sm text-gray-500">Manage system roles and permissions</p>
           </div>
           <button
             onClick={() => setShowRoleModal(true)}
@@ -81,9 +79,7 @@ export const RoleManagement = () => {
                   </div>
                 </div>
                 <div className="flex items-center space-x-4">
-                  <span className="text-sm text-gray-500">
-                    {role.userCount} users
-                  </span>
+                  <span className="text-sm text-gray-500">{role.userCount} users</span>
                   <button
                     onClick={() => {
                       setEditingRole(role);
@@ -184,7 +180,7 @@ export const RoleManagement = () => {
                                 <input
                                   type="checkbox"
                                   defaultChecked={editingRole?.permissions.some(
-                                    p => p.action === action && p.resource === resource
+                                    (p) => p.action === action && p.resource === resource
                                   )}
                                   className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                                 />

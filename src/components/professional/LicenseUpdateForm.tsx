@@ -10,10 +10,7 @@ interface LicenseUpdateFormProps {
   userId: string;
 }
 
-export const LicenseUpdateForm: React.FC<LicenseUpdateFormProps> = ({
-  onClose,
-  userId
-}) => {
+export const LicenseUpdateForm: React.FC<LicenseUpdateFormProps> = ({ onClose, userId }) => {
   const [licenseNumber, setLicenseNumber] = useState('');
   const [licenseState, setLicenseState] = useState('');
   const [licenseExpirationDate, setLicenseExpirationDate] = useState('');
@@ -30,14 +27,14 @@ export const LicenseUpdateForm: React.FC<LicenseUpdateFormProps> = ({
       const verificationDoc = await getDoc(verificationRef);
       const userDoc = await getUserDoc(doc(db, 'users', userId));
       const userData = userDoc.data();
-      
+
       const updateData = {
         licenseNumber,
         licenseState,
         licenseExpirationDate,
         licenseImageUrl,
         verificationStatus: 'update_pending',
-        submissionDate: new Date().toISOString()
+        submissionDate: new Date().toISOString(),
       };
 
       if (!verificationDoc.exists()) {
@@ -50,7 +47,7 @@ export const LicenseUpdateForm: React.FC<LicenseUpdateFormProps> = ({
           professionalType: userData?.professionalType || 'makeup_artist',
           submissionDate: new Date().toISOString(),
           verificationStatus: 'update_pending',
-          identificationImageUrl: userData?.identificationImageUrl || ''
+          identificationImageUrl: userData?.identificationImageUrl || '',
         });
       } else {
         // Update existing document
@@ -60,23 +57,28 @@ export const LicenseUpdateForm: React.FC<LicenseUpdateFormProps> = ({
       onClose();
     } catch (error) {
       console.error('Error updating license:', error);
-      alert('Failed to update license. Please try again. ' + (error instanceof Error ? error.message : 'Unknown error'));
+      alert(
+        'Failed to update license. Please try again. ' +
+          (error instanceof Error ? error.message : 'Unknown error')
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-      <div className="bg-white p-6 rounded-lg shadow-lg max-h-[90vh] overflow-y-auto">
+    <div className="bg-white p-6 rounded-lg shadow-lg max-h-[90vh] overflow-y-auto">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold text-gray-900">Update License</h2>
-        <button
-          onClick={onClose}
-          className="text-gray-400 hover:text-gray-500"
-        >
+        <button onClick={onClose} className="text-gray-400 hover:text-gray-500">
           <span className="sr-only">Close</span>
           <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         </button>
       </div>
@@ -117,7 +119,10 @@ export const LicenseUpdateForm: React.FC<LicenseUpdateFormProps> = ({
         </div>
 
         <div>
-          <label htmlFor="licenseExpirationDate" className="block text-sm font-medium text-gray-700">
+          <label
+            htmlFor="licenseExpirationDate"
+            className="block text-sm font-medium text-gray-700"
+          >
             Expiration Date
           </label>
           <input
@@ -131,9 +136,7 @@ export const LicenseUpdateForm: React.FC<LicenseUpdateFormProps> = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700">
-            License Image
-          </label>
+          <label className="block text-sm font-medium text-gray-700">License Image</label>
           <FileUpload
             onFileUpload={async (file: File) => {
               const storage = getStorage();

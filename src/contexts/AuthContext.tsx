@@ -11,12 +11,7 @@ import {
   OAuthProvider,
 } from 'firebase/auth';
 import { getFunctions, httpsCallable } from 'firebase/functions';
-import {
-  doc,
-  getDoc,
-  setDoc,
-  serverTimestamp,
-} from 'firebase/firestore';
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '../lib/firebase';
 import { User, UserRole } from '../types/user';
 import { CustomClaims } from '../types/auth';
@@ -52,7 +47,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  
+
   // Token refresh interval reference
   const tokenRefreshIntervalRef = React.useRef<NodeJS.Timeout | null>(null);
 
@@ -87,12 +82,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (claims.role === 'client') {
       return 'client';
     }
-    
+
     // Fallback: Use document role if no claims are set
     if (documentRole) {
       return documentRole;
     }
-    
+
     // Default: client
     return 'client';
   };
@@ -101,11 +96,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       console.log('Auth state changed:', {
         userEmail: user?.email,
-        hasUser: !!user
+        hasUser: !!user,
       });
-      
+
       setLoading(true);
-      
+
       if (user) {
         try {
           // Get the latest token result to check claims
@@ -148,26 +143,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
 
           const documentData = userDoc.data() as User;
-          
+
           // Determine role using claims first, document as fallback
           const userRole = getUserRole(claims, documentData.role);
-          
+
           const profile: User = {
             ...documentData,
             uid: user.uid, // Ensure we have the uid from Firebase
             role: userRole, // Use the determined role
-            professionalVerificationStatus: claims.verificationStatus || documentData.professionalVerificationStatus || 'pending'
+            professionalVerificationStatus:
+              claims.verificationStatus || documentData.professionalVerificationStatus || 'pending',
           };
-          
+
           console.log('Loaded user profile:', {
             userId: profile.uid,
             userEmail: profile.email,
             userRole: profile.role,
             claimsRole: claims.role,
             documentRole: documentData.role,
-            verificationStatus: profile.verificationStatus
+            verificationStatus: profile.verificationStatus,
           });
-          
+
           setCurrentUser({
             uid: user.uid,
             email: user.email || '',
@@ -191,9 +187,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             lastLoginAt: serverTimestamp(),
             failedLoginAttempts: profile.failedLoginAttempts || 0,
           });
-          
+
           setUserProfile(profile);
-          
         } catch (error) {
           console.error('Error fetching user profile:', error);
           setError('Failed to fetch user profile');
@@ -203,7 +198,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setCurrentUser(null);
         setUserProfile(null);
       }
-      
+
       setLoading(false);
     });
 
@@ -213,7 +208,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (tokenRefreshIntervalRef.current) {
         clearInterval(tokenRefreshIntervalRef.current);
       }
-      
+
       tokenRefreshIntervalRef.current = setInterval(refreshUserClaims, 2700000);
       refreshUserClaims();
     }
@@ -231,10 +226,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       console.log('Starting sign in process:', { email });
       setError(null);
-      
+
       const auth_result = await signInWithEmailAndPassword(auth, email, password);
       console.log('Auth successful, fetching user profile');
-      
+
       // Get user document from canonical users collection
       let userDoc = await getDoc(doc(db, 'users', auth_result.user.uid));
 
@@ -250,12 +245,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               name: 'Admin User',
               createdAt: serverTimestamp(),
               updatedAt: serverTimestamp(),
-              lastLoginAt: serverTimestamp()
+              lastLoginAt: serverTimestamp(),
             };
             await setDoc(doc(db, 'users', auth_result.user.uid), adminProfile);
             console.log('Created admin user document');
           } else if (userDoc.data()?.role !== 'admin') {
-            await setDoc(doc(db, 'users', auth_result.user.uid), { role: 'admin' }, { merge: true });
+            await setDoc(
+              doc(db, 'users', auth_result.user.uid),
+              { role: 'admin' },
+              { merge: true }
+            );
             console.log('Updated user role to admin');
           }
 
@@ -264,17 +263,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const functions = getFunctions();
           const setAdminClaim = httpsCallable(functions, 'setAdminClaim');
           await setAdminClaim();
-          
+
           // Wait for claims to propagate
-          await new Promise(resolve => setTimeout(resolve, 2000));
+          await new Promise((resolve) => setTimeout(resolve, 2000));
           await auth_result.user.getIdToken(true);
-          
+
           userDoc = await getDoc(doc(db, 'users', auth_result.user.uid));
         } catch (error) {
           console.error('Error setting admin claim:', error);
         }
-      } 
-      else if (email === 'professional@test.com') {
+      } else if (email === 'professional@test.com') {
         try {
           // Create/update professional user document
           if (!userDoc.exists()) {
@@ -286,15 +284,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               professionalVerificationStatus: 'approved',
               createdAt: serverTimestamp(),
               updatedAt: serverTimestamp(),
-              lastLoginAt: serverTimestamp()
+              lastLoginAt: serverTimestamp(),
             };
             await setDoc(doc(db, 'users', auth_result.user.uid), professionalProfile);
             console.log('Created professional user document');
           } else if (userDoc.data()?.role !== 'professional') {
-            await setDoc(doc(db, 'users', auth_result.user.uid), { 
-              role: 'professional',
-              professionalVerificationStatus: 'approved'
-            }, { merge: true });
+            await setDoc(
+              doc(db, 'users', auth_result.user.uid),
+              {
+                role: 'professional',
+                professionalVerificationStatus: 'approved',
+              },
+              { merge: true }
+            );
             console.log('Updated user role to professional');
           }
 
@@ -303,17 +305,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const functions = getFunctions();
           const setProfessionalClaim = httpsCallable(functions, 'setProfessionalClaim');
           await setProfessionalClaim();
-          
+
           // Wait for claims to propagate
-          await new Promise(resolve => setTimeout(resolve, 2000));
+          await new Promise((resolve) => setTimeout(resolve, 2000));
           await auth_result.user.getIdToken(true);
-          
+
           userDoc = await getDoc(doc(db, 'users', auth_result.user.uid));
         } catch (error) {
           console.error('Error setting professional claim:', error);
         }
-      }
-      else if (email === 'client@test.com') {
+      } else if (email === 'client@test.com') {
         try {
           // Create/update client user document
           if (!userDoc.exists()) {
@@ -324,18 +325,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               name: 'Client User',
               createdAt: serverTimestamp(),
               updatedAt: serverTimestamp(),
-              lastLoginAt: serverTimestamp()
+              lastLoginAt: serverTimestamp(),
             };
             await setDoc(doc(db, 'users', auth_result.user.uid), clientProfile);
             console.log('Created client user document');
           }
-          
+
           userDoc = await getDoc(doc(db, 'users', auth_result.user.uid));
         } catch (error) {
           console.error('Error setting up client account:', error);
         }
-      }
-      else if (!userDoc.exists()) {
+      } else if (!userDoc.exists()) {
         throw new Error('User profile not found');
       }
 
@@ -351,11 +351,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const profile = {
         ...documentData,
         uid: auth_result.user.uid,
-        role: role
+        role: role,
       };
 
       console.log('Profile loaded, navigating based on role:', profile.role);
-      
+
       // Update local state
       setUserProfile(profile);
 
@@ -387,14 +387,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       console.log('Starting signup process:', { email, role });
       setError(null);
-      
+
       // Determine initial role
       const userRole: UserRole = role === 'professional' ? 'pending_professional' : 'client';
       console.log('Role determined:', { providedRole: role, determinedRole: userRole });
 
       // Create auth user
       const result = await createUserWithEmailAndPassword(auth, email, password);
-      
+
       // Create the profile document in the canonical users collection
       const newProfile: User = {
         uid: result.user.uid,
@@ -419,28 +419,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const userRef = doc(db, 'users', result.user.uid);
       console.log('Saving profile to users collection:', {
         userId: newProfile.uid,
-        userRole: newProfile.role
+        userRole: newProfile.role,
       });
-      
+
       await setDoc(userRef, newProfile);
-      
+
       // Verify the save
       const savedDoc = await getDoc(userRef);
       console.log('Verifying saved profile:', {
         exists: savedDoc.exists(),
-        savedRole: savedDoc.data()?.role
+        savedRole: savedDoc.data()?.role,
       });
 
       // Update local state
       setUserProfile(newProfile);
-      
+
       // Navigate based on role
       if (userRole === 'pending_professional') {
         navigate('/professional/pending');
       } else {
         navigate('/client/dashboard');
       }
-
     } catch (error: any) {
       console.error('Sign up error:', error);
       setError(error.message);
@@ -448,15 +447,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const handleSocialLogin = async (provider: GoogleAuthProvider | FacebookAuthProvider | OAuthProvider) => {
+  const handleSocialLogin = async (
+    provider: GoogleAuthProvider | FacebookAuthProvider | OAuthProvider
+  ) => {
     try {
       console.log('Starting social login');
-      setError(null); 
-      
+      setError(null);
+
       const result = await signInWithPopup(auth, provider);
       const userRef = doc(db, 'users', result.user.uid);
       const userDoc = await getDoc(userRef);
-      
+
       let profile: User;
 
       if (!userDoc.exists()) {
@@ -486,7 +487,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       setUserProfile(profile);
-      
+
       console.log('Social login successful, navigating based on role:', profile.role);
       switch (profile.role) {
         case 'admin':
@@ -538,7 +539,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // Get current user data first
       const userDoc = await getDoc(userRef);
-      const currentData = userDoc.exists() ? userDoc.data() as User : {} as Partial<User>;
+      const currentData = userDoc.exists() ? (userDoc.data() as User) : ({} as Partial<User>);
 
       // Properly merge data
       const updateData = {
@@ -547,9 +548,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       };
 
       await setDoc(userRef, updateData, { merge: true });
-      
+
       // Update local state with merged data
-      setUserProfile(prev => {
+      setUserProfile((prev) => {
         if (!prev) return null;
         return {
           ...prev,
@@ -580,9 +581,5 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     refreshUserClaims,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
 }

@@ -29,32 +29,32 @@ export const SystemConfiguration = () => {
     notifications: {
       email: true,
       sms: true,
-      push: false
+      push: false,
     },
     booking: {
       advanceNotice: 24,
       cancellationWindow: 48,
-      maxBookingsPerDay: 10
+      maxBookingsPerDay: 10,
     },
     commission: {
       rate: 15,
       minimumPayout: 100,
-      payoutSchedule: 'weekly'
+      payoutSchedule: 'weekly',
     },
     localization: {
       timezone: 'America/New_York',
       currency: 'USD',
-      dateFormat: 'MM/DD/YYYY'
-    }
+      dateFormat: 'MM/DD/YYYY',
+    },
   });
 
   const handleConfigChange = (section: keyof SystemConfig, field: string, value: any) => {
-    setConfig(prev => ({
+    setConfig((prev) => ({
       ...prev,
       [section]: {
         ...prev[section],
-        [field]: value
-      }
+        [field]: value,
+      },
     }));
   };
 
@@ -63,9 +63,7 @@ export const SystemConfiguration = () => {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h3 className="text-lg font-medium text-gray-900">System Configuration</h3>
-          <p className="mt-1 text-sm text-gray-500">
-            Manage system-wide settings and preferences
-          </p>
+          <p className="mt-1 text-sm text-gray-500">Manage system-wide settings and preferences</p>
         </div>
         <Settings className="h-6 w-6 text-gray-400" />
       </div>

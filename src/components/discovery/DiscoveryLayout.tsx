@@ -12,7 +12,9 @@ function isServiceDefinition(service: UnifiedService): service is ServiceDefinit
   return (service as ServiceDefinition).basePrice !== undefined;
 }
 
-function isProfessionalService(service: UnifiedService): service is ProfessionalService & { isProfessionalService: true } {
+function isProfessionalService(
+  service: UnifiedService
+): service is ProfessionalService & { isProfessionalService: true } {
   return (service as ProfessionalService).professionalId !== undefined;
 }
 
@@ -31,26 +33,26 @@ const CategoryCard: React.FC<{
   category: DiscoveryCategory;
   onClick: () => void;
 }> = ({ category, onClick }) => (
-  <div 
+  <div
     className="relative group cursor-pointer rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
     onClick={onClick}
   >
-<img
-  src={(category as any).imageUrl || '/images/default-category.jpg'}
+    <img
+      src={(category as any).imageUrl || '/images/default-category.jpg'}
       alt={category.name}
       className="w-full h-48 object-cover"
       loading="lazy"
     />
     <div className="absolute inset-0 bg-black bg-opacity-30 group-hover:bg-opacity-20 transition-colors" />
     <div className="absolute inset-0 flex items-center justify-center">
-      <h3 className="text-white text-2xl font-bold text-center px-4">
-        {category.name}
-      </h3>
+      <h3 className="text-white text-2xl font-bold text-center px-4">{category.name}</h3>
     </div>
   </div>
 );
 
-export const ProfessionalCard: React.FC<{ professional: ProfessionalService }> = ({ professional }) => {
+export const ProfessionalCard: React.FC<{ professional: ProfessionalService }> = ({
+  professional,
+}) => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
 
@@ -68,12 +70,12 @@ export const ProfessionalCard: React.FC<{ professional: ProfessionalService }> =
       navigate('/login');
       return;
     }
-    navigate(`/messages`, { 
-      state: { 
+    navigate(`/messages`, {
+      state: {
         recipientId: professional.professionalId,
         serviceId: professional.baseServiceId,
-        serviceName: professional.name
-      } 
+        serviceName: professional.name,
+      },
     });
   };
 
@@ -95,13 +97,13 @@ export const ProfessionalCard: React.FC<{ professional: ProfessionalService }> =
           </div>
         </div>
         <div className="flex space-x-2">
-          <button 
+          <button
             className="bg-white border border-indigo-600 text-indigo-600 px-3 py-2 rounded-md hover:bg-indigo-50 transition-colors"
             onClick={handleMessage}
           >
             Message
           </button>
-          <button 
+          <button
             className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors"
             onClick={handleBookNow}
           >
@@ -111,11 +113,17 @@ export const ProfessionalCard: React.FC<{ professional: ProfessionalService }> =
       </div>
       <div className="mt-4 space-y-2">
         <div className="text-sm text-gray-600">
-          <p>{professional.name}: <span className="font-medium text-indigo-600">${professional.price}</span> for {professional.duration} minutes</p>
+          <p>
+            {professional.name}:{' '}
+            <span className="font-medium text-indigo-600">${professional.price}</span> for{' '}
+            {professional.duration} minutes
+          </p>
         </div>
         {professional.customOptions?.map((option, index) => (
           <div key={index} className="text-sm text-gray-600">
-            <p>{option.name}: ${option.basePrice}</p>
+            <p>
+              {option.name}: ${option.basePrice}
+            </p>
           </div>
         ))}
       </div>
@@ -130,9 +138,9 @@ const ServiceCard: React.FC<{
 }> = ({ service, trending, onClick }) => {
   const price = isServiceDefinition(service) ? service.basePrice : service.price;
   const duration = isServiceDefinition(service) ? service.baseDuration : service.duration;
-  
+
   return (
-    <div 
+    <div
       className={`bg-white rounded-lg shadow-sm p-4 md:p-6 hover:shadow-md transition-shadow cursor-pointer ${
         trending ? 'border-2 border-indigo-100' : ''
       }`}
@@ -141,12 +149,8 @@ const ServiceCard: React.FC<{
       <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">{service.name}</h3>
       <p className="text-sm text-gray-500 mt-1 line-clamp-2">{service.description}</p>
       <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between">
-        <span className="text-indigo-600 font-medium">
-          Starting from ${price}
-        </span>
-        <span className="text-gray-400 text-sm mt-1 sm:mt-0">
-          ({duration} min)
-        </span>
+        <span className="text-indigo-600 font-medium">Starting from ${price}</span>
+        <span className="text-gray-400 text-sm mt-1 sm:mt-0">({duration} min)</span>
       </div>
     </div>
   );
@@ -200,10 +204,7 @@ export const DiscoveryLayout = () => {
     navigate(`/discovery/${category.id}/professionals`, { state: { category } });
   };
 
-  const filteredCategories = useMemo(() => 
-    categories,
-    [categories]
-  );
+  const filteredCategories = useMemo(() => categories, [categories]);
 
   if (loading) {
     return (
@@ -235,7 +236,7 @@ export const DiscoveryLayout = () => {
         <div className="flex items-center justify-center h-[calc(100vh-200px)]">
           <div className="text-center">
             <p className="text-red-600 mb-4">Error: {error}</p>
-            <button 
+            <button
               onClick={() => window.location.reload()}
               className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
             >
@@ -251,7 +252,7 @@ export const DiscoveryLayout = () => {
   return (
     <div className="min-h-screen bg-gray-50 pb-16">
       <DiscoveryHeader searchTerm={searchTerm} onSearchChange={setSearchTerm} />
-      
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-12">
           {/* Categories Grid */}
@@ -282,21 +283,15 @@ export const DiscoveryLayout = () => {
               <h2 className="text-2xl font-bold text-gray-900">Trending Now</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {trendingServices.map((service) => {
-                  const unifiedService = isServiceDefinition(service) ? 
-                    service : 
-                    { 
-                      ...service,
-                      basePrice: service.price,
-                      baseDuration: service.duration
-                    };
-                  
-                  return (
-                    <ServiceCard 
-                      key={service.id} 
-                      service={unifiedService} 
-                      trending 
-                    />
-                  );
+                  const unifiedService = isServiceDefinition(service)
+                    ? service
+                    : {
+                        ...service,
+                        basePrice: service.price,
+                        baseDuration: service.duration,
+                      };
+
+                  return <ServiceCard key={service.id} service={unifiedService} trending />;
                 })}
               </div>
             </div>
@@ -306,7 +301,9 @@ export const DiscoveryLayout = () => {
           {selectedCategory && (
             <div className="space-y-8">
               <button
-                onClick={() => selectedService ? setSelectedService(null) : setSelectedCategory(null)}
+                onClick={() =>
+                  selectedService ? setSelectedService(null) : setSelectedCategory(null)
+                }
                 className="flex items-center text-gray-500 hover:text-indigo-600 transition-colors"
               >
                 <svg
@@ -346,25 +343,31 @@ export const DiscoveryLayout = () => {
                                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
                                     </div>
                                   ) : (
-                                    <p className="text-gray-500">No professionals available for this service yet</p>
+                                    <p className="text-gray-500">
+                                      No professionals available for this service yet
+                                    </p>
                                   )}
                                 </div>
                               );
                             }
-                            
-                            return professionals.map(professional => (
+
+                            return professionals.map((professional) => (
                               <ProfessionalCard key={professional.id} professional={professional} />
                             ));
                           } else {
                             // If it's already a professional service, just show that professional
                             const professional = selectedService as ProfessionalService;
-                            return <ProfessionalCard key={professional.id} professional={professional} />;
+                            return (
+                              <ProfessionalCard key={professional.id} professional={professional} />
+                            );
                           }
                         } catch (error) {
                           console.error('Error rendering professionals:', error);
                           return (
                             <div className="col-span-full text-center py-8">
-                              <p className="text-gray-500">Unable to display professionals at this time</p>
+                              <p className="text-gray-500">
+                                Unable to display professionals at this time
+                              </p>
                             </div>
                           );
                         }
@@ -377,30 +380,30 @@ export const DiscoveryLayout = () => {
                       <h3 className="text-xl font-semibold text-gray-900">Services</h3>
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {selectedCategory.loading ? (
-                          [1, 2, 3, 4].map((i) => (
-                            <LoadingCard key={i} />
-                          ))
+                          [1, 2, 3, 4].map((i) => <LoadingCard key={i} />)
                         ) : selectedCategory.error ? (
                           <div className="bg-red-50 p-4 rounded-md">
                             <p className="text-red-600">{selectedCategory.error}</p>
                           </div>
                         ) : selectedCategory.services.length === 0 ? (
                           <div className="col-span-full text-center py-8">
-                            <p className="text-gray-500">No services available in this category yet</p>
+                            <p className="text-gray-500">
+                              No services available in this category yet
+                            </p>
                           </div>
                         ) : (
                           selectedCategory.services.map((service) => {
-                            const unifiedService = isServiceDefinition(service) ? 
-                              service : 
-                              { 
-                                ...service,
-                                basePrice: service.price,
-                                baseDuration: service.duration
-                              };
-                            
+                            const unifiedService = isServiceDefinition(service)
+                              ? service
+                              : {
+                                  ...service,
+                                  basePrice: service.price,
+                                  baseDuration: service.duration,
+                                };
+
                             return (
-                              <ServiceCard 
-                                key={service.id} 
+                              <ServiceCard
+                                key={service.id}
                                 service={unifiedService}
                                 onClick={() => setSelectedService(unifiedService)}
                               />
@@ -416,20 +419,16 @@ export const DiscoveryLayout = () => {
                         <h2 className="text-2xl font-bold text-gray-900">Trending Now</h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                           {trendingServices.map((service) => {
-                            const unifiedService = isServiceDefinition(service) ? 
-                              service : 
-                              { 
-                                ...service,
-                                basePrice: service.price,
-                                baseDuration: service.duration
-                              };
-                            
+                            const unifiedService = isServiceDefinition(service)
+                              ? service
+                              : {
+                                  ...service,
+                                  basePrice: service.price,
+                                  baseDuration: service.duration,
+                                };
+
                             return (
-                              <ServiceCard 
-                                key={service.id} 
-                                service={unifiedService} 
-                                trending 
-                              />
+                              <ServiceCard key={service.id} service={unifiedService} trending />
                             );
                           })}
                         </div>

@@ -31,7 +31,7 @@ export const useNotifications = () => {
         notificationsData.push({
           id: doc.id,
           ...doc.data(),
-          timestamp: doc.data().timestamp.toDate()
+          timestamp: doc.data().timestamp.toDate(),
         } as Notification);
       });
       setNotifications(notificationsData);

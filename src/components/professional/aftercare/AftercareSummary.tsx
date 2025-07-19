@@ -10,33 +10,25 @@ interface AftercareSummaryProps {
 export const AftercareSummary: React.FC<AftercareSummaryProps> = ({
   appointment,
   beforeImage,
-  afterImage
+  afterImage,
 }) => {
   if (!appointment) return null;
 
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-bold">Aftercare Summary</h2>
-      
+
       <div className="grid grid-cols-2 gap-4">
         <div>
           <h3 className="font-medium">Before</h3>
           {beforeImage && (
-            <img 
-              src={beforeImage.uri} 
-              alt="Before service" 
-              className="w-full rounded-lg"
-            />
+            <img src={beforeImage.uri} alt="Before service" className="w-full rounded-lg" />
           )}
         </div>
         <div>
           <h3 className="font-medium">After</h3>
           {afterImage && (
-            <img 
-              src={afterImage.uri} 
-              alt="After service" 
-              className="w-full rounded-lg"
-            />
+            <img src={afterImage.uri} alt="After service" className="w-full rounded-lg" />
           )}
         </div>
       </div>
@@ -61,7 +53,7 @@ export const AftercareSummary: React.FC<AftercareSummaryProps> = ({
         />
       </div>
 
-      <button 
+      <button
         className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
         onClick={() => console.log('Aftercare submitted')}
       >

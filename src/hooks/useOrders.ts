@@ -5,7 +5,7 @@ import {
   getOrder,
   getClientOrders,
   getProfessionalOrders,
-  updateOrderStatus
+  updateOrderStatus,
 } from '../lib/api/orders';
 
 interface OrderProduct {
@@ -35,9 +35,10 @@ export const useOrders = (type: 'professional' | 'client') => {
         setLoading(true);
         setError(null);
 
-        const fetchedOrders = type === 'professional'
-          ? await getProfessionalOrders(userProfile.id)
-          : await getClientOrders(userProfile.id);
+        const fetchedOrders =
+          type === 'professional'
+            ? await getProfessionalOrders(userProfile.id)
+            : await getClientOrders(userProfile.id);
 
         setOrders(fetchedOrders);
       } catch (err) {
@@ -56,18 +57,21 @@ export const useOrders = (type: 'professional' | 'client') => {
     }
 
     try {
-      const totalAmount = products.reduce((sum, product) => sum + (product.price * product.quantity), 0);
+      const totalAmount = products.reduce(
+        (sum, product) => sum + product.price * product.quantity,
+        0
+      );
 
       const orderId = await createOrder({
         clientId: userProfile.id,
         professionalId,
         products,
         totalAmount,
-        aftercareSummaryId
+        aftercareSummaryId,
       });
 
       const newOrder = await getOrder(orderId);
-      setOrders(prev => [newOrder, ...prev]);
+      setOrders((prev) => [newOrder, ...prev]);
 
       return orderId;
     } catch (err) {
@@ -76,14 +80,15 @@ export const useOrders = (type: 'professional' | 'client') => {
     }
   };
 
-  const updateStatus = async (orderId: string, status: 'confirmed' | 'shipped' | 'delivered' | 'cancelled') => {
+  const updateStatus = async (
+    orderId: string,
+    status: 'confirmed' | 'shipped' | 'delivered' | 'cancelled'
+  ) => {
     try {
       await updateOrderStatus(orderId, status);
-      setOrders(prev => prev.map(order =>
-        order.id === orderId
-          ? { ...order, status }
-          : order
-      ));
+      setOrders((prev) =>
+        prev.map((order) => (order.id === orderId ? { ...order, status } : order))
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update order status');
       throw err;
@@ -95,6 +100,6 @@ export const useOrders = (type: 'professional' | 'client') => {
     loading,
     error,
     placeOrder,
-    updateStatus
+    updateStatus,
   };
 };

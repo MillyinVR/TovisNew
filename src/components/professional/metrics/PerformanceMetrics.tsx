@@ -1,5 +1,13 @@
 import React from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 import { format } from 'date-fns';
 
 export const PerformanceMetrics = () => {
@@ -11,9 +19,9 @@ export const PerformanceMetrics = () => {
     { date: '2024-04-01', bookings: 7, rating: 4.8, retention: 82 },
     { date: '2024-05-01', bookings: 9, rating: 4.9, retention: 88 },
     { date: '2024-06-01', bookings: 11, rating: 5.0, retention: 90 },
-  ].map(item => ({
+  ].map((item) => ({
     ...item,
-    date: format(new Date(item.date), 'MMM yyyy')
+    date: format(new Date(item.date), 'MMM yyyy'),
   }));
 
   return (
@@ -52,8 +60,20 @@ export const PerformanceMetrics = () => {
             <YAxis yAxisId="left" />
             <YAxis yAxisId="right" orientation="right" />
             <Tooltip />
-            <Line yAxisId="left" type="monotone" dataKey="bookings" stroke="#8884d8" name="Bookings" />
-            <Line yAxisId="right" type="monotone" dataKey="retention" stroke="#82ca9d" name="Retention %" />
+            <Line
+              yAxisId="left"
+              type="monotone"
+              dataKey="bookings"
+              stroke="#8884d8"
+              name="Bookings"
+            />
+            <Line
+              yAxisId="right"
+              type="monotone"
+              dataKey="retention"
+              stroke="#82ca9d"
+              name="Retention %"
+            />
           </LineChart>
         </ResponsiveContainer>
       </div>

@@ -9,7 +9,7 @@ export const MarketingAnalytics = () => {
     { month: 'Mar', engagement: 2000, reach: 9800, conversions: 1600 },
     { month: 'Apr', engagement: 2780, reach: 3908, conversions: 1400 },
     { month: 'May', engagement: 1890, reach: 4800, conversions: 1000 },
-    { month: 'Jun', engagement: 2390, reach: 3800, conversions: 1300 }
+    { month: 'Jun', engagement: 2390, reach: 3800, conversions: 1300 },
   ];
 
   const metrics = [
@@ -18,35 +18,35 @@ export const MarketingAnalytics = () => {
       value: '45.2K',
       change: '+12.5%',
       icon: Users,
-      color: 'text-blue-500'
+      color: 'text-blue-500',
     },
     {
       name: 'Engagement Rate',
       value: '8.4%',
       change: '+3.2%',
       icon: TrendingUp,
-      color: 'text-green-500'
+      color: 'text-green-500',
     },
     {
       name: 'Conversion Rate',
       value: '2.8%',
       change: '+0.5%',
       icon: DollarSign,
-      color: 'text-purple-500'
+      color: 'text-purple-500',
     },
     {
       name: 'Social Shares',
       value: '1.2K',
       change: '+15.3%',
       icon: Share2,
-      color: 'text-pink-500'
-    }
+      color: 'text-pink-500',
+    },
   ];
 
   return (
     <div className="bg-white shadow rounded-lg p-6">
       <h3 className="text-lg font-medium text-gray-900 mb-6">Marketing Analytics</h3>
-      
+
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
         {metrics.map((metric) => {
           const Icon = metric.icon;
@@ -59,16 +59,14 @@ export const MarketingAnalytics = () => {
                   </div>
                   <div className="ml-5 w-0 flex-1">
                     <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">
-                        {metric.name}
-                      </dt>
+                      <dt className="text-sm font-medium text-gray-500 truncate">{metric.name}</dt>
                       <dd className="flex items-baseline">
-                        <div className="text-2xl font-semibold text-gray-900">
-                          {metric.value}
-                        </div>
-                        <div className={`ml-2 flex items-baseline text-sm font-semibold ${
-                          metric.change.startsWith('+') ? 'text-green-600' : 'text-red-600'
-                        }`}>
+                        <div className="text-2xl font-semibold text-gray-900">{metric.value}</div>
+                        <div
+                          className={`ml-2 flex items-baseline text-sm font-semibold ${
+                            metric.change.startsWith('+') ? 'text-green-600' : 'text-red-600'
+                          }`}
+                        >
                           {metric.change}
                         </div>
                       </dd>

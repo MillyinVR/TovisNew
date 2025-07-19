@@ -5,13 +5,15 @@ import { LicenseManagement } from './LicenseManagement';
 import { ProfessionalDirectory } from './ProfessionalDirectory';
 
 export const ProfessionalManagement = () => {
-  const [activeTab, setActiveTab] = useState<'pending' | 'performance' | 'license' | 'directory'>('pending');
+  const [activeTab, setActiveTab] = useState<'pending' | 'performance' | 'license' | 'directory'>(
+    'pending'
+  );
 
   return (
     <div className="space-y-6">
       <div className="border-b border-gray-200">
         <h1 className="text-2xl font-semibold text-gray-900 pb-4">Professional Management</h1>
-        
+
         <nav className="-mb-px flex space-x-8">
           <button
             onClick={() => setActiveTab('pending')}

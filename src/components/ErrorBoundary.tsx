@@ -14,7 +14,7 @@ export class ErrorBoundary extends Component<Props, State> {
   public state: State = {
     hasError: false,
     error: null,
-    errorInfo: null
+    errorInfo: null,
   };
 
   public static getDerivedStateFromError(error: Error): State {
@@ -25,7 +25,7 @@ export class ErrorBoundary extends Component<Props, State> {
     console.error('Uncaught error:', error, errorInfo);
     this.setState({
       error,
-      errorInfo
+      errorInfo,
     });
   }
 
@@ -41,9 +41,7 @@ export class ErrorBoundary extends Component<Props, State> {
                   <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight sm:text-5xl">
                     Something went wrong
                   </h1>
-                  <p className="mt-1 text-base text-gray-500">
-                    {this.state.error?.message}
-                  </p>
+                  <p className="mt-1 text-base text-gray-500">{this.state.error?.message}</p>
                   {this.state.errorInfo && (
                     <pre className="mt-4 text-sm text-gray-500 overflow-auto">
                       {this.state.errorInfo.componentStack}

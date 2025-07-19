@@ -22,7 +22,7 @@ const BeautyCapture = () => {
   const [currentGuidance, setCurrentGuidance] = useState('');
   const [recordingDuration, setRecordingDuration] = useState(0);
   const [processingStatus, setProcessingStatus] = useState('');
-  
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -31,14 +31,14 @@ const BeautyCapture = () => {
 
   // Professional photography guidance sequences
   const guidanceSequences = [
-    { prompt: "Align face at eye level for optimal engagement", duration: 5000 },
-    { prompt: "Tilt chin slightly down for a flattering angle", duration: 4000 },
-    { prompt: "Turn shoulders 45 degrees for dimension", duration: 4000 },
-    { prompt: "Soften expression - natural smile", duration: 3000 },
-    { prompt: "Perfect! Holding this composition", duration: 4000 },
-    { prompt: "Create subtle movement for dynamic shots", duration: 4000 },
-    { prompt: "Maintain eye contact with camera", duration: 4000 },
-    { prompt: "Adjust posture - shoulders back, neck elongated", duration: 4000 }
+    { prompt: 'Align face at eye level for optimal engagement', duration: 5000 },
+    { prompt: 'Tilt chin slightly down for a flattering angle', duration: 4000 },
+    { prompt: 'Turn shoulders 45 degrees for dimension', duration: 4000 },
+    { prompt: 'Soften expression - natural smile', duration: 3000 },
+    { prompt: 'Perfect! Holding this composition', duration: 4000 },
+    { prompt: 'Create subtle movement for dynamic shots', duration: 4000 },
+    { prompt: 'Maintain eye contact with camera', duration: 4000 },
+    { prompt: 'Adjust posture - shoulders back, neck elongated', duration: 4000 },
   ];
 
   const startCamera = async () => {
@@ -48,11 +48,11 @@ const BeautyCapture = () => {
           facingMode: 'environment',
           width: { ideal: 3840 }, // 4K support
           height: { ideal: 2160 },
-          frameRate: { ideal: 60 }
+          frameRate: { ideal: 60 },
         },
-        audio: false
+        audio: false,
       });
-      
+
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         streamRef.current = stream;
@@ -68,7 +68,7 @@ const BeautyCapture = () => {
   const initializeRecorder = (stream: MediaStream) => {
     const mediaRecorder = new MediaRecorder(stream, {
       mimeType: 'video/webm;codecs=vp9',
-      videoBitsPerSecond: 8000000 // 8 Mbps for high quality
+      videoBitsPerSecond: 8000000, // 8 Mbps for high quality
     });
 
     mediaRecorder.ondataavailable = (event) => {
@@ -110,7 +110,7 @@ const BeautyCapture = () => {
         clearInterval(interval);
         return;
       }
-      
+
       const guidance = guidanceSequences[index];
       setCurrentGuidance(guidance.prompt);
       index = (index + 1) % guidanceSequences.length;
@@ -124,13 +124,13 @@ const BeautyCapture = () => {
         clearInterval(interval);
         return;
       }
-      setRecordingDuration(prev => prev + 1);
+      setRecordingDuration((prev) => prev + 1);
     }, 1000);
   };
 
   const processRecording = async (blob: Blob) => {
     setProcessingStatus('Analyzing video frames...');
-    
+
     // Simulate frame extraction and analysis
     setTimeout(() => {
       const simulatedFrames = [
@@ -142,8 +142,8 @@ const BeautyCapture = () => {
           aspects: {
             lighting: 0.92,
             composition: 0.96,
-            focus: 0.98
-          }
+            focus: 0.98,
+          },
         },
         {
           id: 2,
@@ -152,9 +152,9 @@ const BeautyCapture = () => {
           type: 'Detail',
           aspects: {
             lighting: 0.88,
-            composition: 0.90,
-            focus: 0.89
-          }
+            composition: 0.9,
+            focus: 0.89,
+          },
         },
         {
           id: 3,
@@ -164,14 +164,16 @@ const BeautyCapture = () => {
           aspects: {
             lighting: 0.94,
             composition: 0.91,
-            focus: 0.92
-          }
-        }
+            focus: 0.92,
+          },
+        },
       ];
 
       setSelectedFrames(simulatedFrames);
       setProcessingStatus('');
-      setCurrentGuidance('Review your best captures below! These frames showed optimal composition and lighting.');
+      setCurrentGuidance(
+        'Review your best captures below! These frames showed optimal composition and lighting.'
+      );
     }, 2000);
   };
 
@@ -179,7 +181,7 @@ const BeautyCapture = () => {
     startCamera();
     return () => {
       if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
+        streamRef.current.getTracks().forEach((track) => track.stop());
       }
     };
   }, []);
@@ -192,23 +194,21 @@ const BeautyCapture = () => {
             <span>Beauty Capture Assistant</span>
             {isRecording && (
               <span className="text-red-500 text-sm">
-                Recording: {Math.floor(recordingDuration / 60)}:{(recordingDuration % 60).toString().padStart(2, '0')}
+                Recording: {Math.floor(recordingDuration / 60)}:
+                {(recordingDuration % 60).toString().padStart(2, '0')}
               </span>
             )}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="relative aspect-video bg-gray-900 rounded overflow-hidden">
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              className="w-full h-full object-cover"
-            />
+            <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" />
             <div className="absolute bottom-4 left-0 right-0 flex justify-center">
               {streamRef.current && (
                 <button
-                  className={`${isRecording ? 'bg-red-500' : 'bg-blue-500'} text-white px-6 py-3 rounded-lg flex items-center space-x-2`}
+                  className={`${
+                    isRecording ? 'bg-red-500' : 'bg-blue-500'
+                  } text-white px-6 py-3 rounded-lg flex items-center space-x-2`}
                   onClick={isRecording ? stopRecording : startRecording}
                 >
                   {isRecording ? (
@@ -244,7 +244,7 @@ const BeautyCapture = () => {
             <div className="mt-6">
               <h3 className="text-lg font-semibold mb-3">Best Captures</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {selectedFrames.map(frame => (
+                {selectedFrames.map((frame) => (
                   <Card key={frame.id} className="overflow-hidden">
                     <div className="aspect-video bg-gray-100 flex items-center justify-center">
                       <Instagram className="w-8 h-8 text-gray-400" />
@@ -253,9 +253,7 @@ const BeautyCapture = () => {
                       <div className="font-medium">{frame.type}</div>
                       <div className="text-sm text-gray-500">Timestamp: {frame.timestamp}</div>
                       <div className="mt-2 space-y-1">
-                        <div className="text-sm">
-                          Quality: {(frame.quality * 100).toFixed(0)}%
-                        </div>
+                        <div className="text-sm">Quality: {(frame.quality * 100).toFixed(0)}%</div>
                         <div className="text-xs text-gray-500">
                           Lighting: {(frame.aspects.lighting * 100).toFixed(0)}%
                         </div>

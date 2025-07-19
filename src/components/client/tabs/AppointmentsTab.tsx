@@ -12,7 +12,14 @@ interface AppointmentUI {
   date: string;
   time: string;
   location: string;
-  status: 'upcoming' | 'requested' | 'prebooked' | 'confirmed' | 'waitlisted' | 'completed' | 'cancelled';
+  status:
+    | 'upcoming'
+    | 'requested'
+    | 'prebooked'
+    | 'confirmed'
+    | 'waitlisted'
+    | 'completed'
+    | 'cancelled';
   position?: number; // For waitlist position
   rating?: number;
   startTimeDate: Date; // Actual Date object for filtering
@@ -32,12 +39,21 @@ export const AppointmentsTab = () => {
 
     const convertedAppointments = dbAppointments.map((appointment: AppointmentType) => {
       // Default avatar based on first letter of professional name
-      const defaultAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(appointment.professionalName)}&background=random`;
-      
+      const defaultAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(
+        appointment.professionalName
+      )}&background=random`;
+
       // Map database appointment status to UI status
-      let uiStatus: 'upcoming' | 'requested' | 'prebooked' | 'confirmed' | 'waitlisted' | 'completed' | 'cancelled';
+      let uiStatus:
+        | 'upcoming'
+        | 'requested'
+        | 'prebooked'
+        | 'confirmed'
+        | 'waitlisted'
+        | 'completed'
+        | 'cancelled';
       let isApproved = false;
-      
+
       switch (appointment.status) {
         case AppointmentStatus.REQUESTED:
           uiStatus = 'requested';
@@ -49,7 +65,7 @@ export const AppointmentsTab = () => {
           break;
         case AppointmentStatus.SCHEDULED:
           // Check if this was a requested appointment that was approved
-          if (appointment.statusReason === "Approved by professional") {
+          if (appointment.statusReason === 'Approved by professional') {
             uiStatus = 'confirmed';
             isApproved = true;
           } else {
@@ -100,7 +116,7 @@ export const AppointmentsTab = () => {
         status: uiStatus,
         rating: 4.8, // Default rating since we don't have this in the database yet
         startTimeDate,
-        isApproved
+        isApproved,
       };
     });
 
@@ -108,19 +124,21 @@ export const AppointmentsTab = () => {
   }, [dbAppointments]);
 
   // Filter appointments based on the active filter
-  const filteredAppointments = uiAppointments.filter(appointment => {
+  const filteredAppointments = uiAppointments.filter((appointment) => {
     if (activeFilter === 'upcoming') {
       // For upcoming, show all appointments in the next 14 days regardless of status
       // This ensures confirmed appointments also show up in the upcoming tab
       const now = new Date();
       const twoWeeksFromNow = addDays(now, 14);
-      
+
       // Include all appointments within the date range that are not cancelled or completed
-      return appointment.status !== 'cancelled' && 
-             appointment.status !== 'completed' &&
-             isWithinInterval(appointment.startTimeDate, { start: now, end: twoWeeksFromNow });
+      return (
+        appointment.status !== 'cancelled' &&
+        appointment.status !== 'completed' &&
+        isWithinInterval(appointment.startTimeDate, { start: now, end: twoWeeksFromNow })
+      );
     }
-    
+
     return appointment.status === activeFilter;
   });
 
@@ -137,19 +155,21 @@ export const AppointmentsTab = () => {
     try {
       setIsProcessing(appointmentId);
       setError(null);
-      
+
       // Use the cancelAppointment function from the hook
       await cancelAppointment(appointmentId, 'Cancelled by client');
-      
+
       // The appointment list will automatically update due to the Firestore listener in useAppointments
     } catch (err) {
       console.error('Error cancelling appointment:', err);
-      
+
       // Check if the error is related to authentication
-      if (err instanceof Error && 
-          (err.message.includes('auth') || 
-           err.message.includes('permission') || 
-           err.message.includes('token'))) {
+      if (
+        err instanceof Error &&
+        (err.message.includes('auth') ||
+          err.message.includes('permission') ||
+          err.message.includes('token'))
+      ) {
         setError('Authentication error. Please refresh the page and try again.');
       } else {
         setError('Failed to cancel appointment. Please try again.');
@@ -229,9 +249,7 @@ export const AppointmentsTab = () => {
               <p className="mt-2 text-gray-500">Loading appointments...</p>
             </div>
           ) : filteredAppointments.length === 0 ? (
-            <div className="p-6 text-center text-gray-500">
-              No {activeFilter} appointments
-            </div>
+            <div className="p-6 text-center text-gray-500">No {activeFilter} appointments</div>
           ) : (
             <ul className="divide-y divide-gray-200">
               {filteredAppointments.map((appointment) => (
@@ -244,12 +262,8 @@ export const AppointmentsTab = () => {
                         className="h-12 w-12 rounded-full object-cover"
                       />
                       <div>
-                        <h4 className="text-lg font-medium text-gray-900">
-                          {appointment.service}
-                        </h4>
-                        <p className="text-sm text-gray-500">
-                          with {appointment.professionalName}
-                        </p>
+                        <h4 className="text-lg font-medium text-gray-900">{appointment.service}</h4>
+                        <p className="text-sm text-gray-500">with {appointment.professionalName}</p>
                         <div className="mt-1 flex items-center text-sm text-gray-500">
                           <Star className="h-4 w-4 text-yellow-400 mr-1" />
                           {appointment.rating}
@@ -266,31 +280,35 @@ export const AppointmentsTab = () => {
                           <Clock className="h-4 w-4 mr-1" />
                           {appointment.time}
                         </div>
-                      <div className="flex items-center text-sm text-gray-500">
-                        <MapPin className="h-4 w-4 mr-1" />
-                        {appointment.location}
-                      </div>
-                      {appointment.status === 'waitlisted' && (
-                        <div className="flex items-center text-sm text-orange-600">
-                          <AlertCircle className="h-4 w-4 mr-1" />
-                          Waitlist Position: {appointment.position}
+                        <div className="flex items-center text-sm text-gray-500">
+                          <MapPin className="h-4 w-4 mr-1" />
+                          {appointment.location}
                         </div>
-                      )}
-                      {activeFilter === 'upcoming' && (
-                        <div className={`flex items-center text-sm ${appointment.isApproved ? 'text-green-600' : 'text-amber-600'}`}>
-                          {appointment.isApproved ? (
-                            <>
-                              <CheckCircle className="h-4 w-4 mr-1" />
-                              Approved
-                            </>
-                          ) : (
-                            <>
-                              <Clock3 className="h-4 w-4 mr-1" />
-                              Pending Approval
-                            </>
-                          )}
-                        </div>
-                      )}
+                        {appointment.status === 'waitlisted' && (
+                          <div className="flex items-center text-sm text-orange-600">
+                            <AlertCircle className="h-4 w-4 mr-1" />
+                            Waitlist Position: {appointment.position}
+                          </div>
+                        )}
+                        {activeFilter === 'upcoming' && (
+                          <div
+                            className={`flex items-center text-sm ${
+                              appointment.isApproved ? 'text-green-600' : 'text-amber-600'
+                            }`}
+                          >
+                            {appointment.isApproved ? (
+                              <>
+                                <CheckCircle className="h-4 w-4 mr-1" />
+                                Approved
+                              </>
+                            ) : (
+                              <>
+                                <Clock3 className="h-4 w-4 mr-1" />
+                                Pending Approval
+                              </>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -307,14 +325,16 @@ export const AppointmentsTab = () => {
                       onClick={() => handleCancel(appointment.id)}
                       disabled={isProcessing === appointment.id}
                       className={`inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md ${
-                        isProcessing === appointment.id 
-                          ? 'bg-gray-200 text-gray-500 cursor-not-allowed' 
+                        isProcessing === appointment.id
+                          ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
                           : 'text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500'
                       }`}
                     >
-                      {isProcessing === appointment.id 
-                        ? 'Processing...' 
-                        : appointment.status === 'waitlisted' ? 'Leave Waitlist' : 'Cancel'}
+                      {isProcessing === appointment.id
+                        ? 'Processing...'
+                        : appointment.status === 'waitlisted'
+                          ? 'Leave Waitlist'
+                          : 'Cancel'}
                     </button>
                   </div>
                 </li>
@@ -323,13 +343,9 @@ export const AppointmentsTab = () => {
           )}
         </div>
       </div>
-      
+
       {/* Error message */}
-      {error && (
-        <div className="mt-4 p-3 bg-red-100 text-red-700 rounded-md">
-          {error}
-        </div>
-      )}
+      {error && <div className="mt-4 p-3 bg-red-100 text-red-700 rounded-md">{error}</div>}
     </div>
   );
 };

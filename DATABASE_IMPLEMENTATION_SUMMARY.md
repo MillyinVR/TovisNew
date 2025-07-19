@@ -17,6 +17,7 @@ This document summarizes the implementation of the Firestore database structure 
 - ✅ **License Data**: Added sample license data to professionals
 
 ### Pending:
+
 - ❌ **User Activity Collections**: `userActivity` and `userRecommendations` not yet populated
 - ❌ **Booking Collections**: `appointments`, `reviews` not yet populated
 - ❌ **Messaging Collections**: `conversations` not yet populated

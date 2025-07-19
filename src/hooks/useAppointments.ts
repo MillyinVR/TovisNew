@@ -13,10 +13,7 @@ export const useAppointments = () => {
   useEffect(() => {
     if (!currentUser?.uid) return;
 
-    const q = query(
-      collection(db, 'appointments'),
-      where('clientId', '==', currentUser.uid)
-    );
+    const q = query(collection(db, 'appointments'), where('clientId', '==', currentUser.uid));
 
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const appointmentsData: Appointment[] = [];
@@ -44,7 +41,7 @@ export const useAppointments = () => {
           // The periodic refresh in AuthContext should help in most cases
         }
       }
-      
+
       await updateAppointmentStatus(
         appointmentId,
         AppointmentStatus.CANCELLED,
@@ -57,9 +54,9 @@ export const useAppointments = () => {
     }
   }, []);
 
-  return { 
-    appointments, 
+  return {
+    appointments,
     loading,
-    cancelAppointment
+    cancelAppointment,
   };
 };

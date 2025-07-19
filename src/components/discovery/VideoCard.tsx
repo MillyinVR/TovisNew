@@ -52,7 +52,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({ video, onVideoClick }) => 
         />
         <div className="absolute inset-0 bg-black/20 transition-opacity duration-200 hover:bg-black/10" />
         <div className="absolute bottom-2 right-2 flex space-x-2">
-          <button 
+          <button
             className="flex items-center px-2 py-1 bg-white/90 rounded-full text-sm hover:bg-white"
             onClick={(e) => {
               e.stopPropagation();
@@ -62,7 +62,7 @@ export const VideoCard: React.FC<VideoCardProps> = ({ video, onVideoClick }) => 
             <Heart className="h-4 w-4 mr-1" />
             {video.likes}
           </button>
-          <button 
+          <button
             className="p-1 bg-white/90 rounded-full hover:bg-white"
             onClick={(e) => {
               e.stopPropagation();
@@ -78,8 +78,8 @@ export const VideoCard: React.FC<VideoCardProps> = ({ video, onVideoClick }) => 
         <p className="text-xs text-gray-500">{video.views} views</p>
         <div className="flex flex-wrap mt-2">
           {video.hashtags.map((tag, index) => (
-            <span 
-              key={index} 
+            <span
+              key={index}
               className="text-xs text-blue-500 mr-2 hover:text-blue-700 cursor-pointer"
               onClick={(e) => {
                 e.stopPropagation();

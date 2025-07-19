@@ -29,8 +29,8 @@ const ProfileSetup: React.FC = () => {
     communicationPreferences: {
       reminders: true,
       method: 'sms',
-      frequency: 'day_before'
-    }
+      frequency: 'day_before',
+    },
   });
 
   const skinTypes = ['Oily', 'Dry', 'Combination', 'Normal', 'Sensitive'];
@@ -39,9 +39,9 @@ const ProfileSetup: React.FC = () => {
   const commonSensitivities = ['Fragrance', 'Alcohol', 'Essential Oils', 'Preservatives'];
 
   const handlePreferenceChange = (field: keyof ProfilePreferences, value: any) => {
-    setPreferences(prev => ({
+    setPreferences((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
@@ -49,7 +49,7 @@ const ProfileSetup: React.FC = () => {
     try {
       setLoading(true);
       await updateUserProfile({
-        preferences
+        preferences,
       });
     } catch (error) {
       console.error('Failed to update preferences:', error);
@@ -82,9 +82,7 @@ const ProfileSetup: React.FC = () => {
           </div>
           <div>
             <h4 className="text-sm font-medium text-gray-900">Change photo</h4>
-            <p className="text-sm text-gray-500">
-              Upload a new photo or remove the current one
-            </p>
+            <p className="text-sm text-gray-500">Upload a new photo or remove the current one</p>
           </div>
         </div>
       </div>
@@ -101,8 +99,10 @@ const ProfileSetup: React.FC = () => {
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             >
               <option value="">Select skin type</option>
-              {skinTypes.map(type => (
-                <option key={type} value={type}>{type}</option>
+              {skinTypes.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
               ))}
             </select>
           </div>
@@ -115,8 +115,10 @@ const ProfileSetup: React.FC = () => {
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             >
               <option value="">Select hair type</option>
-              {hairTypes.map(type => (
-                <option key={type} value={type}>{type}</option>
+              {hairTypes.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
               ))}
             </select>
           </div>
@@ -125,7 +127,7 @@ const ProfileSetup: React.FC = () => {
         <div className="mt-6">
           <label className="block text-sm font-medium text-gray-700">Allergies</label>
           <div className="mt-2 flex flex-wrap gap-2">
-            {commonAllergies.map(allergy => (
+            {commonAllergies.map((allergy) => (
               <label key={allergy} className="inline-flex items-center">
                 <input
                   type="checkbox"
@@ -133,7 +135,7 @@ const ProfileSetup: React.FC = () => {
                   onChange={(e) => {
                     const newAllergies = e.target.checked
                       ? [...preferences.allergies, allergy]
-                      : preferences.allergies.filter(a => a !== allergy);
+                      : preferences.allergies.filter((a) => a !== allergy);
                     handlePreferenceChange('allergies', newAllergies);
                   }}
                   className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
@@ -147,7 +149,7 @@ const ProfileSetup: React.FC = () => {
         <div className="mt-6">
           <label className="block text-sm font-medium text-gray-700">Sensitivities</label>
           <div className="mt-2 flex flex-wrap gap-2">
-            {commonSensitivities.map(sensitivity => (
+            {commonSensitivities.map((sensitivity) => (
               <label key={sensitivity} className="inline-flex items-center">
                 <input
                   type="checkbox"
@@ -155,7 +157,7 @@ const ProfileSetup: React.FC = () => {
                   onChange={(e) => {
                     const newSensitivities = e.target.checked
                       ? [...preferences.sensitivities, sensitivity]
-                      : preferences.sensitivities.filter(s => s !== sensitivity);
+                      : preferences.sensitivities.filter((s) => s !== sensitivity);
                     handlePreferenceChange('sensitivities', newSensitivities);
                   }}
                   className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
@@ -176,15 +178,15 @@ const ProfileSetup: React.FC = () => {
               <input
                 type="checkbox"
                 checked={preferences.communicationPreferences.reminders}
-                onChange={(e) => handlePreferenceChange('communicationPreferences', {
-                  ...preferences.communicationPreferences,
-                  reminders: e.target.checked
-                })}
+                onChange={(e) =>
+                  handlePreferenceChange('communicationPreferences', {
+                    ...preferences.communicationPreferences,
+                    reminders: e.target.checked,
+                  })
+                }
                 className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
               />
-              <span className="ml-2 text-sm text-gray-600">
-                Enable appointment reminders
-              </span>
+              <span className="ml-2 text-sm text-gray-600">Enable appointment reminders</span>
             </label>
           </div>
 
@@ -192,10 +194,12 @@ const ProfileSetup: React.FC = () => {
             <label className="block text-sm font-medium text-gray-700">Reminder Method</label>
             <select
               value={preferences.communicationPreferences.method}
-              onChange={(e) => handlePreferenceChange('communicationPreferences', {
-                ...preferences.communicationPreferences,
-                method: e.target.value as 'email' | 'sms' | 'both'
-              })}
+              onChange={(e) =>
+                handlePreferenceChange('communicationPreferences', {
+                  ...preferences.communicationPreferences,
+                  method: e.target.value as 'email' | 'sms' | 'both',
+                })
+              }
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             >
               <option value="email">Email</option>
@@ -208,10 +212,12 @@ const ProfileSetup: React.FC = () => {
             <label className="block text-sm font-medium text-gray-700">Reminder Timing</label>
             <select
               value={preferences.communicationPreferences.frequency}
-              onChange={(e) => handlePreferenceChange('communicationPreferences', {
-                ...preferences.communicationPreferences,
-                frequency: e.target.value as 'day_before' | 'hours_before' | 'week_before'
-              })}
+              onChange={(e) =>
+                handlePreferenceChange('communicationPreferences', {
+                  ...preferences.communicationPreferences,
+                  frequency: e.target.value as 'day_before' | 'hours_before' | 'week_before',
+                })
+              }
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             >
               <option value="week_before">1 week before</option>
@@ -234,9 +240,7 @@ const ProfileSetup: React.FC = () => {
               type="checkbox"
               className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
             />
-            <span className="ml-2 text-sm text-gray-600">
-              Show my profile to other clients
-            </span>
+            <span className="ml-2 text-sm text-gray-600">Show my profile to other clients</span>
           </label>
           <label className="flex items-center">
             <input
@@ -252,9 +256,7 @@ const ProfileSetup: React.FC = () => {
               type="checkbox"
               className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
             />
-            <span className="ml-2 text-sm text-gray-600">
-              Receive personalized recommendations
-            </span>
+            <span className="ml-2 text-sm text-gray-600">Receive personalized recommendations</span>
           </label>
         </div>
       </div>

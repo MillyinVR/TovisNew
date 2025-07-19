@@ -25,7 +25,7 @@ export const ReviewModeration = () => {
       content: 'Great service, very professional!',
       date: '2024-03-15T10:30:00Z',
       status: 'pending',
-      flagged: false
+      flagged: false,
     },
     {
       id: '2',
@@ -37,8 +37,8 @@ export const ReviewModeration = () => {
       date: '2024-03-14T15:45:00Z',
       status: 'pending',
       flagged: true,
-      flagReason: 'Inappropriate content'
-    }
+      flagReason: 'Inappropriate content',
+    },
   ]);
 
   return (
@@ -71,9 +71,7 @@ export const ReviewModeration = () => {
             </div>
             <p className="mt-2 text-sm text-gray-600">{review.content}</p>
             {review.flagReason && (
-              <p className="mt-2 text-sm text-red-600">
-                Flag reason: {review.flagReason}
-              </p>
+              <p className="mt-2 text-sm text-red-600">Flag reason: {review.flagReason}</p>
             )}
             <div className="mt-4 flex justify-between items-center">
               <span className="text-sm text-gray-500">

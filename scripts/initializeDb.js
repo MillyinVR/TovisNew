@@ -1,24 +1,24 @@
 import { initializeApp } from 'firebase/app';
-import { 
-  getFirestore, 
-  collection, 
+import {
+  getFirestore,
+  collection,
   getDocs,
   addDoc,
   deleteDoc,
   query,
   where,
   limit,
-  serverTimestamp
+  serverTimestamp,
 } from 'firebase/firestore';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAI8veylKH5YI8aRnH4-iHoqAUrtFD1LZo",
-  authDomain: "beautyappaici.firebaseapp.com",
-  projectId: "beautyappaici",
-  storageBucket: "beautyappaici.appspot.com",
-  messagingSenderId: "487403425623",
-  appId: "1:487403425623:web:87e8d73a9e2424fb20b812"
+  apiKey: 'AIzaSyAI8veylKH5YI8aRnH4-iHoqAUrtFD1LZo',
+  authDomain: 'beautyappaici.firebaseapp.com',
+  projectId: 'beautyappaici',
+  storageBucket: 'beautyappaici.appspot.com',
+  messagingSenderId: '487403425623',
+  appId: '1:487403425623:web:87e8d73a9e2424fb20b812',
 };
 
 // Initialize Firebase
@@ -30,21 +30,24 @@ const initialCategories = [
   {
     name: 'Hair Care',
     description: 'All hair related services',
-    imageUrl: 'https://firebasestorage.googleapis.com/v0/b/beautyappaici.appspot.com/o/categories%2Fhair-care.jpg?alt=media',
-    services: []
+    imageUrl:
+      'https://firebasestorage.googleapis.com/v0/b/beautyappaici.appspot.com/o/categories%2Fhair-care.jpg?alt=media',
+    services: [],
   },
   {
     name: 'Skin Care',
     description: 'Facial and skin treatments',
-    imageUrl: 'https://firebasestorage.googleapis.com/v0/b/beautyappaici.appspot.com/o/categories%2Fskin-care.jpg?alt=media',
-    services: []
+    imageUrl:
+      'https://firebasestorage.googleapis.com/v0/b/beautyappaici.appspot.com/o/categories%2Fskin-care.jpg?alt=media',
+    services: [],
   },
   {
     name: 'Nail Care',
     description: 'Manicure and pedicure services',
-    imageUrl: 'https://firebasestorage.googleapis.com/v0/b/beautyappaici.appspot.com/o/categories%2Fnail-care.jpg?alt=media',
-    services: []
-  }
+    imageUrl:
+      'https://firebasestorage.googleapis.com/v0/b/beautyappaici.appspot.com/o/categories%2Fnail-care.jpg?alt=media',
+    services: [],
+  },
 ];
 
 const initialServices = [
@@ -58,17 +61,21 @@ const initialServices = [
     minDuration: 30,
     duration: 30,
     durationStep: 15,
-    imageUrls: ['https://firebasestorage.googleapis.com/v0/b/beautyappaici.appspot.com/o/services%2Fhaircut.jpg?alt=media'],
+    imageUrls: [
+      'https://firebasestorage.googleapis.com/v0/b/beautyappaici.appspot.com/o/services%2Fhaircut.jpg?alt=media',
+    ],
     isAvailable: true,
     isBaseService: true,
     createdBy: 'admin',
     status: 'active',
     isPublished: true,
-    media: [{
-      url: 'https://firebasestorage.googleapis.com/v0/b/beautyappaici.appspot.com/o/services%2Fhaircut.jpg?alt=media',
-      type: 'image'
-    }],
-    price: 30
+    media: [
+      {
+        url: 'https://firebasestorage.googleapis.com/v0/b/beautyappaici.appspot.com/o/services%2Fhaircut.jpg?alt=media',
+        type: 'image',
+      },
+    ],
+    price: 30,
   },
   {
     name: 'Hair Coloring',
@@ -80,17 +87,21 @@ const initialServices = [
     minDuration: 120,
     duration: 120,
     durationStep: 30,
-    imageUrls: ['https://firebasestorage.googleapis.com/v0/b/beautyappaici.appspot.com/o/services%2Fhair-coloring.jpg?alt=media'],
+    imageUrls: [
+      'https://firebasestorage.googleapis.com/v0/b/beautyappaici.appspot.com/o/services%2Fhair-coloring.jpg?alt=media',
+    ],
     isAvailable: true,
     isBaseService: true,
     createdBy: 'admin',
     status: 'active',
     isPublished: true,
-    media: [{
-      url: 'https://firebasestorage.googleapis.com/v0/b/beautyappaici.appspot.com/o/services%2Fhair-coloring.jpg?alt=media',
-      type: 'image'
-    }],
-    price: 80
+    media: [
+      {
+        url: 'https://firebasestorage.googleapis.com/v0/b/beautyappaici.appspot.com/o/services%2Fhair-coloring.jpg?alt=media',
+        type: 'image',
+      },
+    ],
+    price: 80,
   },
   {
     name: 'Facial Treatment',
@@ -102,17 +113,21 @@ const initialServices = [
     minDuration: 60,
     duration: 60,
     durationStep: 15,
-    imageUrls: ['https://firebasestorage.googleapis.com/v0/b/beautyappaici.appspot.com/o/services%2Ffacial.jpg?alt=media'],
+    imageUrls: [
+      'https://firebasestorage.googleapis.com/v0/b/beautyappaici.appspot.com/o/services%2Ffacial.jpg?alt=media',
+    ],
     isAvailable: true,
     isBaseService: true,
     createdBy: 'admin',
     status: 'active',
     isPublished: true,
-    media: [{
-      url: 'https://firebasestorage.googleapis.com/v0/b/beautyappaici.appspot.com/o/services%2Ffacial.jpg?alt=media',
-      type: 'image'
-    }],
-    price: 50
+    media: [
+      {
+        url: 'https://firebasestorage.googleapis.com/v0/b/beautyappaici.appspot.com/o/services%2Ffacial.jpg?alt=media',
+        type: 'image',
+      },
+    ],
+    price: 50,
   },
   {
     name: 'Manicure',
@@ -124,29 +139,33 @@ const initialServices = [
     minDuration: 45,
     duration: 45,
     durationStep: 15,
-    imageUrls: ['https://firebasestorage.googleapis.com/v0/b/beautyappaici.appspot.com/o/services%2Fmanicure.jpg?alt=media'],
+    imageUrls: [
+      'https://firebasestorage.googleapis.com/v0/b/beautyappaici.appspot.com/o/services%2Fmanicure.jpg?alt=media',
+    ],
     isAvailable: true,
     isBaseService: true,
     createdBy: 'admin',
     status: 'active',
     isPublished: true,
-    media: [{
-      url: 'https://firebasestorage.googleapis.com/v0/b/beautyappaici.appspot.com/o/services%2Fmanicure.jpg?alt=media',
-      type: 'image'
-    }],
-    price: 25
-  }
+    media: [
+      {
+        url: 'https://firebasestorage.googleapis.com/v0/b/beautyappaici.appspot.com/o/services%2Fmanicure.jpg?alt=media',
+        type: 'image',
+      },
+    ],
+    price: 25,
+  },
 ];
 
 async function clearCollection(collectionPath) {
   const collectionRef = collection(db, collectionPath);
   const snapshot = await getDocs(collectionRef);
-  
+
   console.log(`Deleting ${snapshot.size} documents from ${collectionPath}...`);
-  
-  const deletePromises = snapshot.docs.map(doc => deleteDoc(doc.ref));
+
+  const deletePromises = snapshot.docs.map((doc) => deleteDoc(doc.ref));
   await Promise.all(deletePromises);
-  
+
   console.log(`Deleted all documents from ${collectionPath}`);
 }
 
@@ -165,7 +184,7 @@ async function initializeDatabase() {
       const docRef = await addDoc(collection(db, 'serviceCategories'), {
         ...category,
         createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
       });
       return { id: docRef.id, ...category };
     });
@@ -178,36 +197,47 @@ async function initializeDatabase() {
     const servicePromises = [];
 
     // Assign services to categories
-    servicePromises.push(addDoc(collection(db, 'services'), {
-      ...initialServices[0],
-      categoryId: addedCategories[0].id, // Haircut -> Hair Care
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
-    }));
+    servicePromises.push(
+      addDoc(collection(db, 'services'), {
+        ...initialServices[0],
+        categoryId: addedCategories[0].id, // Haircut -> Hair Care
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      })
+    );
 
-    servicePromises.push(addDoc(collection(db, 'services'), {
-      ...initialServices[1],
-      categoryId: addedCategories[0].id, // Hair Coloring -> Hair Care
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
-    }));
+    servicePromises.push(
+      addDoc(collection(db, 'services'), {
+        ...initialServices[1],
+        categoryId: addedCategories[0].id, // Hair Coloring -> Hair Care
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      })
+    );
 
-    servicePromises.push(addDoc(collection(db, 'services'), {
-      ...initialServices[2],
-      categoryId: addedCategories[1].id, // Facial Treatment -> Skin Care
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
-    }));
+    servicePromises.push(
+      addDoc(collection(db, 'services'), {
+        ...initialServices[2],
+        categoryId: addedCategories[1].id, // Facial Treatment -> Skin Care
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      })
+    );
 
-    servicePromises.push(addDoc(collection(db, 'services'), {
-      ...initialServices[3],
-      categoryId: addedCategories[2].id, // Manicure -> Nail Care
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
-    }));
+    servicePromises.push(
+      addDoc(collection(db, 'services'), {
+        ...initialServices[3],
+        categoryId: addedCategories[2].id, // Manicure -> Nail Care
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      })
+    );
 
     const addedServices = await Promise.all(servicePromises);
-    console.log('Services added:', addedServices.map(doc => doc.id));
+    console.log(
+      'Services added:',
+      addedServices.map((doc) => doc.id)
+    );
 
     console.log('Database initialization complete');
   } catch (error) {

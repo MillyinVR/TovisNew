@@ -38,16 +38,10 @@ export const VideoModal: React.FC<VideoModalProps> = ({ video, onClose }) => {
   };
 
   return (
-    <div 
-      className="fixed inset-0 bg-black/90 z-50 flex flex-col"
-      onClick={handleBackdropClick}
-    >
+    <div className="fixed inset-0 bg-black/90 z-50 flex flex-col" onClick={handleBackdropClick}>
       <div className="p-4 flex justify-between items-center">
         <h2 className="text-white text-xl font-bold">{video.title}</h2>
-        <button
-          onClick={onClose}
-          className="text-white hover:text-gray-300 transition-colors"
-        >
+        <button onClick={onClose} className="text-white hover:text-gray-300 transition-colors">
           <X className="h-6 w-6" />
         </button>
       </div>

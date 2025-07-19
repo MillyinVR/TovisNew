@@ -16,44 +16,42 @@ interface MediaFile {
   caption: string;
 }
 
-export default function UploadMediaModal({ 
-  isOpen, 
+export default function UploadMediaModal({
+  isOpen,
   onClose,
   serviceId,
-  onUploadSuccess
+  onUploadSuccess,
 }: UploadMediaModalProps) {
   const [files, setFiles] = useState<MediaFile[]>([]);
   const { uploadMedia } = usePortfolio();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const newFiles = Array.from(e.target.files).map(file => ({
+      const newFiles = Array.from(e.target.files).map((file) => ({
         file,
         preview: URL.createObjectURL(file),
-        caption: ''
+        caption: '',
       }));
-      setFiles(prev => [...prev, ...newFiles]);
+      setFiles((prev) => [...prev, ...newFiles]);
     }
   };
 
   const handleCaptionChange = (index: number, caption: string) => {
-    setFiles(prev => prev.map((f, i) => 
-      i === index ? { ...f, caption } : f
-    ));
+    setFiles((prev) => prev.map((f, i) => (i === index ? { ...f, caption } : f)));
   };
 
   const handleRemoveFile = (index: number) => {
-    setFiles(prev => prev.filter((_, i) => i !== index));
+    setFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async () => {
     try {
       await uploadMedia({
         serviceId,
-        media: files.map(f => ({
+        media: files.map((f) => ({
           file: f.file,
-          caption: f.caption
-        }))
+          caption: f.caption,
+        })),
       });
       onUploadSuccess();
       onClose();
@@ -93,10 +91,7 @@ export default function UploadMediaModal({
                   <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
                     Add Media to Service History
                   </Dialog.Title>
-                  <button
-                    onClick={onClose}
-                    className="p-2 text-gray-400 hover:text-gray-500"
-                  >
+                  <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-500">
                     <XMarkIcon className="h-6 w-6" />
                   </button>
                 </div>

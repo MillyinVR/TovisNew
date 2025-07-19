@@ -21,14 +21,14 @@ export const AftercareSummaries = () => {
       id: '1',
       name: 'Emma Wilson',
       appointmentTime: '10:00 AM',
-      service: 'Bridal Makeup'
+      service: 'Bridal Makeup',
     },
     {
       id: '2',
       name: 'Sarah Johnson',
       appointmentTime: '2:30 PM',
-      service: 'Hair Styling'
-    }
+      service: 'Hair Styling',
+    },
   ];
 
   const handleSaveSummary = async (summary: AftercareSummary) => {
@@ -42,9 +42,10 @@ export const AftercareSummaries = () => {
     }
   };
 
-  const filteredClients = todaysClients.filter(client =>
-    client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    client.service.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredClients = todaysClients.filter(
+    (client) =>
+      client.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      client.service.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -109,9 +110,7 @@ export const AftercareSummaries = () => {
           <div className="space-y-4">
             <h3 className="text-sm font-medium text-gray-900">Recent Summaries</h3>
             <div className="border-t border-gray-200 pt-4">
-              <p className="text-center text-gray-500 py-8">
-                No recent summaries to display
-              </p>
+              <p className="text-center text-gray-500 py-8">No recent summaries to display</p>
             </div>
           </div>
         </div>

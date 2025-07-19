@@ -41,7 +41,7 @@ export const CalendarManagement: React.FC<CalendarManagementProps> = ({
   const { workingHours } = useWorkingHours();
   const { approveAppointment, cancelAppointment } = useProfessionalAppointments();
   const [events, setEvents] = useState<RBGEvent[]>([]);
-  
+
   // Set to show full 24 hours (using 23:59:59 as end time)
   const [minTime, setMinTime] = useState<Date>(new Date(0, 0, 0, 0, 0, 0));
   const [maxTime, setMaxTime] = useState<Date>(new Date(0, 0, 0, 23, 59, 59));
@@ -54,13 +54,14 @@ export const CalendarManagement: React.FC<CalendarManagementProps> = ({
     if (appointments.length > 0) {
       // Show all non-cancelled appointments in the calendar
       const filteredAppointments = appointments.filter(
-        appt => appt.status !== AppointmentStatus.CANCELLED
+        (appt) => appt.status !== AppointmentStatus.CANCELLED
       );
-      
+
       const mappedEvents = filteredAppointments.map((appt) => {
         // Determine if this is a pending appointment
-        const isPending = appt.status === AppointmentStatus.REQUESTED || appt.status === AppointmentStatus.PENDING;
-        
+        const isPending =
+          appt.status === AppointmentStatus.REQUESTED || appt.status === AppointmentStatus.PENDING;
+
         // Format the title based on status
         let title = appt.serviceName || 'Appointment';
         if (isPending) {
@@ -72,7 +73,7 @@ export const CalendarManagement: React.FC<CalendarManagementProps> = ({
           // Remove [PENDING] prefix if present
           title = title.replace('[PENDING] ', '');
         }
-        
+
         return {
           id: appt.id,
           title: title,
@@ -85,7 +86,7 @@ export const CalendarManagement: React.FC<CalendarManagementProps> = ({
           startTime: appt.startTime,
           endTime: appt.endTime,
           clientId: appt.clientId,
-          clientName: appt.clientName
+          clientName: appt.clientName,
         };
       });
       setEvents(mappedEvents);
@@ -114,8 +115,8 @@ export const CalendarManagement: React.FC<CalendarManagementProps> = ({
       clientName: event.clientName,
       extendedProps: {
         clientId: event.clientId,
-        appointmentId: event.id
-      }
+        appointmentId: event.id,
+      },
     };
     onEventSelect(calendarEvent);
   };
@@ -126,26 +127,26 @@ export const CalendarManagement: React.FC<CalendarManagementProps> = ({
       if (event.id) {
         await approveAppointment(event.id);
         console.log('Appointment approved:', event.id);
-        
+
         // Update the events state to reflect the change
-        setEvents(prevEvents => 
-          prevEvents.map(evt => {
+        setEvents((prevEvents) =>
+          prevEvents.map((evt) => {
             if (evt.id === event.id) {
               return {
                 ...evt,
                 status: AppointmentStatus.SCHEDULED,
-                title: evt.title.replace('[PENDING] ', '')
+                title: evt.title.replace('[PENDING] ', ''),
               };
             }
             return evt;
           })
         );
-        
+
         // Call the onRefresh prop to refresh appointments from the parent component
         if (onRefresh) {
           onRefresh();
         }
-        
+
         // Also refresh local events after a short delay
         setTimeout(refreshEvents, 500);
       }
@@ -160,15 +161,15 @@ export const CalendarManagement: React.FC<CalendarManagementProps> = ({
       if (event.id) {
         await cancelAppointment(event.id, 'Appointment request denied by professional');
         console.log('Appointment denied:', event.id);
-        
+
         // Remove the denied appointment from the events state
-        setEvents(prevEvents => prevEvents.filter(evt => evt.id !== event.id));
-        
+        setEvents((prevEvents) => prevEvents.filter((evt) => evt.id !== event.id));
+
         // Call the onRefresh prop to refresh appointments from the parent component
         if (onRefresh) {
           onRefresh();
         }
-        
+
         // Also refresh local events after a short delay
         setTimeout(refreshEvents, 500);
       }
@@ -177,7 +178,11 @@ export const CalendarManagement: React.FC<CalendarManagementProps> = ({
     }
   };
 
-  const handleClientClick = (clientId: string | undefined, clientName: string | undefined, e: React.MouseEvent) => {
+  const handleClientClick = (
+    clientId: string | undefined,
+    clientName: string | undefined,
+    e: React.MouseEvent
+  ) => {
     e.stopPropagation(); // Prevent event selection
     if (clientId && clientName && onClientSelect) {
       onClientSelect(clientId, clientName);
@@ -189,7 +194,7 @@ export const CalendarManagement: React.FC<CalendarManagementProps> = ({
       <div className="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center">
         <h2 className="text-xl font-semibold mb-2 sm:mb-0">Appointment Calendar</h2>
       </div>
-  
+
       <div className="calendar-container w-full overflow-x-auto">
         <Calendar
           localizer={localizer}
@@ -198,7 +203,7 @@ export const CalendarManagement: React.FC<CalendarManagementProps> = ({
           endAccessor="end"
           onSelectEvent={handleSelectEvent}
           defaultView="week"
-          views={['month','week','day']}
+          views={['month', 'week', 'day']}
           min={minTime}
           max={maxTime}
           style={{ height: '100%', minHeight: '500px', width: '100%' }}
@@ -210,48 +215,57 @@ export const CalendarManagement: React.FC<CalendarManagementProps> = ({
                   status === AppointmentStatus.SCHEDULED
                     ? '#10B981' // Green for confirmed
                     : status === AppointmentStatus.COMPLETED
-                    ? '#8B5CF6' // Purple for completed
-                    : status === AppointmentStatus.REQUESTED || status === AppointmentStatus.PENDING
-                    ? '#FBBF24' // Yellow for pending/requested
-                    : '#EF4444', // Red for others (cancelled)
-                border: (status === AppointmentStatus.REQUESTED || status === AppointmentStatus.PENDING) 
-                  ? '2px dashed #F59E0B' // Dashed border for pending/requested
-                  : 'none',
-                opacity: (status === AppointmentStatus.REQUESTED || status === AppointmentStatus.PENDING) 
-                  ? 0.8 // Slightly transparent for pending/requested
-                  : 1,
+                      ? '#8B5CF6' // Purple for completed
+                      : status === AppointmentStatus.REQUESTED ||
+                          status === AppointmentStatus.PENDING
+                        ? '#FBBF24' // Yellow for pending/requested
+                        : '#EF4444', // Red for others (cancelled)
+                border:
+                  status === AppointmentStatus.REQUESTED || status === AppointmentStatus.PENDING
+                    ? '2px dashed #F59E0B' // Dashed border for pending/requested
+                    : 'none',
+                opacity:
+                  status === AppointmentStatus.REQUESTED || status === AppointmentStatus.PENDING
+                    ? 0.8 // Slightly transparent for pending/requested
+                    : 1,
               },
-              className: (status === AppointmentStatus.REQUESTED || status === AppointmentStatus.PENDING)
-                ? 'pending-appointment' // Add a class for additional styling if needed
-                : '',
+              className:
+                status === AppointmentStatus.REQUESTED || status === AppointmentStatus.PENDING
+                  ? 'pending-appointment' // Add a class for additional styling if needed
+                  : '',
             };
           }}
           components={{
             event: (props) => {
               const event = props.event as RBGEvent;
-              const isPending = event.status === AppointmentStatus.REQUESTED || event.status === AppointmentStatus.PENDING;
-              
+              const isPending =
+                event.status === AppointmentStatus.REQUESTED ||
+                event.status === AppointmentStatus.PENDING;
+
               return (
                 <div className={`rbc-event-content ${isPending ? 'pending-event-container' : ''}`}>
                   <div className="event-title">{event.title}</div>
-                  
+
                   {isPending && (
                     <>
-                      <div className="client-name" onClick={(e) => handleClientClick(event.clientId, event.clientName, e)}>
+                      <div
+                        className="client-name"
+                        onClick={(e) => handleClientClick(event.clientId, event.clientName, e)}
+                      >
                         <span className="text-xs font-medium text-blue-600 hover:underline cursor-pointer">
                           {event.clientName || 'Client'}
                         </span>
                       </div>
                       <div className="pending-event-actions">
-                        <button 
-                          className="pending-approve-btn" 
+                        <button
+                          className="pending-approve-btn"
                           onClick={(e) => handleApproveAppointment(event, e)}
                           title="Approve"
                         >
                           ✓
                         </button>
-                        <button 
-                          className="pending-deny-btn" 
+                        <button
+                          className="pending-deny-btn"
                           onClick={(e) => handleDenyAppointment(event, e)}
                           title="Deny"
                         >
@@ -262,7 +276,7 @@ export const CalendarManagement: React.FC<CalendarManagementProps> = ({
                   )}
                 </div>
               );
-            }
+            },
           }}
         />
       </div>

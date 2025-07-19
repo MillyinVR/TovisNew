@@ -15,7 +15,7 @@ export const NotificationsPage = () => {
         <div className="bg-white shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center">
-              <button 
+              <button
                 onClick={() => navigate(-1)}
                 className="p-2 text-gray-500 hover:text-gray-700"
               >
@@ -29,7 +29,7 @@ export const NotificationsPage = () => {
         {/* Notifications List */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {notifications.length > 0 ? (
-            notifications.map(notification => (
+            notifications.map((notification) => (
               <div key={notification.id} className="p-4 mb-2 bg-white rounded-lg shadow-sm">
                 <div className="text-sm text-gray-700">{notification.message}</div>
                 <div className="text-xs text-gray-400 mt-1">

@@ -14,7 +14,7 @@ interface Provider {
 }
 
 const providers: Provider[] = [
-  { id: '1', city: 'New York', state: 'NY', count: 245, lat: 40.7128, lng: -74.0060 },
+  { id: '1', city: 'New York', state: 'NY', count: 245, lat: 40.7128, lng: -74.006 },
   { id: '2', city: 'Los Angeles', state: 'CA', count: 189, lat: 34.0522, lng: -118.2437 },
   { id: '3', city: 'Houston', state: 'TX', count: 156, lat: 29.7604, lng: -95.3698 },
   { id: '4', city: 'Indianapolis', state: 'IN', count: 134, lat: 39.7684, lng: -86.1581 },
@@ -22,10 +22,10 @@ const providers: Provider[] = [
   { id: '6', city: 'Milwaukee', state: 'WI', count: 98, lat: 43.0389, lng: -87.9065 },
   { id: '7', city: 'Nashville', state: 'TN', count: 87, lat: 36.1627, lng: -86.7816 },
   { id: '8', city: 'Oklahoma City', state: 'OK', count: 145, lat: 35.4676, lng: -97.5164 },
-  { id: '9', city: 'Providence', state: 'RI', count: 76, lat: 41.8240, lng: -71.4128 },
+  { id: '9', city: 'Providence', state: 'RI', count: 76, lat: 41.824, lng: -71.4128 },
   { id: '10', city: 'Queens', state: 'NY', count: 167, lat: 40.7282, lng: -73.7949 },
   { id: '11', city: 'Tucson', state: 'AZ', count: 92, lat: 32.2226, lng: -110.9747 },
-  { id: '12', city: 'West Hollywood', state: 'CA', count: 134, lat: 34.0900, lng: -118.3617 }
+  { id: '12', city: 'West Hollywood', state: 'CA', count: 134, lat: 34.09, lng: -118.3617 },
 ];
 
 export const ProviderMap = () => {
@@ -35,7 +35,7 @@ export const ProviderMap = () => {
   const [viewport, setViewport] = useState({
     latitude: 39.8283,
     longitude: -98.5795,
-    zoom: 3.5
+    zoom: 3.5,
   });
 
   useEffect(() => {
@@ -75,7 +75,7 @@ export const ProviderMap = () => {
       <div className="w-full h-[300px] relative">
         <Map
           {...viewport}
-          onMove={evt => setViewport(evt.viewState)}
+          onMove={(evt) => setViewport(evt.viewState)}
           mapStyle="mapbox://styles/mapbox/streets-v12"
           mapboxAccessToken={MAPBOX_TOKEN}
           style={{ width: '100%', height: '100%', position: 'relative' }}
@@ -92,27 +92,28 @@ export const ProviderMap = () => {
             setMapError('Unable to load map. Please check your internet connection and try again.');
           }}
         >
-          {mapLoaded && providers.map((provider) => (
-            <Marker
-              key={provider.id}
-              latitude={provider.lat}
-              longitude={provider.lng}
-              anchor="center"
-              onClick={e => {
-                e.originalEvent.stopPropagation();
-                setSelectedProvider(provider);
-              }}
-            >
-              <div className="relative group cursor-pointer">
-                <div className="absolute -inset-2">
-                  <div className="w-4 h-4 bg-black/20 rounded-full animate-ping" />
+          {mapLoaded &&
+            providers.map((provider) => (
+              <Marker
+                key={provider.id}
+                latitude={provider.lat}
+                longitude={provider.lng}
+                anchor="center"
+                onClick={(e) => {
+                  e.originalEvent.stopPropagation();
+                  setSelectedProvider(provider);
+                }}
+              >
+                <div className="relative group cursor-pointer">
+                  <div className="absolute -inset-2">
+                    <div className="w-4 h-4 bg-black/20 rounded-full animate-ping" />
+                  </div>
+                  <div className="relative w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center">
+                    <div className="w-3 h-3 bg-black rounded-full" />
+                  </div>
                 </div>
-                <div className="relative w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center">
-                  <div className="w-3 h-3 bg-black rounded-full" />
-                </div>
-              </div>
-            </Marker>
-          ))}
+              </Marker>
+            ))}
 
           {selectedProvider && (
             <Popup
@@ -125,7 +126,9 @@ export const ProviderMap = () => {
               offset={25}
             >
               <div className="p-3">
-                <h3 className="font-medium text-base">{selectedProvider.city}, {selectedProvider.state}</h3>
+                <h3 className="font-medium text-base">
+                  {selectedProvider.city}, {selectedProvider.state}
+                </h3>
                 <p className="text-sm text-gray-500">{selectedProvider.count} providers</p>
               </div>
             </Popup>

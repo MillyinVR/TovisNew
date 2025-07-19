@@ -56,7 +56,7 @@ export const syncUserToRoleCollection = functions.firestore
 
     // Check if role has changed
     const roleChanged = beforeData && beforeData.role !== afterData.role;
-    
+
     // If role changed, remove from old collection
     if (roleChanged && beforeData?.role) {
       let oldCollection;
@@ -72,7 +72,7 @@ export const syncUserToRoleCollection = functions.firestore
           oldCollection = 'clients';
           break;
       }
-      
+
       if (oldCollection) {
         try {
           await db.collection(oldCollection).doc(userId).delete();
@@ -87,19 +87,19 @@ export const syncUserToRoleCollection = functions.firestore
     try {
       const targetDocRef = db.collection(targetCollection).doc(userId);
       const targetDoc = await targetDocRef.get();
-      
+
       if (!targetDoc.exists) {
         // Create new document
         await targetDocRef.set({
           ...afterData,
-          updatedAt: FieldValue.serverTimestamp()
+          updatedAt: FieldValue.serverTimestamp(),
         });
         console.log(`Created new document for user ${userId} in ${targetCollection} collection`);
       } else {
         // Update existing document
         await targetDocRef.update({
           ...afterData,
-          updatedAt: FieldValue.serverTimestamp()
+          updatedAt: FieldValue.serverTimestamp(),
         });
         console.log(`Updated document for user ${userId} in ${targetCollection} collection`);
       }
@@ -120,10 +120,10 @@ export const syncPortfolioToContent = functions.firestore
   .onWrite(async (change, context) => {
     const { professionalId, itemId } = context.params;
     const afterData = change.after.exists ? change.after.data() : null;
-    
+
     // Get content document reference
     const contentRef = db.collection('content').doc(itemId);
-    
+
     // If portfolio item was deleted, delete from content collection
     if (!afterData) {
       try {
@@ -135,19 +135,19 @@ export const syncPortfolioToContent = functions.firestore
         return { error: error.message || 'Unknown error' };
       }
     }
-    
+
     try {
       // Get professional data for additional context
       const professionalRef = db.collection('professionals').doc(professionalId);
       const professionalDoc = await professionalRef.get();
-      
+
       if (!professionalDoc.exists) {
         console.log(`Professional ${professionalId} not found, skipping content sync`);
         return null;
       }
-      
+
       const professionalData = professionalDoc.data();
-      
+
       // Create or update content document
       const contentData = {
         professionalId,
@@ -168,17 +168,19 @@ export const syncPortfolioToContent = functions.firestore
         comments: afterData.comments || 0,
         engagementScore: calculateEngagementScore(afterData),
         algorithmScore: 0, // Will be calculated by a separate process
-        isPublished: afterData.isPublished !== false // Default to true if not specified
+        isPublished: afterData.isPublished !== false, // Default to true if not specified
       };
-      
+
       await contentRef.set(contentData, { merge: true });
-      console.log(`Synced portfolio item ${itemId} to content collection for professional ${professionalId}`);
-      
+      console.log(
+        `Synced portfolio item ${itemId} to content collection for professional ${professionalId}`
+      );
+
       // Update theLooks collection
       if (contentData.isPublished) {
         await updateTheLooks(itemId, contentData);
       }
-      
+
       return { success: true };
     } catch (error: any) {
       console.error(`Error syncing portfolio item ${itemId} to content:`, error);
@@ -196,21 +198,23 @@ export const updateGeoIndex = functions.firestore
     const professionalId = context.params.professionalId;
     const afterData = change.after.data() || {};
     const beforeData = change.before.data() || {};
-    
+
     // Check if location has changed
-    const locationChanged = 
+    const locationChanged =
       !beforeData.location?.coordinates?.lat ||
       !beforeData.location?.coordinates?.lng ||
       !afterData.location?.coordinates?.lat ||
       !afterData.location?.coordinates?.lng ||
       beforeData.location.coordinates.lat !== afterData.location.coordinates.lat ||
       beforeData.location.coordinates.lng !== afterData.location.coordinates.lng;
-    
+
     if (!locationChanged) {
-      console.log(`Location for professional ${professionalId} has not changed, skipping geoIndex update`);
+      console.log(
+        `Location for professional ${professionalId} has not changed, skipping geoIndex update`
+      );
       return null;
     }
-    
+
     try {
       // If old location exists, remove from old geohash
       if (beforeData.location?.coordinates?.lat && beforeData.location?.coordinates?.lng) {
@@ -218,64 +222,71 @@ export const updateGeoIndex = functions.firestore
           beforeData.location.coordinates.lat,
           beforeData.location.coordinates.lng
         );
-        
+
         const oldGeoRef = db.collection('geoIndex').doc(oldGeohash);
         const oldGeoDoc = await oldGeoRef.get();
-        
+
         if (oldGeoDoc.exists) {
           const oldGeoData = oldGeoDoc.data() || {};
-          const professionalIds = (oldGeoData.professionalIds || []).filter((id: string) => id !== professionalId);
-          
+          const professionalIds = (oldGeoData.professionalIds || []).filter(
+            (id: string) => id !== professionalId
+          );
+
           if (professionalIds.length > 0) {
             await oldGeoRef.update({
               professionalIds,
-              updatedAt: FieldValue.serverTimestamp()
+              updatedAt: FieldValue.serverTimestamp(),
             });
           } else {
             await oldGeoRef.delete();
           }
-          
+
           console.log(`Removed professional ${professionalId} from geohash ${oldGeohash}`);
         }
       }
-      
+
       // If new location exists, add to new geohash
       if (afterData.location?.coordinates?.lat && afterData.location?.coordinates?.lng) {
         const newGeohash = generateGeohash(
           afterData.location.coordinates.lat,
           afterData.location.coordinates.lng
         );
-        
+
         const newGeoRef = db.collection('geoIndex').doc(newGeohash);
         const newGeoDoc = await newGeoRef.get();
-        
+
         // Get professional's services
-        const servicesSnapshot = await db.collection('professionals').doc(professionalId)
-          .collection('services').get();
-        
-        const serviceIds = servicesSnapshot.docs.map(doc => doc.id);
-        
+        const servicesSnapshot = await db
+          .collection('professionals')
+          .doc(professionalId)
+          .collection('services')
+          .get();
+
+        const serviceIds = servicesSnapshot.docs.map((doc) => doc.id);
+
         if (newGeoDoc.exists) {
           const newGeoData = newGeoDoc.data() || {};
-          const professionalIds = [...new Set([...(newGeoData.professionalIds || []), professionalId])];
+          const professionalIds = [
+            ...new Set([...(newGeoData.professionalIds || []), professionalId]),
+          ];
           const allServiceIds = [...new Set([...(newGeoData.serviceIds || []), ...serviceIds])];
-          
+
           await newGeoRef.update({
             professionalIds,
             serviceIds: allServiceIds,
-            updatedAt: FieldValue.serverTimestamp()
+            updatedAt: FieldValue.serverTimestamp(),
           });
         } else {
           await newGeoRef.set({
             professionalIds: [professionalId],
             serviceIds: serviceIds,
-            updatedAt: FieldValue.serverTimestamp()
+            updatedAt: FieldValue.serverTimestamp(),
           });
         }
-        
+
         console.log(`Added professional ${professionalId} to geohash ${newGeohash}`);
       }
-      
+
       return { success: true };
     } catch (error: any) {
       console.error(`Error updating geoIndex for professional ${professionalId}:`, error);
@@ -293,33 +304,33 @@ export const updateContentEngagement = functions.firestore
     const contentId = context.params.contentId;
     const afterData = change.after.data() || {};
     const beforeData = change.before.data() || {};
-    
+
     // Check if engagement metrics have changed
-    const engagementChanged = 
+    const engagementChanged =
       beforeData.views !== afterData.views ||
       beforeData.likes !== afterData.likes ||
       beforeData.comments !== afterData.comments;
-    
+
     if (!engagementChanged) {
       return null;
     }
-    
+
     try {
       // Calculate new engagement score
       const engagementScore = calculateEngagementScore(afterData);
-      
+
       // Update content document with new engagement score
       await change.after.ref.update({
         engagementScore,
-        updatedAt: FieldValue.serverTimestamp()
+        updatedAt: FieldValue.serverTimestamp(),
       });
-      
+
       // Update theLooks collection
       await updateTheLooks(contentId, {
         ...afterData,
-        engagementScore
+        engagementScore,
       });
-      
+
       return { success: true };
     } catch (error: any) {
       console.error(`Error updating engagement for content ${contentId}:`, error);
@@ -335,10 +346,10 @@ export const createUserActivity = functions.firestore
   .document('users/{userId}')
   .onCreate(async (snapshot, context) => {
     const userId = context.params.userId;
-    
+
     try {
       const activityRef = db.collection('userActivity').doc(`${userId}_activity`);
-      
+
       await activityRef.set({
         userId,
         viewedContent: [],
@@ -348,9 +359,9 @@ export const createUserActivity = functions.firestore
         searchHistory: [],
         categoryPreferences: {},
         lastActive: FieldValue.serverTimestamp(),
-        createdAt: FieldValue.serverTimestamp()
+        createdAt: FieldValue.serverTimestamp(),
       });
-      
+
       console.log(`Created activity document for user ${userId}`);
       return { success: true };
     } catch (error: any) {
@@ -368,30 +379,33 @@ export const createUserRecommendations = functions.firestore
   .onCreate(async (snapshot, context) => {
     const activityId = context.params.activityId;
     const userId = activityId.split('_')[0];
-    
+
     try {
       // Get top trending content
-      const trendingSnapshot = await db.collection('theLooks')
+      const trendingSnapshot = await db
+        .collection('theLooks')
         .orderBy('trendingScore', 'desc')
         .limit(20)
         .get();
-      
-      const recommendedContent = trendingSnapshot.docs.map(doc => ({
+
+      const recommendedContent = trendingSnapshot.docs.map((doc) => ({
         contentId: doc.data().contentId,
-        score: doc.data().trendingScore
+        score: doc.data().trendingScore,
       }));
-      
+
       // Create recommendations document
-      const recommendationsRef = db.collection('userRecommendations').doc(`${userId}_recommendations`);
-      
+      const recommendationsRef = db
+        .collection('userRecommendations')
+        .doc(`${userId}_recommendations`);
+
       await recommendationsRef.set({
         userId,
         recommendedContent,
         recommendedProfessionals: [],
         recommendedServices: [],
-        generatedAt: FieldValue.serverTimestamp()
+        generatedAt: FieldValue.serverTimestamp(),
       });
-      
+
       console.log(`Created recommendations for user ${userId}`);
       return { success: true };
     } catch (error: any) {
@@ -407,39 +421,43 @@ function calculateEngagementScore(data: Record<string, any>): number {
   const viewWeight = 1;
   const likeWeight = 5;
   const commentWeight = 10;
-  
+
   const views = data.views || 0;
   const likes = data.likes || 0;
   const comments = data.comments || 0;
-  
-  return (views * viewWeight) + (likes * likeWeight) + (comments * commentWeight);
+
+  return views * viewWeight + likes * likeWeight + comments * commentWeight;
 }
 
 // Helper function to update theLooks collection
-async function updateTheLooks(contentId: string, contentData: Record<string, any>): Promise<boolean> {
+async function updateTheLooks(
+  contentId: string,
+  contentData: Record<string, any>
+): Promise<boolean> {
   try {
     const looksRef = db.collection('theLooks').doc(contentId);
     const looksDoc = await looksRef.get();
-    
+
     // Calculate trending score
     // This is a simple formula that considers recency and engagement
     // You can adjust this based on your business logic
     const now = admin.firestore.Timestamp.now().toMillis();
-    const createdAt = contentData.createdAt instanceof admin.firestore.Timestamp 
-      ? contentData.createdAt.toMillis() 
-      : now;
-    
+    const createdAt =
+      contentData.createdAt instanceof admin.firestore.Timestamp
+        ? contentData.createdAt.toMillis()
+        : now;
+
     const ageInHours = (now - createdAt) / (1000 * 60 * 60);
-    const recencyFactor = Math.max(0, 1 - (ageInHours / 72)); // Decay over 3 days
-    
+    const recencyFactor = Math.max(0, 1 - ageInHours / 72); // Decay over 3 days
+
     const trendingScore = contentData.engagementScore * recencyFactor;
-    
+
     if (looksDoc.exists) {
       // Update existing document
       await looksRef.update({
         score: contentData.engagementScore,
         trendingScore,
-        updatedAt: FieldValue.serverTimestamp()
+        updatedAt: FieldValue.serverTimestamp(),
       });
     } else {
       // Create new document
@@ -447,20 +465,22 @@ async function updateTheLooks(contentId: string, contentData: Record<string, any
         contentId,
         score: contentData.engagementScore,
         trendingScore,
-        categoryId: contentData.categoryIds && contentData.categoryIds.length > 0 
-          ? contentData.categoryIds[0] 
-          : null,
-        serviceId: contentData.serviceIds && contentData.serviceIds.length > 0 
-          ? contentData.serviceIds[0] 
-          : null,
+        categoryId:
+          contentData.categoryIds && contentData.categoryIds.length > 0
+            ? contentData.categoryIds[0]
+            : null,
+        serviceId:
+          contentData.serviceIds && contentData.serviceIds.length > 0
+            ? contentData.serviceIds[0]
+            : null,
         region: contentData.location?.state || 'all',
         featuredUntil: admin.firestore.Timestamp.fromDate(
           new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days from now
         ),
-        createdAt: FieldValue.serverTimestamp()
+        createdAt: FieldValue.serverTimestamp(),
       });
     }
-    
+
     console.log(`Updated theLooks for content ${contentId}`);
     return true;
   } catch (error) {
@@ -475,17 +495,17 @@ function generateGeohash(lat: number, lng: number, precision = 5): string {
   // Convert lat and lng to integers for simplicity
   const latInt = Math.floor((lat + 90) * 1000000);
   const lngInt = Math.floor((lng + 180) * 1000000);
-  
+
   // Convert to binary strings
   const latBin = latInt.toString(2).padStart(32, '0');
   const lngBin = lngInt.toString(2).padStart(32, '0');
-  
+
   // Interleave bits
   let geohashBin = '';
   for (let i = 0; i < precision * 5; i++) {
-    geohashBin += (i % 2 === 0) ? lngBin[Math.floor(i/2)] : latBin[Math.floor(i/2)];
+    geohashBin += i % 2 === 0 ? lngBin[Math.floor(i / 2)] : latBin[Math.floor(i / 2)];
   }
-  
+
   // Convert to base32 string
   const base32Chars = '0123456789bcdefghjkmnpqrstuvwxyz';
   let geohash = '';
@@ -494,6 +514,6 @@ function generateGeohash(lat: number, lng: number, precision = 5): string {
     const index = parseInt(chunk, 2);
     geohash += base32Chars[index];
   }
-  
+
   return geohash;
 }

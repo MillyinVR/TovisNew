@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { 
-  Search, 
+import {
+  Search,
   Filter,
   Star,
   MapPin,
@@ -11,7 +11,7 @@ import {
   Shield,
   Ban,
   MessageSquare,
-  Loader2
+  Loader2,
 } from 'lucide-react';
 import { useAdminProfessionals, Professional } from '../../../hooks/useAdminProfessionals';
 
@@ -21,10 +21,11 @@ export const ProfessionalDirectory = () => {
   const { professionals, loading, error } = useAdminProfessionals(filterStatus);
 
   // Filter professionals based on search term
-  const filteredProfessionals = professionals.filter(professional => 
-    professional.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    professional.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    professional.location.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredProfessionals = professionals.filter(
+    (professional) =>
+      professional.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      professional.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      professional.location.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const [selectedProfessional, setSelectedProfessional] = useState<Professional | null>(null);
@@ -96,19 +97,34 @@ export const ProfessionalDirectory = () => {
           <table className="min-w-full divide-y divide-gray-300">
             <thead className="bg-gray-50">
               <tr>
-                <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">
+                <th
+                  scope="col"
+                  className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900"
+                >
                   Professional
                 </th>
-                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
                   Location
                 </th>
-                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
                   Rating
                 </th>
-                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
                   Status
                 </th>
-                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
                   Bookings
                 </th>
                 <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
@@ -147,13 +163,15 @@ export const ProfessionalDirectory = () => {
                     </div>
                   </td>
                   <td className="whitespace-nowrap px-3 py-4 text-sm">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      professional.status === 'active'
-                        ? 'bg-green-100 text-green-800'
-                        : professional.status === 'suspended'
-                        ? 'bg-red-100 text-red-800'
-                        : 'bg-gray-100 text-gray-800'
-                    }`}>
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        professional.status === 'active'
+                          ? 'bg-green-100 text-green-800'
+                          : professional.status === 'suspended'
+                            ? 'bg-red-100 text-red-800'
+                            : 'bg-gray-100 text-gray-800'
+                      }`}
+                    >
                       {professional.status}
                     </span>
                   </td>
@@ -207,9 +225,7 @@ export const ProfessionalDirectory = () => {
                   className="h-16 w-16 rounded-full object-cover"
                 />
                 <div>
-                  <h4 className="text-lg font-medium text-gray-900">
-                    {selectedProfessional.name}
-                  </h4>
+                  <h4 className="text-lg font-medium text-gray-900">{selectedProfessional.name}</h4>
                   <p className="text-sm text-gray-500">{selectedProfessional.type}</p>
                 </div>
               </div>

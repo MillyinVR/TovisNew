@@ -1,5 +1,5 @@
 import React from 'react';
-import { 
+import {
   LayoutDashboard,
   Users,
   Settings,
@@ -7,7 +7,7 @@ import {
   DollarSign,
   Megaphone,
   Package,
-  Calendar
+  Calendar,
 } from 'lucide-react';
 
 import { DashboardTab } from './AdminDashboardLayout';
@@ -26,7 +26,7 @@ export const AdminSidebar = ({ activeTab, onTabChange }: AdminSidebarProps) => {
     { id: 'support', label: 'Support', icon: HeartHandshake },
     { id: 'finance', label: 'Finance', icon: DollarSign },
     { id: 'marketing', label: 'Marketing', icon: Megaphone },
-    { id: 'settings', label: 'Settings', icon: Settings }
+    { id: 'settings', label: 'Settings', icon: Settings },
   ];
 
   return (
@@ -47,7 +47,9 @@ export const AdminSidebar = ({ activeTab, onTabChange }: AdminSidebarProps) => {
               >
                 <Icon
                   className={`${
-                    activeTab === item.id ? 'text-indigo-600' : 'text-gray-400 group-hover:text-gray-500'
+                    activeTab === item.id
+                      ? 'text-indigo-600'
+                      : 'text-gray-400 group-hover:text-gray-500'
                   } mr-3 h-5 w-5`}
                 />
                 {item.label}

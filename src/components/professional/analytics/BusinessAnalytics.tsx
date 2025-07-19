@@ -1,5 +1,15 @@
 import React from 'react';
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 import { DollarSign, Users, Star, TrendingUp, Calendar, Package } from 'lucide-react';
 
 export const BusinessAnalytics = () => {
@@ -10,7 +20,7 @@ export const BusinessAnalytics = () => {
     { month: 'Mar', revenue: 6100, bookings: 58 },
     { month: 'Apr', revenue: 5800, bookings: 54 },
     { month: 'May', revenue: 6500, bookings: 62 },
-    { month: 'Jun', revenue: 7200, bookings: 68 }
+    { month: 'Jun', revenue: 7200, bookings: 68 },
   ];
 
   const metrics = [
@@ -19,35 +29,35 @@ export const BusinessAnalytics = () => {
       value: '$35,300',
       change: '+12.5%',
       icon: DollarSign,
-      color: 'text-green-500'
+      color: 'text-green-500',
     },
     {
       label: 'Total Clients',
       value: '339',
       change: '+8.2%',
       icon: Users,
-      color: 'text-blue-500'
+      color: 'text-blue-500',
     },
     {
       label: 'Average Rating',
       value: '4.9',
       change: '+0.2',
       icon: Star,
-      color: 'text-yellow-500'
+      color: 'text-yellow-500',
     },
     {
       label: 'Retention Rate',
       value: '85%',
       change: '+3%',
       icon: TrendingUp,
-      color: 'text-purple-500'
-    }
+      color: 'text-purple-500',
+    },
   ];
 
   const popularServices = [
     { name: 'Bridal Makeup', bookings: 28, revenue: 5600 },
     { name: 'Natural Glam', bookings: 45, revenue: 4500 },
-    { name: 'Editorial', bookings: 15, revenue: 3750 }
+    { name: 'Editorial', bookings: 15, revenue: 3750 },
   ];
 
   return (
@@ -65,16 +75,14 @@ export const BusinessAnalytics = () => {
                   </div>
                   <div className="ml-5 w-0 flex-1">
                     <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">
-                        {metric.label}
-                      </dt>
+                      <dt className="text-sm font-medium text-gray-500 truncate">{metric.label}</dt>
                       <dd className="flex items-baseline">
-                        <div className="text-2xl font-semibold text-gray-900">
-                          {metric.value}
-                        </div>
-                        <div className={`ml-2 flex items-baseline text-sm font-semibold ${
-                          metric.change.startsWith('+') ? 'text-green-600' : 'text-red-600'
-                        }`}>
+                        <div className="text-2xl font-semibold text-gray-900">{metric.value}</div>
+                        <div
+                          className={`ml-2 flex items-baseline text-sm font-semibold ${
+                            metric.change.startsWith('+') ? 'text-green-600' : 'text-red-600'
+                          }`}
+                        >
                           {metric.change}
                         </div>
                       </dd>

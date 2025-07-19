@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { 
-  AlertTriangle, 
-  MessageSquare, 
-  Clock, 
-  CheckCircle, 
-  XCircle, 
-  ArrowUp, 
-  Eye, 
+import {
+  AlertTriangle,
+  MessageSquare,
+  Clock,
+  CheckCircle,
+  XCircle,
+  ArrowUp,
+  Eye,
   FileText,
-  Mail
+  Mail,
 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -48,11 +48,8 @@ export const ComplaintsManagement = () => {
       priority: 'high',
       description: 'Service not as described, requesting refund',
       category: 'Service Quality',
-      notes: [
-        'Initial contact made with client',
-        'Professional response requested'
-      ],
-      attachments: ['photo1.jpg', 'receipt.pdf']
+      notes: ['Initial contact made with client', 'Professional response requested'],
+      attachments: ['photo1.jpg', 'receipt.pdf'],
     },
     {
       id: '2',
@@ -65,8 +62,8 @@ export const ComplaintsManagement = () => {
       priority: 'medium',
       description: 'Appointment started 30 minutes late',
       category: 'Scheduling',
-      notes: ['Professional provided explanation for delay']
-    }
+      notes: ['Professional provided explanation for delay'],
+    },
   ]);
 
   const [selectedComplaint, setSelectedComplaint] = useState<Complaint | null>(null);
@@ -75,21 +72,21 @@ export const ComplaintsManagement = () => {
   const [resolution, setResolution] = useState('');
 
   const handleStatusChange = (complaintId: string, newStatus: Complaint['status']) => {
-    setComplaints(complaints.map(complaint => 
-      complaint.id === complaintId 
-        ? { ...complaint, status: newStatus }
-        : complaint
-    ));
+    setComplaints(
+      complaints.map((complaint) =>
+        complaint.id === complaintId ? { ...complaint, status: newStatus } : complaint
+      )
+    );
   };
 
   const handleAddNote = () => {
     if (!selectedComplaint || !newNote.trim()) return;
 
-    const updatedComplaints = complaints.map(complaint =>
+    const updatedComplaints = complaints.map((complaint) =>
       complaint.id === selectedComplaint.id
         ? {
             ...complaint,
-            notes: [...(complaint.notes || []), newNote.trim()]
+            notes: [...(complaint.notes || []), newNote.trim()],
           }
         : complaint
     );
@@ -101,12 +98,12 @@ export const ComplaintsManagement = () => {
   const handleResolveComplaint = () => {
     if (!selectedComplaint || !resolution.trim()) return;
 
-    const updatedComplaints = complaints.map(complaint =>
+    const updatedComplaints = complaints.map((complaint) =>
       complaint.id === selectedComplaint.id
         ? {
             ...complaint,
             status: 'resolved',
-            resolution: resolution.trim()
+            resolution: resolution.trim(),
           }
         : complaint
     );
@@ -148,19 +145,34 @@ export const ComplaintsManagement = () => {
           <table className="min-w-full divide-y divide-gray-300">
             <thead className="bg-gray-50">
               <tr>
-                <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">
+                <th
+                  scope="col"
+                  className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900"
+                >
                   Details
                 </th>
-                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
                   Service
                 </th>
-                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
                   Category
                 </th>
-                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
                   Status
                 </th>
-                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
                   Priority
                 </th>
                 <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
@@ -191,27 +203,31 @@ export const ComplaintsManagement = () => {
                     {complaint.category}
                   </td>
                   <td className="whitespace-nowrap px-3 py-4 text-sm">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      complaint.status === 'resolved'
-                        ? 'bg-green-100 text-green-800'
-                        : complaint.status === 'escalated'
-                        ? 'bg-red-100 text-red-800'
-                        : complaint.status === 'in_progress'
-                        ? 'bg-blue-100 text-blue-800'
-                        : 'bg-yellow-100 text-yellow-800'
-                    }`}>
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        complaint.status === 'resolved'
+                          ? 'bg-green-100 text-green-800'
+                          : complaint.status === 'escalated'
+                            ? 'bg-red-100 text-red-800'
+                            : complaint.status === 'in_progress'
+                              ? 'bg-blue-100 text-blue-800'
+                              : 'bg-yellow-100 text-yellow-800'
+                      }`}
+                    >
                       {getStatusIcon(complaint.status)}
                       <span className="ml-1 capitalize">{complaint.status.replace('_', ' ')}</span>
                     </span>
                   </td>
                   <td className="whitespace-nowrap px-3 py-4 text-sm">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      complaint.priority === 'high'
-                        ? 'bg-red-100 text-red-800'
-                        : complaint.priority === 'medium'
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-green-100 text-green-800'
-                    }`}>
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        complaint.priority === 'high'
+                          ? 'bg-red-100 text-red-800'
+                          : complaint.priority === 'medium'
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : 'bg-green-100 text-green-800'
+                      }`}
+                    >
                       <AlertTriangle className="h-3 w-3 mr-1" />
                       {complaint.priority}
                     </span>

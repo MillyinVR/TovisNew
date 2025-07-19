@@ -1,6 +1,6 @@
 import { Timestamp } from 'firebase/firestore';
 
-export type ProfessionalType = 
+export type ProfessionalType =
   | 'makeup_artist'
   | 'cosmetologist'
   | 'barber'
@@ -8,7 +8,7 @@ export type ProfessionalType =
   | 'manicurist'
   | 'massage_therapist';
 
-export type VerificationStatus = 
+export type VerificationStatus =
   | 'pending'
   | 'approved'
   | 'rejected'
@@ -98,7 +98,7 @@ export const PROFESSIONAL_TYPES: { [key in ProfessionalType]: string } = {
   barber: 'Barber',
   esthetician: 'Esthetician',
   manicurist: 'Manicurist',
-  massage_therapist: 'Massage Therapist'
+  massage_therapist: 'Massage Therapist',
 };
 
 export const MAKEUP_ARTIST_VERIFICATION_TYPES: { [key in MakeupArtistVerificationType]: string } = {
@@ -110,7 +110,7 @@ export const MAKEUP_ARTIST_VERIFICATION_TYPES: { [key in MakeupArtistVerificatio
   linkedin_profile: 'LinkedIn Public Profile',
   salon_listing: 'URL Listing on Salon/Concierge Site',
   reference_letter: 'Letter of Reference from Salon',
-  diploma_certificate: 'Diploma or Certificate'
+  diploma_certificate: 'Diploma or Certificate',
 };
 
 export interface Location {
@@ -217,7 +217,7 @@ export interface ProfessionalProfile {
     [day: string]: {
       open: string;
       close: string;
-    }
+    };
   };
   lastUpdated?: string;
   rating?: number;
@@ -228,14 +228,54 @@ export interface ProfessionalProfile {
 }
 
 export const US_STATES = [
-  'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',
-  'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia',
-  'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa',
-  'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland',
-  'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri',
-  'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey',
-  'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio',
-  'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina',
-  'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
-  'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
+  'Alabama',
+  'Alaska',
+  'Arizona',
+  'Arkansas',
+  'California',
+  'Colorado',
+  'Connecticut',
+  'Delaware',
+  'Florida',
+  'Georgia',
+  'Hawaii',
+  'Idaho',
+  'Illinois',
+  'Indiana',
+  'Iowa',
+  'Kansas',
+  'Kentucky',
+  'Louisiana',
+  'Maine',
+  'Maryland',
+  'Massachusetts',
+  'Michigan',
+  'Minnesota',
+  'Mississippi',
+  'Missouri',
+  'Montana',
+  'Nebraska',
+  'Nevada',
+  'New Hampshire',
+  'New Jersey',
+  'New Mexico',
+  'New York',
+  'North Carolina',
+  'North Dakota',
+  'Ohio',
+  'Oklahoma',
+  'Oregon',
+  'Pennsylvania',
+  'Rhode Island',
+  'South Carolina',
+  'South Dakota',
+  'Tennessee',
+  'Texas',
+  'Utah',
+  'Vermont',
+  'Virginia',
+  'Washington',
+  'West Virginia',
+  'Wisconsin',
+  'Wyoming',
 ];

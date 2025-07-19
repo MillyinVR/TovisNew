@@ -4,7 +4,7 @@ export enum AppointmentStatus {
   PREBOOKED = 'PREBOOKED',
   SCHEDULED = 'SCHEDULED',
   COMPLETED = 'COMPLETED',
-  CANCELLED = 'CANCELLED'
+  CANCELLED = 'CANCELLED',
 }
 
 export interface TimeSlot {

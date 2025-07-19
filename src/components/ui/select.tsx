@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { cn } from '../../lib/utils';
 
-export interface SelectProps
-  extends React.SelectHTMLAttributes<HTMLSelectElement> {
+export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   options: Array<{
     value: string;
     label: string;
@@ -12,14 +11,17 @@ export interface SelectProps
 
 const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
   ({ className, options, ...props }, ref) => {
-    const groupedOptions = options.reduce((acc, option) => {
-      const group = option.group || 'default';
-      if (!acc[group]) {
-        acc[group] = [];
-      }
-      acc[group].push(option);
-      return acc;
-    }, {} as Record<string, typeof options>);
+    const groupedOptions = options.reduce(
+      (acc, option) => {
+        const group = option.group || 'default';
+        if (!acc[group]) {
+          acc[group] = [];
+        }
+        acc[group].push(option);
+        return acc;
+      },
+      {} as Record<string, typeof options>
+    );
 
     return (
       <select

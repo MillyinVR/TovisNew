@@ -50,9 +50,7 @@ const PublicProfile: React.FC<PublicProfileProps> = ({ userId }) => {
             <AvatarFallback>{userProfile?.displayName?.[0]}</AvatarFallback>
           </Avatar>
           <div className="flex-1">
-            <h1 className="text-2xl font-bold text-gray-900">
-              {userProfile?.displayName}
-            </h1>
+            <h1 className="text-2xl font-bold text-gray-900">{userProfile?.displayName}</h1>
             <p className="text-gray-500">{userProfile?.bio}</p>
             <div className="mt-2 flex space-x-4">
               <Button variant="ghost" onClick={() => setShowMap(!showMap)}>
@@ -86,7 +84,7 @@ const PublicProfile: React.FC<PublicProfileProps> = ({ userId }) => {
           <TabsTrigger value="services">Services</TabsTrigger>
         </TabsList>
         <TabsContent value="media">
-          <MediaGrid 
+          <MediaGrid
             mediaItems={mediaItems}
             onSelect={setSelectedMedia}
             onLike={handleLike}
@@ -96,9 +94,7 @@ const PublicProfile: React.FC<PublicProfileProps> = ({ userId }) => {
         </TabsContent>
         <TabsContent value="services">
           {/* Service History Integration */}
-          <div className="mt-4">
-            {/* Service history component will be rendered here */}
-          </div>
+          <div className="mt-4">{/* Service history component will be rendered here */}</div>
         </TabsContent>
       </Tabs>
 
@@ -130,10 +126,7 @@ const PublicProfile: React.FC<PublicProfileProps> = ({ userId }) => {
               </div>
               <div className="space-y-4">
                 <div className="flex space-x-4">
-                  <Button
-                    variant="ghost"
-                    onClick={() => handleLike(selectedMedia.id)}
-                  >
+                  <Button variant="ghost" onClick={() => handleLike(selectedMedia.id)}>
                     <Heart className="h-4 w-4 mr-2" />
                     {selectedMedia.likes} Likes
                   </Button>
@@ -149,10 +142,7 @@ const PublicProfile: React.FC<PublicProfileProps> = ({ userId }) => {
                     <MessageCircle className="h-4 w-4 mr-2" />
                     Comment
                   </Button>
-                  <Button
-                    variant="ghost"
-                    onClick={() => handleShare(selectedMedia.id)}
-                  >
+                  <Button variant="ghost" onClick={() => handleShare(selectedMedia.id)}>
                     <Share2 className="h-4 w-4 mr-2" />
                     Share
                   </Button>

@@ -22,7 +22,7 @@ export const DisputeResolution = () => {
       amount: 250,
       date: '2024-03-15T10:30:00Z',
       status: 'open',
-      reason: 'Service quality issues'
+      reason: 'Service quality issues',
     },
     {
       id: '2',
@@ -32,8 +32,8 @@ export const DisputeResolution = () => {
       amount: 85,
       date: '2024-03-14T15:45:00Z',
       status: 'mediation',
-      reason: 'Pricing dispute'
-    }
+      reason: 'Pricing dispute',
+    },
   ]);
 
   return (
@@ -59,13 +59,15 @@ export const DisputeResolution = () => {
                   <Clock className="h-4 w-4 mr-1" />
                   {new Date(dispute.date).toLocaleDateString()}
                 </span>
-                <span className={`flex items-center text-sm ${
-                  dispute.status === 'resolved'
-                    ? 'text-green-600'
-                    : dispute.status === 'mediation'
-                    ? 'text-blue-600'
-                    : 'text-yellow-600'
-                }`}>
+                <span
+                  className={`flex items-center text-sm ${
+                    dispute.status === 'resolved'
+                      ? 'text-green-600'
+                      : dispute.status === 'mediation'
+                        ? 'text-blue-600'
+                        : 'text-yellow-600'
+                  }`}
+                >
                   {dispute.status === 'mediation' && <MessageSquare className="h-4 w-4 mr-1" />}
                   {dispute.status === 'open' && <AlertTriangle className="h-4 w-4 mr-1" />}
                   {dispute.status}

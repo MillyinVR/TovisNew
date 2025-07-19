@@ -13,7 +13,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
   label,
   onFileSelect,
   accept = 'image/*,.pdf',
-  required = false
+  required = false,
 }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onFileSelect(e.target.files?.[0] || null);

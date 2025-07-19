@@ -2,21 +2,8 @@ import React, { useState } from 'react';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Calendar, Clock, RefreshCw, Settings } from 'lucide-react';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter
-} from '../ui/card';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '../ui/select';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 interface CalendarConnectionProps {
   calendarSync: boolean;
@@ -31,7 +18,7 @@ export const CalendarConnection: React.FC<CalendarConnectionProps> = ({
   calendarProvider,
   onConnect,
   onDisconnect,
-  lastSynced
+  lastSynced,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [syncFrequency, setSyncFrequency] = useState('15');
@@ -72,18 +59,12 @@ export const CalendarConnection: React.FC<CalendarConnectionProps> = ({
               {calendarSync ? 'Connected' : 'Not Connected'}
             </Badge>
             {calendarProvider && (
-              <span className="text-sm text-muted-foreground">
-                ({calendarProvider})
-              </span>
+              <span className="text-sm text-muted-foreground">({calendarProvider})</span>
             )}
           </div>
 
           {calendarSync ? (
-            <Button
-              variant="destructive"
-              onClick={handleDisconnect}
-              disabled={isLoading}
-            >
+            <Button variant="destructive" onClick={handleDisconnect} disabled={isLoading}>
               Disconnect
             </Button>
           ) : (
@@ -102,11 +83,7 @@ export const CalendarConnection: React.FC<CalendarConnectionProps> = ({
               >
                 Connect Outlook
               </Button>
-              <Button
-                variant="outline"
-                onClick={() => handleConnect('apple')}
-                disabled={isLoading}
-              >
+              <Button variant="outline" onClick={() => handleConnect('apple')} disabled={isLoading}>
                 Connect Apple
               </Button>
             </div>
@@ -126,10 +103,7 @@ export const CalendarConnection: React.FC<CalendarConnectionProps> = ({
             <div className="flex items-center gap-2">
               <Settings className="w-4 h-4" />
               <span>Sync frequency:</span>
-              <Select
-                value={syncFrequency}
-                onValueChange={setSyncFrequency}
-              >
+              <Select value={syncFrequency} onValueChange={setSyncFrequency}>
                 <SelectTrigger className="w-[100px]">
                   <SelectValue placeholder="Frequency" />
                 </SelectTrigger>

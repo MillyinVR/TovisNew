@@ -12,7 +12,7 @@ interface LicenseExpirationWarningProps {
 
 export const LicenseExpirationWarning: React.FC<LicenseExpirationWarningProps> = ({
   licenseExpirationDate,
-  userId
+  userId,
 }) => {
   const [showUpdateForm, setShowUpdateForm] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
@@ -36,23 +36,29 @@ export const LicenseExpirationWarning: React.FC<LicenseExpirationWarningProps> =
     fetchVerificationStatus();
   }, [userId]);
 
-  if (!isExpiring || !daysUntilExpiration || isDismissed || verificationStatus === 'update_pending') {
+  if (
+    !isExpiring ||
+    !daysUntilExpiration ||
+    isDismissed ||
+    verificationStatus === 'update_pending'
+  ) {
     return null;
   }
 
   return (
     <>
-      <div 
+      <div
         className="bg-yellow-50 border-l-4 border-yellow-400 p-2 flex items-center justify-between cursor-pointer hover:bg-yellow-100 transition-colors"
         onClick={() => setShowUpdateForm(true)}
       >
         <div className="flex items-center">
           <AlertTriangle className="h-5 w-5 text-yellow-400 mr-2" />
           <p className="text-sm text-yellow-700">
-            License expires in {daysUntilExpiration} day{daysUntilExpiration !== 1 ? 's' : ''} - Click to update
+            License expires in {daysUntilExpiration} day{daysUntilExpiration !== 1 ? 's' : ''} -
+            Click to update
           </p>
         </div>
-        <button 
+        <button
           className="text-yellow-400 hover:text-yellow-500"
           onClick={(e) => {
             e.stopPropagation();
@@ -66,10 +72,7 @@ export const LicenseExpirationWarning: React.FC<LicenseExpirationWarningProps> =
       {showUpdateForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="max-w-lg w-full mx-4">
-            <LicenseUpdateForm 
-              onClose={() => setShowUpdateForm(false)}
-              userId={userId}
-            />
+            <LicenseUpdateForm onClose={() => setShowUpdateForm(false)} userId={userId} />
           </div>
         </div>
       )}

@@ -23,7 +23,7 @@ export const ClientDetailsModal: React.FC<ClientDetailsModalProps> = ({
   noteType,
   onNoteTypeChange,
   noteVisibility,
-  onNoteVisibilityChange
+  onNoteVisibilityChange,
 }) => {
   return (
     <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
@@ -62,12 +62,14 @@ export const ClientDetailsModal: React.FC<ClientDetailsModalProps> = ({
           <div className="bg-gray-50 p-4 rounded-lg">
             <h4 className="text-sm font-medium text-gray-900 mb-2">Service History</h4>
             <div className="space-y-2 text-sm text-gray-700">
-              {client.serviceHistory.map(service => (
+              {client.serviceHistory.map((service) => (
                 <div key={service.id} className="flex items-start">
                   <Calendar className="h-4 w-4 text-gray-400 mt-1" />
                   <div className="ml-2">
                     {service.serviceName}
-                    <div className="text-gray-400 text-xs">{new Date(service.date).toLocaleDateString()}</div>
+                    <div className="text-gray-400 text-xs">
+                      {new Date(service.date).toLocaleDateString()}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -117,7 +119,7 @@ export const ClientDetailsModal: React.FC<ClientDetailsModalProps> = ({
           </div>
 
           <div className="space-y-2">
-            {client.professionalNotes.map(note => (
+            {client.professionalNotes.map((note) => (
               <div key={note.id} className="flex items-start bg-white p-3 rounded-md shadow-sm">
                 {note.type === 'warning' && <AlertTriangle className="h-4 w-4 text-red-500 mt-1" />}
                 {note.type === 'medical' && <FileText className="h-4 w-4 text-yellow-500 mt-1" />}
@@ -125,7 +127,8 @@ export const ClientDetailsModal: React.FC<ClientDetailsModalProps> = ({
                 <div className="ml-2 text-sm">
                   {note.note}
                   <div className="text-xs text-gray-400">
-                    {note.professionalName} • {new Date(note.date).toLocaleDateString()} • {note.visibility}
+                    {note.professionalName} • {new Date(note.date).toLocaleDateString()} •{' '}
+                    {note.visibility}
                   </div>
                 </div>
               </div>

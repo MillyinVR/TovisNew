@@ -22,15 +22,15 @@ const BeautyCapture: React.FC<BeautyCaptureProps> = ({ onCapture, instructions }
 
   const requestCameraPermission = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { 
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
           facingMode: 'environment',
           width: { ideal: 1280 },
-          height: { ideal: 720 }
-        }, 
-        audio: false 
+          height: { ideal: 720 },
+        },
+        audio: false,
       });
-      
+
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         setHasPermission(true);
@@ -39,13 +39,15 @@ const BeautyCapture: React.FC<BeautyCaptureProps> = ({ onCapture, instructions }
     } catch (err: any) {
       console.error('Camera setup error:', err);
       if (err.name === 'NotAllowedError') {
-        setError('Camera access was denied. Please grant permission through your browser settings.');
+        setError(
+          'Camera access was denied. Please grant permission through your browser settings.'
+        );
       } else if (err.name === 'NotFoundError') {
         setError('No camera found on your device.');
       } else if (err.name === 'NotReadableError') {
         setError('Camera is already in use by another application.');
       } else {
-        setError('Unable to access camera. Please ensure you\'re using HTTPS or localhost.');
+        setError("Unable to access camera. Please ensure you're using HTTPS or localhost.");
       }
       setHasPermission(false);
     }
@@ -53,7 +55,7 @@ const BeautyCapture: React.FC<BeautyCaptureProps> = ({ onCapture, instructions }
 
   useEffect(() => {
     requestCameraPermission();
-    
+
     return () => {
       if (videoRef.current?.srcObject) {
         const stream = videoRef.current.srcObject as MediaStream;
@@ -77,7 +79,7 @@ const BeautyCapture: React.FC<BeautyCaptureProps> = ({ onCapture, instructions }
         ctx.drawImage(videoRef.current, 0, 0);
         const imageData = {
           uri: canvas.toDataURL('image/jpeg'),
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
         };
         onCapture(imageData);
       }
@@ -93,7 +95,7 @@ const BeautyCapture: React.FC<BeautyCaptureProps> = ({ onCapture, instructions }
         >
           <ArrowLeft className="w-6 h-6 text-gray-900" />
         </button>
-        
+
         <div className="flex-1 flex items-center justify-center p-8">
           <p className="text-gray-600">Requesting camera access...</p>
         </div>
@@ -114,19 +116,15 @@ const BeautyCapture: React.FC<BeautyCaptureProps> = ({ onCapture, instructions }
         >
           <ArrowLeft className="w-6 h-6 text-gray-900" />
         </button>
-        
+
         <div className="flex-1 p-4 max-w-lg mx-auto">
-        <Alert variant="destructive" className="mb-4">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription className="ml-6">
-            {error}
-          </AlertDescription>
-        </Alert>
           <Alert variant="destructive" className="mb-4">
             <AlertCircle className="h-4 w-4" />
-            <AlertDescription className="ml-6">
-              {error}
-            </AlertDescription>
+            <AlertDescription className="ml-6">{error}</AlertDescription>
+          </Alert>
+          <Alert variant="destructive" className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription className="ml-6">{error}</AlertDescription>
           </Alert>
           <button
             onClick={retryAccess}
@@ -155,34 +153,29 @@ const BeautyCapture: React.FC<BeautyCaptureProps> = ({ onCapture, instructions }
 
       {/* Main Content */}
       <div className="flex-1 relative w-full max-w-lg mx-auto pt-16 pb-24">
-      <div className="relative aspect-video bg-gray-900 rounded-lg overflow-hidden">
-        <video
-          ref={videoRef}
-          autoPlay
-          playsInline
-          className="w-full h-full object-cover"
-        />
-        
-        {/* Composition Grid Overlay */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="w-full h-full grid grid-cols-3 grid-rows-3">
-            {[...Array(9)].map((_, i) => (
-              <div key={i} className="border border-white/20" />
-            ))}
+        <div className="relative aspect-video bg-gray-900 rounded-lg overflow-hidden">
+          <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" />
+
+          {/* Composition Grid Overlay */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="w-full h-full grid grid-cols-3 grid-rows-3">
+              {[...Array(9)].map((_, i) => (
+                <div key={i} className="border border-white/20" />
+              ))}
+            </div>
+          </div>
+
+          {/* Controls */}
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center gap-4">
+            <button
+              onClick={captureImage}
+              className="rounded-full p-4 bg-white hover:bg-gray-100 transition-colors"
+            >
+              <Camera className="w-8 h-8 text-gray-900" />
+            </button>
           </div>
         </div>
-
-        {/* Controls */}
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center gap-4">
-          <button
-            onClick={captureImage}
-            className="rounded-full p-4 bg-white hover:bg-gray-100 transition-colors"
-          >
-            <Camera className="w-8 h-8 text-gray-900" />
-          </button>
-        </div>
-      </div>
-      <p className="mt-2 text-sm text-gray-600 text-center">{instructions}</p>
+        <p className="mt-2 text-sm text-gray-600 text-center">{instructions}</p>
       </div>
 
       {/* Footer */}

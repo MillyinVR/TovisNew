@@ -8,8 +8,8 @@ export interface LightingAnalysis {
 
 export interface FaceDetection {
   count: number;
-  locations: Array<{x: number, y: number, width: number, height: number}>;
-  landmarks: Array<{type: string, x: number, y: number}>;
+  locations: Array<{ x: number; y: number; width: number; height: number }>;
+  landmarks: Array<{ type: string; x: number; y: number }>;
   attributes: {
     age: number;
     gender: string;

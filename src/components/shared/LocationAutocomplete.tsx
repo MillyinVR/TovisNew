@@ -2,12 +2,19 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Search } from 'lucide-react';
 
 interface LocationAutocompleteProps {
-  onLocationSelect: (location: { address: string; coordinates: { lat: number; lng: number } }) => void;
+  onLocationSelect: (location: {
+    address: string;
+    coordinates: { lat: number; lng: number };
+  }) => void;
   initialValue?: string;
   className?: string;
 }
 
-export const LocationAutocomplete = ({ onLocationSelect, initialValue = '', className = '' }: LocationAutocompleteProps) => {
+export const LocationAutocomplete = ({
+  onLocationSelect,
+  initialValue = '',
+  className = '',
+}: LocationAutocompleteProps) => {
   const [inputValue, setInputValue] = useState(initialValue);
   const autoCompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -15,7 +22,9 @@ export const LocationAutocomplete = ({ onLocationSelect, initialValue = '', clas
   useEffect(() => {
     const loadGoogleMapsScript = () => {
       const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&libraries=places`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${
+        import.meta.env.VITE_GOOGLE_MAPS_API_KEY
+      }&libraries=places`;
       script.async = true;
       script.defer = true;
       document.head.appendChild(script);
@@ -25,7 +34,7 @@ export const LocationAutocomplete = ({ onLocationSelect, initialValue = '', clas
           autoCompleteRef.current = new google.maps.places.Autocomplete(inputRef.current, {
             types: ['address'],
             componentRestrictions: { country: 'us' },
-            fields: ['formatted_address', 'geometry']
+            fields: ['formatted_address', 'geometry'],
           });
 
           autoCompleteRef.current.addListener('place_changed', () => {
@@ -35,8 +44,8 @@ export const LocationAutocomplete = ({ onLocationSelect, initialValue = '', clas
                 address: place.formatted_address,
                 coordinates: {
                   lat: place.geometry.location.lat(),
-                  lng: place.geometry.location.lng()
-                }
+                  lng: place.geometry.location.lng(),
+                },
               });
               setInputValue(place.formatted_address);
             }
@@ -51,7 +60,7 @@ export const LocationAutocomplete = ({ onLocationSelect, initialValue = '', clas
       autoCompleteRef.current = new google.maps.places.Autocomplete(inputRef.current, {
         types: ['address'],
         componentRestrictions: { country: 'us' },
-        fields: ['formatted_address', 'geometry']
+        fields: ['formatted_address', 'geometry'],
       });
     }
 

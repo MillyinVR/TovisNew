@@ -1,13 +1,13 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { db } from '../lib/firebase';
-import { 
-  collection, 
-  query, 
-  where, 
-  orderBy, 
-  onSnapshot, 
-  addDoc, 
-  serverTimestamp 
+import {
+  collection,
+  query,
+  where,
+  orderBy,
+  onSnapshot,
+  addDoc,
+  serverTimestamp,
 } from 'firebase/firestore';
 import { useAuth } from './AuthContext';
 
@@ -41,13 +41,13 @@ type MessagingContextType = {
   markMessagesAsRead: (conversationId: string, userId: string) => void;
 };
 
-  const MessagingContext = createContext<MessagingContextType>({
-    messages: [],
-    conversations: [],
-    sendMessage: async () => {},
-    getConversation: () => [],
-    markMessagesAsRead: () => {}
-  });
+const MessagingContext = createContext<MessagingContextType>({
+  messages: [],
+  conversations: [],
+  sendMessage: async () => {},
+  getConversation: () => [],
+  markMessagesAsRead: () => {},
+});
 
 export function MessagingProvider({ children }: { children: React.ReactNode }) {
   const { currentUser } = useAuth();
@@ -63,10 +63,10 @@ export function MessagingProvider({ children }: { children: React.ReactNode }) {
     );
 
     const unsubscribe = onSnapshot(messagesQuery, (snapshot) => {
-      const messagesData = snapshot.docs.map(doc => ({
+      const messagesData = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
-        timestamp: doc.data().timestamp.toDate()
+        timestamp: doc.data().timestamp.toDate(),
       })) as Message[];
       setMessages(messagesData);
     });
@@ -88,45 +88,51 @@ export function MessagingProvider({ children }: { children: React.ReactNode }) {
       content: message.content,
       timestamp: serverTimestamp(),
       read: false,
-      participants: [message.senderId, message.conversationId]
+      participants: [message.senderId, message.conversationId],
     });
   };
 
   const getConversation = (recipientId: string) => {
-    return messages.filter(message => 
-      (message.senderId === currentUser?.uid && message.recipientId === recipientId) ||
-      (message.senderId === recipientId && message.recipientId === currentUser?.uid)
+    return messages.filter(
+      (message) =>
+        (message.senderId === currentUser?.uid && message.recipientId === recipientId) ||
+        (message.senderId === recipientId && message.recipientId === currentUser?.uid)
     );
   };
 
   const markMessagesAsRead = async (conversationId: string, userId: string) => {
     if (!currentUser?.uid) return;
-    
+
     // Update all messages in the conversation for this user
-    const conversationMessages = messages.filter(message =>
-      (message.senderId === conversationId && message.recipientId === currentUser.uid) ||
-      (message.senderId === currentUser.uid && message.recipientId === conversationId)
+    const conversationMessages = messages.filter(
+      (message) =>
+        (message.senderId === conversationId && message.recipientId === currentUser.uid) ||
+        (message.senderId === currentUser.uid && message.recipientId === conversationId)
     );
-    
+
     // TODO: Implement Firestore update to mark messages as read
     // This would require a batch update to mark all relevant messages as read
     // For now, we'll just update the local state
-    setMessages(prevMessages => prevMessages.map(message => {
-      if (message.recipientId === currentUser.uid && !message.read) {
-        return { ...message, read: true };
-      }
-      return message;
-    }));
+    setMessages((prevMessages) =>
+      prevMessages.map((message) => {
+        if (message.recipientId === currentUser.uid && !message.read) {
+          return { ...message, read: true };
+        }
+        return message;
+      })
+    );
   };
 
   return (
-    <MessagingContext.Provider value={{ 
-      messages, 
-      conversations: [], 
-      sendMessage, 
-      getConversation, 
-      markMessagesAsRead 
-    }}>
+    <MessagingContext.Provider
+      value={{
+        messages,
+        conversations: [],
+        sendMessage,
+        getConversation,
+        markMessagesAsRead,
+      }}
+    >
       {children}
     </MessagingContext.Provider>
   );

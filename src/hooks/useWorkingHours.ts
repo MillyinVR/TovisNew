@@ -9,7 +9,7 @@ import {
   getBlockedTimeSlots,
   saveBlockedTimeSlot,
   updateBlockedTimeSlot,
-  deleteBlockedTimeSlot
+  deleteBlockedTimeSlot,
 } from '../lib/api/workingHours';
 import { calendarService } from '../lib/api/calendar';
 
@@ -54,7 +54,7 @@ export const useWorkingHours = () => {
       setError(null);
 
       console.log('Loading working hours for professional:', currentUser.uid);
-      
+
       try {
         // Load working hours
         console.log('Fetching working hours from Firestore...');
@@ -84,7 +84,7 @@ export const useWorkingHours = () => {
       } catch (blockedSlotsError) {
         console.error('Error loading blocked time slots:', blockedSlotsError);
       }
-      
+
       try {
         // Update available time slots in the backend
         console.log('Updating available time slots in the backend...');
@@ -107,162 +107,175 @@ export const useWorkingHours = () => {
   }, [currentUser?.uid, workingHours, customWorkingHours, blockedTimeSlots]);
 
   // Save working hours
-  const updateWorkingHours = useCallback(async (hours: WorkingHours) => {
-    if (!currentUser?.uid) return;
+  const updateWorkingHours = useCallback(
+    async (hours: WorkingHours) => {
+      if (!currentUser?.uid) return;
 
-    try {
-      setLoading(true);
-      setError(null);
+      try {
+        setLoading(true);
+        setError(null);
 
-      await saveWorkingHours(currentUser.uid, hours);
-      setWorkingHours(hours);
-      
-      // Update available time slots in the backend
-      await calendarService.updateAvailableTimeSlots(
-        currentUser.uid,
-        hours,
-        customWorkingHours,
-        blockedTimeSlots
-      );
-    } catch (err) {
-      console.error('Error saving working hours:', err);
-      setError(err instanceof Error ? err : new Error('Failed to save working hours'));
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [currentUser?.uid, customWorkingHours, blockedTimeSlots]);
+        await saveWorkingHours(currentUser.uid, hours);
+        setWorkingHours(hours);
+
+        // Update available time slots in the backend
+        await calendarService.updateAvailableTimeSlots(
+          currentUser.uid,
+          hours,
+          customWorkingHours,
+          blockedTimeSlots
+        );
+      } catch (err) {
+        console.error('Error saving working hours:', err);
+        setError(err instanceof Error ? err : new Error('Failed to save working hours'));
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [currentUser?.uid, customWorkingHours, blockedTimeSlots]
+  );
 
   // Save custom working hours
-  const updateCustomWorkingHours = useCallback(async (hours: CustomWorkingHours[]) => {
-    if (!currentUser?.uid) return;
+  const updateCustomWorkingHours = useCallback(
+    async (hours: CustomWorkingHours[]) => {
+      if (!currentUser?.uid) return;
 
-    try {
-      setLoading(true);
-      setError(null);
+      try {
+        setLoading(true);
+        setError(null);
 
-      await saveCustomWorkingHours(currentUser.uid, hours);
-      setCustomWorkingHours(hours);
-      
-      // Update available time slots in the backend
-      await calendarService.updateAvailableTimeSlots(
-        currentUser.uid,
-        workingHours,
-        hours,
-        blockedTimeSlots
-      );
-    } catch (err) {
-      console.error('Error saving custom working hours:', err);
-      setError(err instanceof Error ? err : new Error('Failed to save custom working hours'));
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [currentUser?.uid, workingHours, blockedTimeSlots]);
+        await saveCustomWorkingHours(currentUser.uid, hours);
+        setCustomWorkingHours(hours);
+
+        // Update available time slots in the backend
+        await calendarService.updateAvailableTimeSlots(
+          currentUser.uid,
+          workingHours,
+          hours,
+          blockedTimeSlots
+        );
+      } catch (err) {
+        console.error('Error saving custom working hours:', err);
+        setError(err instanceof Error ? err : new Error('Failed to save custom working hours'));
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [currentUser?.uid, workingHours, blockedTimeSlots]
+  );
 
   // Add a blocked time slot
-  const addBlockedTimeSlot = useCallback(async (timeSlot: Omit<BlockedTimeSlot, 'id' | 'type' | 'status'>) => {
-    if (!currentUser?.uid) return;
+  const addBlockedTimeSlot = useCallback(
+    async (timeSlot: Omit<BlockedTimeSlot, 'id' | 'type' | 'status'>) => {
+      if (!currentUser?.uid) return;
 
-    try {
-      setLoading(true);
-      setError(null);
+      try {
+        setLoading(true);
+        setError(null);
 
-      const id = await saveBlockedTimeSlot(currentUser.uid, timeSlot);
-      
-      const newTimeSlot: BlockedTimeSlot = {
-        id,
-        ...timeSlot,
-        type: 'blocked',
-        status: 'scheduled'
-      };
-      
-      const updatedBlockedTimeSlots = [...blockedTimeSlots, newTimeSlot];
-      setBlockedTimeSlots(updatedBlockedTimeSlots);
-      
-      // Update available time slots in the backend
-      await calendarService.updateAvailableTimeSlots(
-        currentUser.uid,
-        workingHours,
-        customWorkingHours,
-        updatedBlockedTimeSlots
-      );
-      
-      return id;
-    } catch (err) {
-      console.error('Error adding blocked time slot:', err);
-      setError(err instanceof Error ? err : new Error('Failed to add blocked time slot'));
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [currentUser?.uid, workingHours, customWorkingHours, blockedTimeSlots]);
+        const id = await saveBlockedTimeSlot(currentUser.uid, timeSlot);
+
+        const newTimeSlot: BlockedTimeSlot = {
+          id,
+          ...timeSlot,
+          type: 'blocked',
+          status: 'scheduled',
+        };
+
+        const updatedBlockedTimeSlots = [...blockedTimeSlots, newTimeSlot];
+        setBlockedTimeSlots(updatedBlockedTimeSlots);
+
+        // Update available time slots in the backend
+        await calendarService.updateAvailableTimeSlots(
+          currentUser.uid,
+          workingHours,
+          customWorkingHours,
+          updatedBlockedTimeSlots
+        );
+
+        return id;
+      } catch (err) {
+        console.error('Error adding blocked time slot:', err);
+        setError(err instanceof Error ? err : new Error('Failed to add blocked time slot'));
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [currentUser?.uid, workingHours, customWorkingHours, blockedTimeSlots]
+  );
 
   // Update a blocked time slot
-  const editBlockedTimeSlot = useCallback(async (
-    timeSlotId: string,
-    updates: Partial<Omit<BlockedTimeSlot, 'id' | 'type' | 'status'>>
-  ) => {
-    if (!currentUser?.uid) return;
+  const editBlockedTimeSlot = useCallback(
+    async (
+      timeSlotId: string,
+      updates: Partial<Omit<BlockedTimeSlot, 'id' | 'type' | 'status'>>
+    ) => {
+      if (!currentUser?.uid) return;
 
-    try {
-      setLoading(true);
-      setError(null);
+      try {
+        setLoading(true);
+        setError(null);
 
-      await updateBlockedTimeSlot(currentUser.uid, timeSlotId, updates);
-      
-      const updatedBlockedTimeSlots = blockedTimeSlots.map(slot => 
-        slot.id === timeSlotId 
-          ? { ...slot, ...updates } 
-          : slot
-      );
-      
-      setBlockedTimeSlots(updatedBlockedTimeSlots);
-      
-      // Update available time slots in the backend
-      await calendarService.updateAvailableTimeSlots(
-        currentUser.uid,
-        workingHours,
-        customWorkingHours,
-        updatedBlockedTimeSlots
-      );
-    } catch (err) {
-      console.error('Error updating blocked time slot:', err);
-      setError(err instanceof Error ? err : new Error('Failed to update blocked time slot'));
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [currentUser?.uid, workingHours, customWorkingHours, blockedTimeSlots]);
+        await updateBlockedTimeSlot(currentUser.uid, timeSlotId, updates);
+
+        const updatedBlockedTimeSlots = blockedTimeSlots.map((slot) =>
+          slot.id === timeSlotId ? { ...slot, ...updates } : slot
+        );
+
+        setBlockedTimeSlots(updatedBlockedTimeSlots);
+
+        // Update available time slots in the backend
+        await calendarService.updateAvailableTimeSlots(
+          currentUser.uid,
+          workingHours,
+          customWorkingHours,
+          updatedBlockedTimeSlots
+        );
+      } catch (err) {
+        console.error('Error updating blocked time slot:', err);
+        setError(err instanceof Error ? err : new Error('Failed to update blocked time slot'));
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [currentUser?.uid, workingHours, customWorkingHours, blockedTimeSlots]
+  );
 
   // Delete a blocked time slot
-  const removeBlockedTimeSlot = useCallback(async (timeSlotId: string) => {
-    if (!currentUser?.uid) return;
+  const removeBlockedTimeSlot = useCallback(
+    async (timeSlotId: string) => {
+      if (!currentUser?.uid) return;
 
-    try {
-      setLoading(true);
-      setError(null);
+      try {
+        setLoading(true);
+        setError(null);
 
-      await deleteBlockedTimeSlot(currentUser.uid, timeSlotId);
-      
-      const updatedBlockedTimeSlots = blockedTimeSlots.filter(slot => slot.id !== timeSlotId);
-      setBlockedTimeSlots(updatedBlockedTimeSlots);
-      
-      // Update available time slots in the backend
-      await calendarService.updateAvailableTimeSlots(
-        currentUser.uid,
-        workingHours,
-        customWorkingHours,
-        updatedBlockedTimeSlots
-      );
-    } catch (err) {
-      console.error('Error deleting blocked time slot:', err);
-      setError(err instanceof Error ? err : new Error('Failed to delete blocked time slot'));
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, [currentUser?.uid, workingHours, customWorkingHours, blockedTimeSlots]);
+        await deleteBlockedTimeSlot(currentUser.uid, timeSlotId);
+
+        const updatedBlockedTimeSlots = blockedTimeSlots.filter((slot) => slot.id !== timeSlotId);
+        setBlockedTimeSlots(updatedBlockedTimeSlots);
+
+        // Update available time slots in the backend
+        await calendarService.updateAvailableTimeSlots(
+          currentUser.uid,
+          workingHours,
+          customWorkingHours,
+          updatedBlockedTimeSlots
+        );
+      } catch (err) {
+        console.error('Error deleting blocked time slot:', err);
+        setError(err instanceof Error ? err : new Error('Failed to delete blocked time slot'));
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [currentUser?.uid, workingHours, customWorkingHours, blockedTimeSlots]
+  );
 
   // Load data on mount
   useEffect(() => {
@@ -280,6 +293,6 @@ export const useWorkingHours = () => {
     addBlockedTimeSlot,
     editBlockedTimeSlot,
     removeBlockedTimeSlot,
-    refreshWorkingHours: loadWorkingHours
+    refreshWorkingHours: loadWorkingHours,
   };
 };

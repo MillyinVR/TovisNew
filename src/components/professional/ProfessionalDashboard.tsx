@@ -21,10 +21,10 @@ import { LastMinuteTab } from './tabs/LastMinuteTab';
 import { TrendingServicesTab } from './tabs/TrendingServicesTab';
 import { ServicesTab } from './tabs/ServicesTab';
 import './tabs/navigation-tabs.css';
-import { 
-  BarChart3, 
-  DollarSign, 
-  Users, 
+import {
+  BarChart3,
+  DollarSign,
+  Users,
   TrendingUp,
   Calendar,
   Star,
@@ -35,10 +35,21 @@ import {
   Store,
   Clock,
   Bell,
-  Briefcase
+  Briefcase,
 } from 'lucide-react';
 
-type TabType = 'overview' | 'profile' | 'analytics' | 'reviews' | 'aftercare' | 'bookings' | 'ai-consult' | 'store' | 'lastminute' | 'trending' | 'services';
+type TabType =
+  | 'overview'
+  | 'profile'
+  | 'analytics'
+  | 'reviews'
+  | 'aftercare'
+  | 'bookings'
+  | 'ai-consult'
+  | 'store'
+  | 'lastminute'
+  | 'trending'
+  | 'services';
 
 export const ProfessionalDashboard = () => {
   const { userProfile, logout } = useAuth();
@@ -48,7 +59,7 @@ export const ProfessionalDashboard = () => {
   const { unreadCount } = useNotifications();
 
   const location = useLocation();
-  
+
   useEffect(() => {
     const refreshToken = async () => {
       try {
@@ -64,9 +75,10 @@ export const ProfessionalDashboard = () => {
         setTimeout(() => {
           if (auth.currentUser) {
             console.log('Retrying token refresh');
-            auth.currentUser.getIdToken(true)
+            auth.currentUser
+              .getIdToken(true)
               .then(() => console.log('Token refresh retry successful'))
-              .catch(retryError => {
+              .catch((retryError) => {
                 console.error('Token refresh retry failed:', retryError);
                 // If retry fails, we'll rely on the periodic refresh in AuthContext
               });
@@ -74,14 +86,14 @@ export const ProfessionalDashboard = () => {
         }, 5000);
       }
     };
-    
+
     // Refresh token first
     refreshToken();
-    
+
     if (userProfile?.uid) {
       setLoading(false);
     }
-    
+
     // Set active tab based on URL query parameter
     const params = new URLSearchParams(location.search);
     const tabParam = params.get('tab');
@@ -170,7 +182,7 @@ export const ProfessionalDashboard = () => {
         );
       case 'profile':
         return (
-          <ProfileManagement 
+          <ProfileManagement
             profileData={{
               ...userProfile,
               uid: userProfile?.uid || '',
@@ -182,9 +194,11 @@ export const ProfessionalDashboard = () => {
                 status: userProfile?.professionalProfile?.verification?.status || 'pending',
                 documentType: userProfile?.professionalProfile?.professionalType,
                 documentId: userProfile?.professionalProfile?.licenseNumber,
-                verifiedDate: userProfile?.professionalProfile?.verification?.verifiedDate || userProfile?.professionalProfile?.submissionDate,
-                expirationDate: userProfile?.professionalProfile?.licenseExpirationDate
-              }
+                verifiedDate:
+                  userProfile?.professionalProfile?.verification?.verifiedDate ||
+                  userProfile?.professionalProfile?.submissionDate,
+                expirationDate: userProfile?.professionalProfile?.licenseExpirationDate,
+              },
             }}
             updateProfile={async (data) => {
               if (!userProfile?.uid) {
@@ -223,44 +237,40 @@ export const ProfessionalDashboard = () => {
       <div className="fixed top-0 left-0 right-0 z-40 bg-white">
         {/* Main Header */}
         <div>
-          <LicenseExpirationWarning 
+          <LicenseExpirationWarning
             licenseExpirationDate={userProfile?.professionalProfile?.licenseExpirationDate}
             userId={userProfile.uid}
           />
           <div className="border-b border-gray-200">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-lg font-semibold text-gray-900">
-                  Professional Dashboard
-                </h1>
-                <p className="text-xs text-gray-500">
-                  Welcome back, {userProfile?.displayName}
-                </p>
-              </div>
-              <div className="flex items-center space-x-4">
-                <button 
-                  onClick={() => navigate('/professional/dashboard?tab=activity')}
-                  className="p-1.5 hover:bg-gray-100 rounded-full relative"
-                >
-                  <Bell className="h-5 w-5 text-gray-600" />
-                  {unreadCount > 0 && (
-                    <span className="absolute top-0 right-0 flex items-center justify-center h-4 w-4 text-xs text-white bg-red-500 rounded-full">
-                      {unreadCount > 9 ? '9+' : unreadCount}
-                    </span>
-                  )}
-                </button>
-                <button
-                  onClick={handleLogout}
-                  className="inline-flex items-center px-3 py-1.5 border border-transparent rounded-full text-xs font-medium text-white bg-red-600 hover:bg-red-700"
-                >
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Logout
-                </button>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-lg font-semibold text-gray-900">Professional Dashboard</h1>
+                  <p className="text-xs text-gray-500">Welcome back, {userProfile?.displayName}</p>
+                </div>
+                <div className="flex items-center space-x-4">
+                  <button
+                    onClick={() => navigate('/professional/dashboard?tab=activity')}
+                    className="p-1.5 hover:bg-gray-100 rounded-full relative"
+                  >
+                    <Bell className="h-5 w-5 text-gray-600" />
+                    {unreadCount > 0 && (
+                      <span className="absolute top-0 right-0 flex items-center justify-center h-4 w-4 text-xs text-white bg-red-500 rounded-full">
+                        {unreadCount > 9 ? '9+' : unreadCount}
+                      </span>
+                    )}
+                  </button>
+                  <button
+                    onClick={handleLogout}
+                    className="inline-flex items-center px-3 py-1.5 border border-transparent rounded-full text-xs font-medium text-white bg-red-600 hover:bg-red-700"
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Logout
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
         </div>
 
         {/* Navigation Tabs - Fixed right below header */}
@@ -268,123 +278,123 @@ export const ProfessionalDashboard = () => {
           <div className="max-w-7xl mx-auto relative">
             {/* Left fade gradient */}
             <div className="absolute left-0 top-0 bottom-0 w-8 fade-edge-left z-10 pointer-events-none"></div>
-            
+
             {/* Right fade gradient */}
             <div className="absolute right-0 top-0 bottom-0 w-8 fade-edge-right z-10 pointer-events-none"></div>
-            
+
             <div className="relative px-4 sm:px-6 lg:px-8 overflow-x-auto scrollbar-hide">
               <nav className="flex w-full -mb-px">
                 <div className="flex space-x-1 min-w-max px-8">
-                <button
-                  onClick={() => setActiveTab('overview')}
-                  className={`whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm flex items-center ${
-                    activeTab === 'overview'
-                      ? 'border-indigo-500 text-indigo-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  <BarChart3 className="h-5 w-5 mr-2" />
-                  Overview
-                </button>
-                <button
-                  onClick={() => setActiveTab('services')}
-                  className={`whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm flex items-center ${
-                    activeTab === 'services'
-                      ? 'border-indigo-500 text-indigo-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  <Briefcase className="h-5 w-5 mr-2" />
-                  Services
-                </button>
-                <button
-                  onClick={() => setActiveTab('profile')}
-                  className={`whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm flex items-center ${
-                    activeTab === 'profile'
-                      ? 'border-indigo-500 text-indigo-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  <UserCircle className="h-5 w-5 mr-2" />
-                  Profile
-                </button>
-                <button
-                  onClick={() => setActiveTab('reviews')}
-                  className={`whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm flex items-center ${
-                    activeTab === 'reviews'
-                      ? 'border-indigo-500 text-indigo-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  <Star className="h-5 w-5 mr-2" />
-                  Reviews
-                </button>
-                <button
-                  onClick={() => setActiveTab('aftercare')}
-                  className={`whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm flex items-center ${
-                    activeTab === 'aftercare'
-                      ? 'border-indigo-500 text-indigo-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  <ClipboardList className="h-5 w-5 mr-2" />
-                  Aftercare
-                </button>
-                <button
-                  onClick={() => setActiveTab('bookings')}
-                  className={`whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm flex items-center ${
-                    activeTab === 'bookings'
-                      ? 'border-indigo-500 text-indigo-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  <Calendar className="h-5 w-5 mr-2" />
-                  Bookings
-                </button>
-                <button
-                  onClick={() => setActiveTab('lastminute')}
-                  className={`whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm flex items-center ${
-                    activeTab === 'lastminute'
-                      ? 'border-indigo-500 text-indigo-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  <Clock className="h-5 w-5 mr-2" />
-                  Last Minute
-                </button>
-                <button
-                  onClick={() => setActiveTab('store')}
-                  className={`whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm flex items-center ${
-                    activeTab === 'store'
-                      ? 'border-indigo-500 text-indigo-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  <Store className="h-5 w-5 mr-2" />
-                  Store
-                </button>
-                <button
-                  onClick={() => setActiveTab('ai-consult')}
-                  className={`whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm flex items-center ${
-                    activeTab === 'ai-consult'
-                      ? 'border-indigo-500 text-indigo-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  <Bot className="h-5 w-5 mr-2" />
-                  AI Consult
-                </button>
-                <button
-                  onClick={() => setActiveTab('trending')}
-                  className={`whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm flex items-center ${
-                    activeTab === 'trending'
-                      ? 'border-indigo-500 text-indigo-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  <TrendingUp className="h-5 w-5 mr-2" />
-                  Trending Services
-                </button>
+                  <button
+                    onClick={() => setActiveTab('overview')}
+                    className={`whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm flex items-center ${
+                      activeTab === 'overview'
+                        ? 'border-indigo-500 text-indigo-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    <BarChart3 className="h-5 w-5 mr-2" />
+                    Overview
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('services')}
+                    className={`whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm flex items-center ${
+                      activeTab === 'services'
+                        ? 'border-indigo-500 text-indigo-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    <Briefcase className="h-5 w-5 mr-2" />
+                    Services
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('profile')}
+                    className={`whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm flex items-center ${
+                      activeTab === 'profile'
+                        ? 'border-indigo-500 text-indigo-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    <UserCircle className="h-5 w-5 mr-2" />
+                    Profile
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('reviews')}
+                    className={`whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm flex items-center ${
+                      activeTab === 'reviews'
+                        ? 'border-indigo-500 text-indigo-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    <Star className="h-5 w-5 mr-2" />
+                    Reviews
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('aftercare')}
+                    className={`whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm flex items-center ${
+                      activeTab === 'aftercare'
+                        ? 'border-indigo-500 text-indigo-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    <ClipboardList className="h-5 w-5 mr-2" />
+                    Aftercare
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('bookings')}
+                    className={`whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm flex items-center ${
+                      activeTab === 'bookings'
+                        ? 'border-indigo-500 text-indigo-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    <Calendar className="h-5 w-5 mr-2" />
+                    Bookings
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('lastminute')}
+                    className={`whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm flex items-center ${
+                      activeTab === 'lastminute'
+                        ? 'border-indigo-500 text-indigo-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    <Clock className="h-5 w-5 mr-2" />
+                    Last Minute
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('store')}
+                    className={`whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm flex items-center ${
+                      activeTab === 'store'
+                        ? 'border-indigo-500 text-indigo-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    <Store className="h-5 w-5 mr-2" />
+                    Store
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('ai-consult')}
+                    className={`whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm flex items-center ${
+                      activeTab === 'ai-consult'
+                        ? 'border-indigo-500 text-indigo-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    <Bot className="h-5 w-5 mr-2" />
+                    AI Consult
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('trending')}
+                    className={`whitespace-nowrap py-3 px-4 border-b-2 font-medium text-sm flex items-center ${
+                      activeTab === 'trending'
+                        ? 'border-indigo-500 text-indigo-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    <TrendingUp className="h-5 w-5 mr-2" />
+                    Trending Services
+                  </button>
                 </div>
               </nav>
             </div>
@@ -399,7 +409,7 @@ export const ProfessionalDashboard = () => {
 
       {/* Footer Navigation */}
       <div className="z-40">
-        <FooterNav 
+        <FooterNav
           userType="professional"
           onServiceAction={() => {
             const { currentUser } = useAuth() as AuthContextType;

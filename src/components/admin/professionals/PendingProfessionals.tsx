@@ -40,20 +40,20 @@ export const PendingProfessionals: React.FC<PendingProfessionalsProps> = ({ comp
         {
           type: 'ID',
           url: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d',
-          name: 'Government ID'
+          name: 'Government ID',
         },
         {
           type: 'Portfolio',
           url: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f',
-          name: 'Portfolio Sample'
+          name: 'Portfolio Sample',
         },
         {
           type: 'Certification',
           url: 'https://images.unsplash.com/photo-1503236823255-94609f598e71',
-          name: 'Professional Certificate'
-        }
+          name: 'Professional Certificate',
+        },
       ],
-      status: 'pending'
+      status: 'pending',
     },
     {
       id: '2',
@@ -66,21 +66,21 @@ export const PendingProfessionals: React.FC<PendingProfessionalsProps> = ({ comp
         {
           type: 'License',
           url: 'https://images.unsplash.com/photo-1512314889357-e157c22f938d',
-          name: 'Professional License'
+          name: 'Professional License',
         },
         {
           type: 'ID',
           url: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d',
-          name: 'Government ID'
+          name: 'Government ID',
         },
         {
           type: 'Insurance',
           url: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c',
-          name: 'Insurance Document'
-        }
+          name: 'Insurance Document',
+        },
       ],
-      status: 'pending'
-    }
+      status: 'pending',
+    },
   ];
 
   const handleViewDocument = (document: Document) => {
@@ -110,13 +110,13 @@ export const PendingProfessionals: React.FC<PendingProfessionalsProps> = ({ comp
                 <p className="text-sm text-gray-500">{professional.type}</p>
               </div>
               <div className="flex space-x-2">
-                <button 
+                <button
                   onClick={() => handleApprove(professional.id)}
                   className="p-1 text-green-600 hover:text-green-700"
                 >
                   <Check className="h-5 w-5" />
                 </button>
-                <button 
+                <button
                   onClick={() => handleReject(professional.id)}
                   className="p-1 text-red-600 hover:text-red-700"
                 >
@@ -141,24 +141,39 @@ export const PendingProfessionals: React.FC<PendingProfessionalsProps> = ({ comp
             </p>
           </div>
         </div>
-        
+
         <div className="mt-6 overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
           <table className="min-w-full divide-y divide-gray-300">
             <thead className="bg-gray-50">
               <tr>
-                <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">
+                <th
+                  scope="col"
+                  className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900"
+                >
                   Professional
                 </th>
-                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
                   Type
                 </th>
-                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
                   Submitted
                 </th>
-                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
                   License Expiration
                 </th>
-                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
                   Documents
                 </th>
                 <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
@@ -205,13 +220,13 @@ export const PendingProfessionals: React.FC<PendingProfessionalsProps> = ({ comp
                   </td>
                   <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                     <div className="flex justify-end space-x-2">
-                      <button 
+                      <button
                         onClick={() => handleApprove(professional.id)}
                         className="text-green-600 hover:text-green-900"
                       >
                         <Check className="h-5 w-5" />
                       </button>
-                      <button 
+                      <button
                         onClick={() => handleReject(professional.id)}
                         className="text-red-600 hover:text-red-900"
                       >
@@ -231,9 +246,7 @@ export const PendingProfessionals: React.FC<PendingProfessionalsProps> = ({ comp
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-4xl w-full">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-medium text-gray-900">
-                {selectedDocument.name}
-              </h3>
+              <h3 className="text-lg font-medium text-gray-900">{selectedDocument.name}</h3>
               <button
                 onClick={() => {
                   setShowDocumentModal(false);

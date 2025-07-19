@@ -1,5 +1,13 @@
 import React from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 import { DollarSign, TrendingUp, ArrowUp, ArrowDown } from 'lucide-react';
 
 export const RevenueAnalytics = () => {
@@ -9,7 +17,7 @@ export const RevenueAnalytics = () => {
     { month: 'Mar', revenue: 6100, bookings: 58 },
     { month: 'Apr', revenue: 5800, bookings: 54 },
     { month: 'May', revenue: 6500, bookings: 62 },
-    { month: 'Jun', revenue: 7200, bookings: 68 }
+    { month: 'Jun', revenue: 7200, bookings: 68 },
   ];
 
   const metrics = [
@@ -17,20 +25,20 @@ export const RevenueAnalytics = () => {
       label: 'Total Revenue',
       value: '$35,300',
       change: '+12.5%',
-      trend: 'up'
+      trend: 'up',
     },
     {
       label: 'Average Order Value',
       value: '$125',
       change: '+8.2%',
-      trend: 'up'
+      trend: 'up',
     },
     {
       label: 'Conversion Rate',
       value: '3.2%',
       change: '-0.4%',
-      trend: 'down'
-    }
+      trend: 'down',
+    },
   ];
 
   return (
@@ -52,9 +60,11 @@ export const RevenueAnalytics = () => {
                 <p className="text-sm text-gray-500">{metric.label}</p>
                 <p className="mt-1 text-xl font-semibold">{metric.value}</p>
               </div>
-              <div className={`flex items-center ${
-                metric.trend === 'up' ? 'text-green-600' : 'text-red-600'
-              }`}>
+              <div
+                className={`flex items-center ${
+                  metric.trend === 'up' ? 'text-green-600' : 'text-red-600'
+                }`}
+              >
                 {metric.trend === 'up' ? (
                   <ArrowUp className="h-4 w-4 mr-1" />
                 ) : (

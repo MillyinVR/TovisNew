@@ -68,7 +68,7 @@ export const ProfileManagement = ({ profileData, updateProfile }: ProfileManagem
     bio: profileData?.bio || '',
     location: profileData?.location || '',
     profilePhotoUrl: profileData?.profilePhotoUrl || '',
-    verification: profileData?.verification
+    verification: profileData?.verification,
   });
 
   // Fetch current verification status
@@ -78,7 +78,7 @@ export const ProfileManagement = ({ profileData, updateProfile }: ProfileManagem
         const verificationDoc = await getDoc(doc(db, 'verifications', profileData.uid));
         if (verificationDoc.exists()) {
           const verificationData = verificationDoc.data();
-          setProfileData(prev => ({
+          setProfileData((prev) => ({
             ...prev,
             verification: {
               ...prev.verification,
@@ -86,8 +86,8 @@ export const ProfileManagement = ({ profileData, updateProfile }: ProfileManagem
               documentId: verificationData.licenseNumber,
               expirationDate: verificationData.licenseExpirationDate,
               documentType: verificationData.professionalType,
-              licenseImageUrl: verificationData.licenseImageUrl
-            }
+              licenseImageUrl: verificationData.licenseImageUrl,
+            },
           }));
         }
       } catch (error) {
@@ -98,14 +98,19 @@ export const ProfileManagement = ({ profileData, updateProfile }: ProfileManagem
     fetchVerificationStatus();
   }, [profileData.uid]);
 
-  const { register, handleSubmit, formState: { errors }, setValue } = useForm<ProfileFormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+  } = useForm<ProfileFormData>({
     defaultValues: {
       name: profileDataState.name || '',
       bio: profileDataState.bio || '',
       location: profileDataState.location || '',
       profilePhotoUrl: profileDataState.profilePhotoUrl || '',
-      verification: profileDataState.verification
-    }
+      verification: profileDataState.verification,
+    },
   });
 
   // Update form values when profileDataState changes
@@ -127,8 +132,8 @@ export const ProfileManagement = ({ profileData, updateProfile }: ProfileManagem
         professionalProfile: {
           bio: data.bio,
           location: profileDataState.location,
-          services: undefined
-        }
+          services: undefined,
+        },
       };
 
       // Convert base64 URL to File object if needed
@@ -144,16 +149,18 @@ export const ProfileManagement = ({ profileData, updateProfile }: ProfileManagem
       }
 
       await updateProfile(submissionData, profileImage);
-      setProfileData(prev => ({
+      setProfileData((prev) => ({
         ...prev,
         name: data.name,
         bio: data.bio,
         location: profileDataState.location,
-        profilePhotoUrl: data.profilePhotoUrl || prev.profilePhotoUrl
+        profilePhotoUrl: data.profilePhotoUrl || prev.profilePhotoUrl,
       }));
       alert('Profile updated successfully');
     } catch (error) {
-      alert(`Failed to update profile: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      alert(
+        `Failed to update profile: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     } finally {
       setLoading(false);
     }
@@ -188,7 +195,7 @@ export const ProfileManagement = ({ profileData, updateProfile }: ProfileManagem
     const verificationRef = doc(db, 'verifications', profileData.uid);
     getDoc(verificationRef).then((doc) => {
       if (doc.exists()) {
-        setProfileData(prev => ({
+        setProfileData((prev) => ({
           ...prev,
           verification: {
             ...prev.verification,
@@ -196,8 +203,8 @@ export const ProfileManagement = ({ profileData, updateProfile }: ProfileManagem
             documentId: doc.data().licenseNumber,
             expirationDate: doc.data().licenseExpirationDate,
             documentType: doc.data().professionalType,
-            licenseImageUrl: doc.data().licenseImageUrl
-          }
+            licenseImageUrl: doc.data().licenseImageUrl,
+          },
         }));
       }
     });
@@ -210,7 +217,7 @@ export const ProfileManagement = ({ profileData, updateProfile }: ProfileManagem
           <User className="h-5 w-5 mr-2" />
           Profile Information
         </h2>
-        
+
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -225,9 +232,7 @@ export const ProfileManagement = ({ profileData, updateProfile }: ProfileManagem
                   errors.name ? 'border-red-500' : 'border-gray-300'
                 }`}
               />
-              {errors.name && (
-                <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
-              )}
+              {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
             </div>
 
             <div>
@@ -235,18 +240,22 @@ export const ProfileManagement = ({ profileData, updateProfile }: ProfileManagem
                 Salon Location
               </label>
               <LocationAutocomplete
-                initialValue={typeof profileData.location === 'string' ? profileData.location : profileData.location.address}
+                initialValue={
+                  typeof profileData.location === 'string'
+                    ? profileData.location
+                    : profileData.location.address
+                }
                 onLocationSelect={(location) => {
-                  setProfileData(prev => ({
+                  setProfileData((prev) => ({
                     ...prev,
                     location: {
                       address: location.address,
-                      coordinates: location.coordinates
-                    }
+                      coordinates: location.coordinates,
+                    },
                   }));
                   setValue('location', {
                     address: location.address,
-                    coordinates: location.coordinates
+                    coordinates: location.coordinates,
                   });
                 }}
                 className={errors.location ? 'border-red-500' : 'border-gray-300'}
@@ -271,8 +280,8 @@ export const ProfileManagement = ({ profileData, updateProfile }: ProfileManagem
               {...register('bio', {
                 maxLength: {
                   value: 500,
-                  message: 'Bio must be less than 500 characters'
-                }
+                  message: 'Bio must be less than 500 characters',
+                },
               })}
               id="bio"
               rows={4}
@@ -281,29 +290,25 @@ export const ProfileManagement = ({ profileData, updateProfile }: ProfileManagem
                 errors.bio ? 'border-red-500' : 'border-gray-300'
               }`}
             />
-            {errors.bio && (
-              <p className="text-red-500 text-sm mt-1">{errors.bio.message}</p>
-            )}
+            {errors.bio && <p className="text-red-500 text-sm mt-1">{errors.bio.message}</p>}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Profile Photo
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Profile Photo</label>
             <FileUpload
               onFileUpload={async (file: File) => {
                 try {
                   const formData = new FormData();
                   formData.append('file', file);
-                  
+
                   // Upload to Firebase Storage
                   const storageRef = ref(storage, `profiles/${profileData.uid}/${file.name}`);
                   await uploadBytes(storageRef, file);
                   const url = await getDownloadURL(storageRef);
-                  
-                  setProfileData(prev => ({
+
+                  setProfileData((prev) => ({
                     ...prev,
-                    profilePhotoUrl: url
+                    profilePhotoUrl: url,
                   }));
                   setValue('profilePhotoUrl', url);
                   return url;
@@ -333,16 +338,16 @@ export const ProfileManagement = ({ profileData, updateProfile }: ProfileManagem
       {profileDataState.verification && (
         <div className="bg-white p-6 rounded-lg shadow-sm">
           <h2 className="text-xl font-semibold mb-6 flex items-center">
-            <svg 
-              className="h-5 w-5 mr-2" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              stroke="currentColor" 
+            <svg
+              className="h-5 w-5 mr-2"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
               strokeWidth="2"
             >
-              <path 
-                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" 
-                strokeLinecap="round" 
+              <path
+                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                strokeLinecap="round"
                 strokeLinejoin="round"
               />
             </svg>
@@ -353,7 +358,11 @@ export const ProfileManagement = ({ profileData, updateProfile }: ProfileManagem
               <div className="space-y-4">
                 <div>
                   <p className="text-sm text-gray-500">Status</p>
-                  <p className={`text-base font-medium ${getStatusColor(profileDataState.verification.status)}`}>
+                  <p
+                    className={`text-base font-medium ${getStatusColor(
+                      profileDataState.verification.status
+                    )}`}
+                  >
                     {formatStatus(profileDataState.verification.status)}
                   </p>
                 </div>
@@ -368,13 +377,17 @@ export const ProfileManagement = ({ profileData, updateProfile }: ProfileManagem
               {profileDataState.verification.documentType && (
                 <div>
                   <p className="text-sm text-gray-500">Document Type</p>
-                  <p className="text-base font-medium">{profileDataState.verification.documentType}</p>
+                  <p className="text-base font-medium">
+                    {profileDataState.verification.documentType}
+                  </p>
                 </div>
               )}
               {profileDataState.verification.documentId && (
                 <div>
                   <p className="text-sm text-gray-500">Document ID</p>
-                  <p className="text-base font-medium">{profileDataState.verification.documentId}</p>
+                  <p className="text-base font-medium">
+                    {profileDataState.verification.documentId}
+                  </p>
                 </div>
               )}
               {profileDataState.verification.verifiedDate && (
@@ -388,11 +401,13 @@ export const ProfileManagement = ({ profileData, updateProfile }: ProfileManagem
               {profileDataState.verification.expirationDate && (
                 <div>
                   <p className="text-sm text-gray-500">Expiration Date</p>
-                  <p className={`text-base font-medium ${
-                    new Date(profileDataState.verification.expirationDate) < new Date()
-                      ? 'text-red-600'
-                      : 'text-gray-900'
-                  }`}>
+                  <p
+                    className={`text-base font-medium ${
+                      new Date(profileDataState.verification.expirationDate) < new Date()
+                        ? 'text-red-600'
+                        : 'text-gray-900'
+                    }`}
+                  >
                     {new Date(profileDataState.verification.expirationDate).toLocaleDateString()}
                   </p>
                 </div>
@@ -403,8 +418,8 @@ export const ProfileManagement = ({ profileData, updateProfile }: ProfileManagem
                 <p className="text-sm font-medium text-gray-700 mb-2">License Image</p>
                 {profileDataState.verification.licenseImageUrl ? (
                   <div className="relative group">
-                    <img 
-                      src={profileDataState.verification.licenseImageUrl} 
+                    <img
+                      src={profileDataState.verification.licenseImageUrl}
                       alt="License"
                       className="max-w-md rounded-lg shadow-sm"
                     />
@@ -437,7 +452,7 @@ export const ProfileManagement = ({ profileData, updateProfile }: ProfileManagem
       {showUpdateForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="max-w-lg w-full mx-4">
-            <LicenseUpdateForm 
+            <LicenseUpdateForm
               onClose={() => {
                 setShowUpdateForm(false);
                 handleLicenseUpdate();

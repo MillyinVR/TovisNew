@@ -14,9 +14,7 @@ export const ReviewsTab = () => {
       date: '2024-03-15',
       likes: 24,
       replies: 2,
-      images: [
-        'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f'
-      ]
+      images: ['https://images.unsplash.com/photo-1487412720507-e7ab37603c6f'],
     },
     // Add more reviews as needed
   ];

@@ -22,7 +22,7 @@ export const StoreTab = () => {
       stock: 25,
       image: 'https://images.unsplash.com/photo-1527156231393-7023794f363c',
       category: 'Finishing',
-      sales: 48
+      sales: 48,
     },
     {
       id: '2',
@@ -32,8 +32,8 @@ export const StoreTab = () => {
       stock: 15,
       image: 'https://images.unsplash.com/photo-1515688594390-b649af70d282',
       category: 'Tools',
-      sales: 32
-    }
+      sales: 32,
+    },
   ]);
 
   const [showAddProduct, setShowAddProduct] = useState(false);
@@ -45,9 +45,7 @@ export const StoreTab = () => {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-lg font-medium text-gray-900">Store Management</h2>
-            <p className="text-sm text-gray-500">
-              Manage your product inventory and sales
-            </p>
+            <p className="text-sm text-gray-500">Manage your product inventory and sales</p>
           </div>
           <button
             onClick={() => setShowAddProduct(true)}
@@ -93,19 +91,34 @@ export const StoreTab = () => {
           <table className="min-w-full divide-y divide-gray-300">
             <thead className="bg-gray-50">
               <tr>
-                <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">
+                <th
+                  scope="col"
+                  className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900"
+                >
                   Product
                 </th>
-                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
                   Category
                 </th>
-                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
                   Price
                 </th>
-                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
                   Stock
                 </th>
-                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
                   Sales
                 </th>
                 <th scope="col" className="relative py-3.5 pl-3 pr-4">
@@ -119,7 +132,11 @@ export const StoreTab = () => {
                   <td className="whitespace-nowrap py-4 pl-4 pr-3">
                     <div className="flex items-center">
                       <div className="h-10 w-10 flex-shrink-0">
-                        <img className="h-10 w-10 rounded object-cover" src={product.image} alt="" />
+                        <img
+                          className="h-10 w-10 rounded object-cover"
+                          src={product.image}
+                          alt=""
+                        />
                       </div>
                       <div className="ml-4">
                         <div className="font-medium text-gray-900">{product.name}</div>
@@ -134,9 +151,13 @@ export const StoreTab = () => {
                     ${product.price}
                   </td>
                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                    <span className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 ${
-                      product.stock < 10 ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
-                    }`}>
+                    <span
+                      className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 ${
+                        product.stock < 10
+                          ? 'bg-red-100 text-red-800'
+                          : 'bg-green-100 text-green-800'
+                      }`}
+                    >
                       {product.stock} units
                     </span>
                   </td>

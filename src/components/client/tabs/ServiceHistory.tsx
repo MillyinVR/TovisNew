@@ -20,7 +20,7 @@ export default function ServiceHistory() {
   const [selectedService, setSelectedService] = useState<string | null>(null);
   const [services, setServices] = useState<Service[]>([]);
 
-  const filteredServices = services.filter(service => {
+  const filteredServices = services.filter((service) => {
     const query = searchQuery.toLowerCase();
     const dateString = service.date.toISOString().split('T')[0];
     return (
@@ -32,43 +32,47 @@ export default function ServiceHistory() {
   });
 
   const handleUploadMedia = async (
-    files: File[], 
-    captions: string[], 
+    files: File[],
+    captions: string[],
     serviceId: string
   ): Promise<void> => {
     try {
       const media: MediaUpload[] = files.map((file, index) => ({
         file,
-        caption: captions[index]
+        caption: captions[index],
       }));
 
       const results: MediaUploadResult[] = await uploadMedia({
         serviceId,
-        media
+        media,
       });
 
-      setServices(prev => prev.map(service => 
-        service.id === serviceId ? {
-          ...service,
-          media: [
-            ...(service.media || []),
-            ...results.map((result: MediaUploadResult) => ({
-              id: crypto.randomUUID(),
-              type: result.type,
-              url: result.url,
-              title: result.caption || 'Untitled',
-              description: result.caption,
-              likes: 0,
-              comments: [],
-              createdAt: new Date(),
-              updatedAt: new Date(),
-              serviceId: serviceId,
-              professionalId: service.professionalId,
-              clientId: service.provider.id
-            }))
-          ]
-        } : service
-      ));
+      setServices((prev) =>
+        prev.map((service) =>
+          service.id === serviceId
+            ? {
+                ...service,
+                media: [
+                  ...(service.media || []),
+                  ...results.map((result: MediaUploadResult) => ({
+                    id: crypto.randomUUID(),
+                    type: result.type,
+                    url: result.url,
+                    title: result.caption || 'Untitled',
+                    description: result.caption,
+                    likes: 0,
+                    comments: [],
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    serviceId: serviceId,
+                    professionalId: service.professionalId,
+                    clientId: service.provider.id,
+                  })),
+                ],
+              }
+            : service
+        )
+      );
     } catch (error: unknown) {
       console.error('Failed to upload media:', error);
       if (error instanceof Error) {
@@ -83,12 +87,23 @@ export default function ServiceHistory() {
     <div className="flex flex-col h-[calc(100vh-80px)] p-4 pb-20">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-4">
-          <button 
+          <button
             onClick={() => window.history.back()}
             className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
             </svg>
           </button>
           <h1 className="text-2xl font-bold">Service History</h1>
@@ -100,7 +115,7 @@ export default function ServiceHistory() {
       {error && <p className="text-red-500">Error loading service history: {String(error)}</p>}
 
       <div className="flex-1 overflow-y-auto">
-        {filteredServices.map(service => (
+        {filteredServices.map((service) => (
           <ServiceHistoryItem
             key={service.id}
             service={service}

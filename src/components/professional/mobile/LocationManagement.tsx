@@ -21,7 +21,7 @@ export const LocationManagement = () => {
       radius: 5,
       center: { lat: 40.7831, lng: -73.9712 },
       travelFee: 25,
-      active: true
+      active: true,
     },
     {
       id: '2',
@@ -29,16 +29,16 @@ export const LocationManagement = () => {
       radius: 8,
       center: { lat: 40.6782, lng: -73.9442 },
       travelFee: 35,
-      active: true
-    }
+      active: true,
+    },
   ]);
 
   const [selectedZone, setSelectedZone] = useState<ServiceZone | null>(null);
   const [showZoneModal, setShowZoneModal] = useState(false);
 
   const handleZoneUpdate = (updatedZone: ServiceZone) => {
-    setServiceZones(zones => 
-      zones.map(zone => zone.id === updatedZone.id ? updatedZone : zone)
+    setServiceZones((zones) =>
+      zones.map((zone) => (zone.id === updatedZone.id ? updatedZone : zone))
     );
     setShowZoneModal(false);
     setSelectedZone(null);
@@ -75,18 +75,18 @@ export const LocationManagement = () => {
                   </div>
                 </div>
                 <div className="flex items-center">
-                  <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                    zone.active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                  }`}>
+                  <span
+                    className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                      zone.active ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                    }`}
+                  >
                     {zone.active ? 'Active' : 'Inactive'}
                   </span>
                 </div>
               </div>
 
               <div className="mt-4 flex justify-between items-center">
-                <div className="text-sm text-gray-500">
-                  Travel Fee: ${zone.travelFee}
-                </div>
+                <div className="text-sm text-gray-500">Travel Fee: ${zone.travelFee}</div>
                 <button
                   onClick={() => {
                     setSelectedZone(zone);
@@ -112,9 +112,7 @@ export const LocationManagement = () => {
             </div>
             <div className="ml-3">
               <h4 className="text-sm font-medium text-gray-900">Grace Period</h4>
-              <p className="mt-1 text-sm text-gray-500">
-                Set buffer time for travel delays
-              </p>
+              <p className="mt-1 text-sm text-gray-500">Set buffer time for travel delays</p>
               <select className="mt-2 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
                 <option>15 minutes</option>
                 <option>30 minutes</option>
@@ -130,9 +128,7 @@ export const LocationManagement = () => {
             </div>
             <div className="ml-3">
               <h4 className="text-sm font-medium text-gray-900">Navigation Preferences</h4>
-              <p className="mt-1 text-sm text-gray-500">
-                Choose preferred navigation app
-              </p>
+              <p className="mt-1 text-sm text-gray-500">Choose preferred navigation app</p>
               <select className="mt-2 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
                 <option>Google Maps</option>
                 <option>Apple Maps</option>
@@ -147,9 +143,7 @@ export const LocationManagement = () => {
             </div>
             <div className="ml-3">
               <h4 className="text-sm font-medium text-gray-900">Privacy Settings</h4>
-              <p className="mt-1 text-sm text-gray-500">
-                Location sharing preferences
-              </p>
+              <p className="mt-1 text-sm text-gray-500">Location sharing preferences</p>
               <div className="mt-2 space-y-2">
                 <label className="flex items-center">
                   <input
@@ -157,9 +151,7 @@ export const LocationManagement = () => {
                     className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                     defaultChecked
                   />
-                  <span className="ml-2 text-sm text-gray-600">
-                    Share location with clients
-                  </span>
+                  <span className="ml-2 text-sm text-gray-600">Share location with clients</span>
                 </label>
                 <label className="flex items-center">
                   <input
@@ -167,9 +159,7 @@ export const LocationManagement = () => {
                     className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                     defaultChecked
                   />
-                  <span className="ml-2 text-sm text-gray-600">
-                    Enable real-time tracking
-                  </span>
+                  <span className="ml-2 text-sm text-gray-600">Enable real-time tracking</span>
                 </label>
               </div>
             </div>
@@ -181,9 +171,7 @@ export const LocationManagement = () => {
             </div>
             <div className="ml-3">
               <h4 className="text-sm font-medium text-gray-900">Safety Settings</h4>
-              <p className="mt-1 text-sm text-gray-500">
-                Emergency contact information
-              </p>
+              <p className="mt-1 text-sm text-gray-500">Emergency contact information</p>
               <input
                 type="tel"
                 className="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"

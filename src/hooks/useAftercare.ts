@@ -5,7 +5,7 @@ import {
   getSummary,
   getProfessionalSummaries,
   getClientSummaries,
-  updateSummaryStatus
+  updateSummaryStatus,
 } from '../lib/api/aftercare';
 import { AftercareSummary } from '../types/aftercare';
 
@@ -23,9 +23,10 @@ export const useAftercare = (type: 'professional' | 'client') => {
         setLoading(true);
         setError(null);
 
-        const fetchedSummaries = type === 'professional'
-          ? await getProfessionalSummaries(userProfile.id)
-          : await getClientSummaries(userProfile.id);
+        const fetchedSummaries =
+          type === 'professional'
+            ? await getProfessionalSummaries(userProfile.id)
+            : await getClientSummaries(userProfile.id);
 
         setSummaries(fetchedSummaries);
       } catch (err) {
@@ -46,7 +47,7 @@ export const useAftercare = (type: 'professional' | 'client') => {
     try {
       const summaryId = await createSummary(summary, beforeImages, afterImages);
       const newSummary = await getSummary(summaryId);
-      setSummaries(prev => [newSummary, ...prev]);
+      setSummaries((prev) => [newSummary, ...prev]);
       return summaryId;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create summary');
@@ -54,17 +55,12 @@ export const useAftercare = (type: 'professional' | 'client') => {
     }
   };
 
-  const updateStatus = async (
-    summaryId: string,
-    status: AftercareSummary['status']
-  ) => {
+  const updateStatus = async (summaryId: string, status: AftercareSummary['status']) => {
     try {
       await updateSummaryStatus(summaryId, status);
-      setSummaries(prev => prev.map(summary =>
-        summary.id === summaryId
-          ? { ...summary, status }
-          : summary
-      ));
+      setSummaries((prev) =>
+        prev.map((summary) => (summary.id === summaryId ? { ...summary, status } : summary))
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update summary status');
       throw err;
@@ -76,6 +72,6 @@ export const useAftercare = (type: 'professional' | 'client') => {
     loading,
     error,
     createAftercareSummary,
-    updateStatus
+    updateStatus,
   };
 };

@@ -8,11 +8,7 @@ interface ReviewModalProps {
   onSubmit: (rating: number, comment: string) => Promise<void>;
 }
 
-export const ReviewModal: React.FC<ReviewModalProps> = ({
-  summary,
-  onClose,
-  onSubmit
-}) => {
+export const ReviewModal: React.FC<ReviewModalProps> = ({ summary, onClose, onSubmit }) => {
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -20,7 +16,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       setIsSubmitting(true);
       setError(null);
@@ -38,10 +34,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
       <div className="bg-white rounded-lg max-w-lg w-full p-6">
         <div className="flex justify-between items-start mb-6">
           <h2 className="text-xl font-semibold">Leave a Review</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
-          >
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
             <X className="h-6 w-6" />
           </button>
         </div>
@@ -49,9 +42,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Rating */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Rating
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Rating</label>
             <div className="flex space-x-2">
               {[1, 2, 3, 4, 5].map((value) => (
                 <button
@@ -70,9 +61,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
 
           {/* Comment */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Comment
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Comment</label>
             <textarea
               value={comment}
               onChange={(e) => setComment(e.target.value)}
@@ -83,11 +72,7 @@ export const ReviewModal: React.FC<ReviewModalProps> = ({
           </div>
 
           {/* Error Message */}
-          {error && (
-            <div className="text-sm text-red-600">
-              {error}
-            </div>
-          )}
+          {error && <div className="text-sm text-red-600">{error}</div>}
 
           {/* Submit Button */}
           <div className="flex justify-end">

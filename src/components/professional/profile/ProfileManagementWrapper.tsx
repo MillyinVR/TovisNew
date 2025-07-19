@@ -21,13 +21,8 @@ export const ProfileManagementWrapper = () => {
     bio: userProfile.professionalProfile?.bio || '',
     location: userProfile.professionalProfile?.location || '',
     profilePhotoUrl: userProfile.photoURL || '',
-    verification: userProfile.professionalProfile?.verification
+    verification: userProfile.professionalProfile?.verification,
   };
 
-  return (
-    <ProfileManagement 
-      profileData={profileData}
-      updateProfile={handleUpdateProfile}
-    />
-  );
+  return <ProfileManagement profileData={profileData} updateProfile={handleUpdateProfile} />;
 };

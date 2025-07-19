@@ -24,7 +24,7 @@ export const PromotionCreation = () => {
       endDate: '2024-03-30',
       usageLimit: 100,
       usedCount: 45,
-      status: 'active'
+      status: 'active',
     },
     {
       id: '2',
@@ -35,8 +35,8 @@ export const PromotionCreation = () => {
       endDate: '2024-04-15',
       usageLimit: 50,
       usedCount: 0,
-      status: 'scheduled'
-    }
+      status: 'scheduled',
+    },
   ]);
 
   return (
@@ -44,9 +44,7 @@ export const PromotionCreation = () => {
       <div className="flex justify-between items-center mb-6">
         <div>
           <h3 className="text-lg font-medium text-gray-900">Promotions</h3>
-          <p className="mt-1 text-sm text-gray-500">
-            Create and manage promotional offers
-          </p>
+          <p className="mt-1 text-sm text-gray-500">Create and manage promotional offers</p>
         </div>
         <button className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
           <Plus className="h-4 w-4 mr-2" />
@@ -56,19 +54,24 @@ export const PromotionCreation = () => {
 
       <div className="grid grid-cols-1 gap-4">
         {promotions.map((promo) => (
-          <div key={promo.id} className="border rounded-lg p-4 hover:border-indigo-500 transition-colors">
+          <div
+            key={promo.id}
+            className="border rounded-lg p-4 hover:border-indigo-500 transition-colors"
+          >
             <div className="flex justify-between items-start">
               <div>
                 <div className="flex items-center space-x-2">
                   <Tag className="h-5 w-5 text-indigo-500" />
                   <h4 className="text-lg font-medium text-gray-900">{promo.code}</h4>
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    promo.status === 'active'
-                      ? 'bg-green-100 text-green-800'
-                      : promo.status === 'scheduled'
-                      ? 'bg-yellow-100 text-yellow-800'
-                      : 'bg-gray-100 text-gray-800'
-                  }`}>
+                  <span
+                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      promo.status === 'active'
+                        ? 'bg-green-100 text-green-800'
+                        : promo.status === 'scheduled'
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-gray-100 text-gray-800'
+                    }`}
+                  >
                     {promo.status}
                   </span>
                 </div>
@@ -86,7 +89,8 @@ export const PromotionCreation = () => {
               <div className="text-right text-sm text-gray-500">
                 <div className="flex items-center justify-end">
                   <Calendar className="h-4 w-4 mr-1" />
-                  {new Date(promo.startDate).toLocaleDateString()} - {new Date(promo.endDate).toLocaleDateString()}
+                  {new Date(promo.startDate).toLocaleDateString()} -{' '}
+                  {new Date(promo.endDate).toLocaleDateString()}
                 </div>
                 <div className="mt-2">
                   <div className="bg-gray-200 rounded-full h-2 w-32">

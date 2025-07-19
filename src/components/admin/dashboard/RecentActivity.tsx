@@ -5,7 +5,11 @@ import { format } from 'date-fns';
 interface ActivityItem {
   id: string;
   adminName: string;
-  action: 'approved_professional' | 'rejected_professional' | 'resolved_complaint' | 'updated_settings';
+  action:
+    | 'approved_professional'
+    | 'rejected_professional'
+    | 'resolved_complaint'
+    | 'updated_settings';
   target: string;
   date: string;
   details: string;
@@ -24,7 +28,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({ compact = false 
       action: 'approved_professional',
       target: 'Sarah Johnson',
       date: new Date().toISOString(),
-      details: 'Approved makeup artist application'
+      details: 'Approved makeup artist application',
     },
     {
       id: '2',
@@ -32,7 +36,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({ compact = false 
       action: 'resolved_complaint',
       target: 'Booking #12345',
       date: new Date(Date.now() - 3600000).toISOString(),
-      details: 'Resolved customer complaint and issued partial refund'
+      details: 'Resolved customer complaint and issued partial refund',
     },
     {
       id: '3',
@@ -40,8 +44,8 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({ compact = false 
       action: 'updated_settings',
       target: 'System Settings',
       date: new Date(Date.now() - 7200000).toISOString(),
-      details: 'Updated booking cancellation policy'
-    }
+      details: 'Updated booking cancellation policy',
+    },
   ];
 
   const getActionIcon = (action: ActivityItem['action']) => {
@@ -69,8 +73,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({ compact = false 
               {getActionIcon(activity.action)}
               <div>
                 <p className="text-sm text-gray-900">
-                  <span className="font-medium">{activity.adminName}</span>
-                  {' '}{activity.details}
+                  <span className="font-medium">{activity.adminName}</span> {activity.details}
                 </p>
                 <p className="text-xs text-gray-500">
                   {format(new Date(activity.date), 'MMM d, yyyy h:mm a')}
@@ -114,9 +117,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({ compact = false 
                     <div className="min-w-0 flex-1">
                       <div>
                         <div className="text-sm">
-                          <span className="font-medium text-gray-900">
-                            {activity.adminName}
-                          </span>
+                          <span className="font-medium text-gray-900">{activity.adminName}</span>
                         </div>
                         <p className="mt-0.5 text-sm text-gray-500">
                           {format(new Date(activity.date), 'MMM d, yyyy h:mm a')}

@@ -20,11 +20,11 @@ export const FileUpload = ({ onFileUpload, multiple, accept, initialImage }: Fil
     if (!files?.length) return;
 
     const file = files[0];
-    
+
     try {
       setLoading(true);
       setError(null);
-      
+
       // Create preview
       if (file.type === 'application/pdf') {
         setIsPdf(true);
@@ -70,7 +70,7 @@ export const FileUpload = ({ onFileUpload, multiple, accept, initialImage }: Fil
             <input
               type="file"
               className="hidden"
-              accept={accept || "image/*"}
+              accept={accept || 'image/*'}
               onChange={handleFileChange}
               disabled={loading}
               multiple={multiple}
@@ -89,9 +89,9 @@ export const FileUpload = ({ onFileUpload, multiple, accept, initialImage }: Fil
               </div>
             ) : (
               <div className="relative w-12 h-12 group">
-                <img 
-                  src={preview || ''} 
-                  alt="Preview" 
+                <img
+                  src={preview || ''}
+                  alt="Preview"
                   className="w-full h-full object-cover rounded-md"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 rounded-md transition-all flex items-center justify-center">

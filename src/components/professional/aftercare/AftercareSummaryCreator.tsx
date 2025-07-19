@@ -15,7 +15,7 @@ export const AftercareSummaryCreator: React.FC<AftercareSummaryCreatorProps> = (
   appointmentId,
   clientId,
   onSave,
-  onCancel
+  onCancel,
 }) => {
   const [services, setServices] = useState<ServiceSummary[]>([]);
   const [recommendedProducts, setRecommendedProducts] = useState<Product[]>([]);
@@ -25,7 +25,7 @@ export const AftercareSummaryCreator: React.FC<AftercareSummaryCreatorProps> = (
   const [afterImagePreviews, setAfterImagePreviews] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const { createAftercareSummary } = useAftercare('professional');
   const { userProfile } = useAuth();
   const [aftercareInstructions, setAftercareInstructions] = useState<string[]>([]);
@@ -35,32 +35,32 @@ export const AftercareSummaryCreator: React.FC<AftercareSummaryCreatorProps> = (
     if (!files) return;
 
     const newFiles = Array.from(files);
-    const previews = newFiles.map(file => URL.createObjectURL(file));
+    const previews = newFiles.map((file) => URL.createObjectURL(file));
 
     if (type === 'before') {
-      setBeforeImageFiles(prev => [...prev, ...newFiles]);
-      setBeforeImagePreviews(prev => [...prev, ...previews]);
+      setBeforeImageFiles((prev) => [...prev, ...newFiles]);
+      setBeforeImagePreviews((prev) => [...prev, ...previews]);
     } else {
-      setAfterImageFiles(prev => [...prev, ...newFiles]);
-      setAfterImagePreviews(prev => [...prev, ...previews]);
+      setAfterImageFiles((prev) => [...prev, ...newFiles]);
+      setAfterImagePreviews((prev) => [...prev, ...previews]);
     }
   };
 
   const removeImage = (type: 'before' | 'after', index: number) => {
     if (type === 'before') {
       URL.revokeObjectURL(beforeImagePreviews[index]);
-      setBeforeImageFiles(prev => prev.filter((_, i) => i !== index));
-      setBeforeImagePreviews(prev => prev.filter((_, i) => i !== index));
+      setBeforeImageFiles((prev) => prev.filter((_, i) => i !== index));
+      setBeforeImagePreviews((prev) => prev.filter((_, i) => i !== index));
     } else {
       URL.revokeObjectURL(afterImagePreviews[index]);
-      setAfterImageFiles(prev => prev.filter((_, i) => i !== index));
-      setAfterImagePreviews(prev => prev.filter((_, i) => i !== index));
+      setAfterImageFiles((prev) => prev.filter((_, i) => i !== index));
+      setAfterImagePreviews((prev) => prev.filter((_, i) => i !== index));
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!userProfile) {
       setError('Professional profile not found');
       return;
@@ -92,7 +92,7 @@ export const AftercareSummaryCreator: React.FC<AftercareSummaryCreatorProps> = (
         notes,
         reviewSubmitted: false,
         productsOrdered: [],
-        nextAppointmentBooked: false
+        nextAppointmentBooked: false,
       };
 
       const summaryId = await createAftercareSummary(summary, beforeImageFiles, afterImageFiles);
@@ -145,7 +145,17 @@ export const AftercareSummaryCreator: React.FC<AftercareSummaryCreatorProps> = (
           ))}
           <button
             type="button"
-            onClick={() => setServices([...services, { id: Date.now().toString(), name: '', price: 0, nextAppointmentRecommendation: { timeframe: 4, reason: '' } }])}
+            onClick={() =>
+              setServices([
+                ...services,
+                {
+                  id: Date.now().toString(),
+                  name: '',
+                  price: 0,
+                  nextAppointmentRecommendation: { timeframe: 4, reason: '' },
+                },
+              ])
+            }
             className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
           >
             <Plus className="h-4 w-4 mr-2" />
@@ -162,7 +172,11 @@ export const AftercareSummaryCreator: React.FC<AftercareSummaryCreatorProps> = (
               <div className="grid grid-cols-2 gap-4">
                 {beforeImagePreviews.map((url, index) => (
                   <div key={index} className="relative aspect-square">
-                    <img src={url} alt={`Before ${index + 1}`} className="rounded-lg object-cover w-full h-full" />
+                    <img
+                      src={url}
+                      alt={`Before ${index + 1}`}
+                      className="rounded-lg object-cover w-full h-full"
+                    />
                     <button
                       type="button"
                       onClick={() => removeImage('before', index)}
@@ -189,7 +203,11 @@ export const AftercareSummaryCreator: React.FC<AftercareSummaryCreatorProps> = (
               <div className="grid grid-cols-2 gap-4">
                 {afterImagePreviews.map((url, index) => (
                   <div key={index} className="relative aspect-square">
-                    <img src={url} alt={`After ${index + 1}`} className="rounded-lg object-cover w-full h-full" />
+                    <img
+                      src={url}
+                      alt={`After ${index + 1}`}
+                      className="rounded-lg object-cover w-full h-full"
+                    />
                     <button
                       type="button"
                       onClick={() => removeImage('after', index)}
@@ -220,7 +238,11 @@ export const AftercareSummaryCreator: React.FC<AftercareSummaryCreatorProps> = (
           {recommendedProducts.map((product, index) => (
             <div key={index} className="flex items-start space-x-4 mb-4">
               <div className="flex-shrink-0">
-                <img src={product.image} alt={product.name} className="w-20 h-20 rounded-lg object-cover" />
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-20 h-20 rounded-lg object-cover"
+                />
               </div>
               <div className="flex-grow">
                 <input
@@ -260,7 +282,9 @@ export const AftercareSummaryCreator: React.FC<AftercareSummaryCreatorProps> = (
                 />
                 <button
                   type="button"
-                  onClick={() => setRecommendedProducts(recommendedProducts.filter((_, i) => i !== index))}
+                  onClick={() =>
+                    setRecommendedProducts(recommendedProducts.filter((_, i) => i !== index))
+                  }
                   className="text-red-500 hover:text-red-700"
                 >
                   <X className="h-5 w-5" />
@@ -270,15 +294,21 @@ export const AftercareSummaryCreator: React.FC<AftercareSummaryCreatorProps> = (
           ))}
           <button
             type="button"
-            onClick={() => setRecommendedProducts([...recommendedProducts, {
-              id: Date.now().toString(),
-              name: '',
-              description: '',
-              price: 0,
-              image: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=200&h=200&fit=crop',
-              usage: '',
-              inStock: true
-            }])}
+            onClick={() =>
+              setRecommendedProducts([
+                ...recommendedProducts,
+                {
+                  id: Date.now().toString(),
+                  name: '',
+                  description: '',
+                  price: 0,
+                  image:
+                    'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=200&h=200&fit=crop',
+                  usage: '',
+                  inStock: true,
+                },
+              ])
+            }
             className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
           >
             <Plus className="h-4 w-4 mr-2" />
@@ -304,7 +334,9 @@ export const AftercareSummaryCreator: React.FC<AftercareSummaryCreatorProps> = (
               />
               <button
                 type="button"
-                onClick={() => setAftercareInstructions(aftercareInstructions.filter((_, i) => i !== index))}
+                onClick={() =>
+                  setAftercareInstructions(aftercareInstructions.filter((_, i) => i !== index))
+                }
                 className="text-red-500 hover:text-red-700"
               >
                 <X className="h-5 w-5" />
@@ -357,11 +389,11 @@ export const AftercareSummaryCreator: React.FC<AftercareSummaryCreatorProps> = (
             Cancel
           </button>
           <button
-            type="submit" 
+            type="submit"
             disabled={isSubmitting}
             className={`inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
-              isSubmitting 
-                ? 'bg-indigo-400 cursor-not-allowed' 
+              isSubmitting
+                ? 'bg-indigo-400 cursor-not-allowed'
                 : 'bg-indigo-600 hover:bg-indigo-700'
             }`}
           >

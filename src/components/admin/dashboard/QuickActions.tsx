@@ -6,23 +6,23 @@ export const QuickActions = () => {
     {
       name: 'Add Service',
       icon: Plus,
-      onClick: () => console.log('Add Service clicked')
+      onClick: () => console.log('Add Service clicked'),
     },
     {
       name: 'Verify Professional',
       icon: UserPlus,
-      onClick: () => console.log('Verify Professional clicked')
+      onClick: () => console.log('Verify Professional clicked'),
     },
     {
       name: 'System Settings',
       icon: Settings,
-      onClick: () => console.log('System Settings clicked')
+      onClick: () => console.log('System Settings clicked'),
     },
     {
       name: 'View Issues',
       icon: AlertTriangle,
-      onClick: () => console.log('View Issues clicked')
-    }
+      onClick: () => console.log('View Issues clicked'),
+    },
   ];
 
   return (

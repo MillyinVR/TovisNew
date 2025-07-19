@@ -11,12 +11,15 @@ interface ServiceSetupModalProps {
 export const ServiceSetupModal: React.FC<ServiceSetupModalProps> = ({
   onClose,
   mode = 'add',
-  serviceId
+  serviceId,
 }) => {
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={onClose} />
+        <div
+          className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+          onClick={onClose}
+        />
         <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full sm:p-6">
           <div className="absolute top-0 right-0 pt-4 pr-4">
             <button
@@ -32,11 +35,7 @@ export const ServiceSetupModal: React.FC<ServiceSetupModalProps> = ({
               {mode === 'edit' ? 'Edit Service' : 'Add Service'}
             </h3>
             <div className="mt-4">
-              <ServiceSetup 
-                onClose={onClose}
-                mode={mode}
-                serviceId={serviceId}
-              />
+              <ServiceSetup onClose={onClose} mode={mode} serviceId={serviceId} />
             </div>
           </div>
         </div>

@@ -4,7 +4,7 @@ import {
   createProduct,
   getProduct,
   getProfessionalProducts,
-  updateProductStock
+  updateProductStock,
 } from '../lib/api/products';
 import { Product } from '../types/aftercare';
 
@@ -34,14 +34,11 @@ export const useProducts = () => {
     fetchProducts();
   }, [userProfile]);
 
-  const addProduct = async (
-    product: Omit<Product, 'id' | 'image'>,
-    imageFile: File
-  ) => {
+  const addProduct = async (product: Omit<Product, 'id' | 'image'>, imageFile: File) => {
     try {
       const productId = await createProduct(product, imageFile);
       const newProduct = await getProduct(productId);
-      setProducts(prev => [newProduct, ...prev]);
+      setProducts((prev) => [newProduct, ...prev]);
       return productId;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create product');
@@ -52,11 +49,9 @@ export const useProducts = () => {
   const updateStock = async (productId: string, inStock: boolean) => {
     try {
       await updateProductStock(productId, inStock);
-      setProducts(prev => prev.map(product =>
-        product.id === productId
-          ? { ...product, inStock }
-          : product
-      ));
+      setProducts((prev) =>
+        prev.map((product) => (product.id === productId ? { ...product, inStock } : product))
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to update product stock');
       throw err;
@@ -68,6 +63,6 @@ export const useProducts = () => {
     loading,
     error,
     addProduct,
-    updateStock
+    updateStock,
   };
 };

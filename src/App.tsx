@@ -64,16 +64,22 @@ function App() {
               <Route path="/client/discover" element={<ServiceDiscovery />} />
               <Route path="/professional/discover" element={<ServiceDiscovery />} />
               <Route path="/professionals/:professionalId" element={<ProfessionalProfile />} />
-              <Route path="/book/:professionalId/:serviceId" element={
-                <ProtectedRoute allowedRoles={['client' as UserRole]}>
-                  <ServiceAvailability />
-                </ProtectedRoute>
-              } />
-              <Route path="/book/confirm" element={
-                <ProtectedRoute allowedRoles={['client' as UserRole]}>
-                  <BookingConfirmation />
-                </ProtectedRoute>
-              } />
+              <Route
+                path="/book/:professionalId/:serviceId"
+                element={
+                  <ProtectedRoute allowedRoles={['client' as UserRole]}>
+                    <ServiceAvailability />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/book/confirm"
+                element={
+                  <ProtectedRoute allowedRoles={['client' as UserRole]}>
+                    <BookingConfirmation />
+                  </ProtectedRoute>
+                }
+              />
 
               {/* Professional Registration Routes */}
               <Route
@@ -97,7 +103,13 @@ function App() {
               <Route
                 path="/beauty-capture"
                 element={
-                  <ProtectedRoute allowedRoles={['admin' as UserRole, 'professional' as UserRole, 'client' as UserRole]}>
+                  <ProtectedRoute
+                    allowedRoles={[
+                      'admin' as UserRole,
+                      'professional' as UserRole,
+                      'client' as UserRole,
+                    ]}
+                  >
                     <BeautyCapture onCapture={() => {}} instructions="" />
                   </ProtectedRoute>
                 }
@@ -115,23 +127,26 @@ function App() {
                       <Route path="licenses" element={<LicenseManagement />} />
                       <Route path="complaints" element={<ComplaintsManagement />} />
                       <Route path="settings" element={<SystemSettings />} />
-                      <Route path="messages" element={
-                        <div className="min-h-screen bg-gray-50 flex flex-col">
-                          <div className="flex-1">
-                            <ConversationView />
+                      <Route
+                        path="messages"
+                        element={
+                          <div className="min-h-screen bg-gray-50 flex flex-col">
+                            <div className="flex-1">
+                              <ConversationView />
+                            </div>
+                            <div className="fixed bottom-0 left-0 right-0">
+                              <FooterNav userType="client" />
+                            </div>
                           </div>
-                          <div className="fixed bottom-0 left-0 right-0">
-                            <FooterNav userType="client" />
-                          </div>
-                        </div>
-                      } />
-                      <Route 
-                        path="service-flow" 
+                        }
+                      />
+                      <Route
+                        path="service-flow"
                         element={
                           <ProtectedRoute allowedRoles={['professional' as UserRole]}>
                             <ServiceFlow />
                           </ProtectedRoute>
-                        } 
+                        }
                       />
                     </Routes>
                   </ProtectedRoute>
@@ -142,79 +157,84 @@ function App() {
               <Route
                 path="/professional/*"
                 element={
-                  <ProtectedRoute allowedRoles={['professional' as UserRole, 'pending_professional' as UserRole]}>
+                  <ProtectedRoute
+                    allowedRoles={['professional' as UserRole, 'pending_professional' as UserRole]}
+                  >
                     <Routes>
-                      <Route 
-                        path="dashboard" 
+                      <Route
+                        path="dashboard"
                         element={
                           <ProtectedRoute allowedRoles={['professional' as UserRole]}>
                             <ProfessionalDashboard />
                           </ProtectedRoute>
-                        } 
+                        }
                       />
-                      <Route 
-                        path="services" 
+                      <Route
+                        path="services"
                         element={
                           <ProtectedRoute allowedRoles={['professional' as UserRole]}>
                             <ServiceSetup />
                           </ProtectedRoute>
-                        } 
+                        }
                       />
                       {/* Redirect from old calendar route to bookings tab in dashboard */}
-                      <Route 
-                        path="calendar" 
-                        element={<Navigate to="/professional/dashboard?tab=bookings" replace />} 
+                      <Route
+                        path="calendar"
+                        element={<Navigate to="/professional/dashboard?tab=bookings" replace />}
                       />
-                      <Route 
-                        path="profile/edit" 
+                      <Route
+                        path="profile/edit"
                         element={
                           <ProtectedRoute allowedRoles={['professional' as UserRole]}>
                             <ProfileManagementWrapper />
                           </ProtectedRoute>
-                        } 
+                        }
                       />
-                      <Route 
-                        path="activity" 
+                      <Route
+                        path="activity"
                         element={
                           <ProtectedRoute allowedRoles={['professional' as UserRole]}>
                             <ActivityTab />
                           </ProtectedRoute>
-                        } 
+                        }
                       />
-                      <Route 
-                        path="finance" 
+                      <Route
+                        path="finance"
                         element={
                           <ProtectedRoute allowedRoles={['professional' as UserRole]}>
                             <FinancialManagement />
                           </ProtectedRoute>
-                        } 
+                        }
                       />
-                      <Route 
-                        path="profile" 
+                      <Route
+                        path="profile"
                         element={
                           <ProtectedRoute allowedRoles={['professional' as UserRole]}>
                             <ProfessionalProfile />
                           </ProtectedRoute>
-                        } 
+                        }
                       />
-                      <Route 
-                        path="service-flow" 
+                      <Route
+                        path="service-flow"
                         element={
                           <ProtectedRoute allowedRoles={['professional' as UserRole]}>
                             <ServiceFlow />
                           </ProtectedRoute>
-                        } 
+                        }
                       />
-                      <Route path="messages" element={
-                        <div className="min-h-screen bg-gray-50 flex flex-col">
-                          <div className="flex-1">
-                            <ConversationView />
+                      <Route
+                        path="messages"
+                        element={
+                          <div className="min-h-screen bg-gray-50 flex flex-col">
+                            <div className="flex-1">
+                              <ConversationView />
+                            </div>
+                            <div className="fixed bottom-0 left-0 right-0">
+                              <FooterNav userType="client" />
+                            </div>
                           </div>
-                          <div className="fixed bottom-0 left-0 right-0">
-                            <FooterNav userType="client" />
-                          </div>
-                        </div>
-                      } />
+                        }
+                      />
                     </Routes>
                   </ProtectedRoute>
                 }
@@ -231,21 +251,27 @@ function App() {
                       <Route path="profile" element={<ProfileSetup />} />
                       <Route path="history" element={<ServiceHistory />} />
                       <Route path="bookings" element={<Bookings />} />
-                      <Route path="notifications" element={
-                        <ProtectedRoute allowedRoles={['client' as UserRole]}>
-                          <NotificationsPage />
-                        </ProtectedRoute>
-                      } />
-                      <Route path="messages" element={
-                        <div className="min-h-screen bg-gray-50 flex flex-col">
-                          <div className="flex-1">
-                            <ConversationView />
+                      <Route
+                        path="notifications"
+                        element={
+                          <ProtectedRoute allowedRoles={['client' as UserRole]}>
+                            <NotificationsPage />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="messages"
+                        element={
+                          <div className="min-h-screen bg-gray-50 flex flex-col">
+                            <div className="flex-1">
+                              <ConversationView />
+                            </div>
+                            <div className="fixed bottom-0 left-0 right-0">
+                              <FooterNav userType="client" />
+                            </div>
                           </div>
-                          <div className="fixed bottom-0 left-0 right-0">
-                            <FooterNav userType="client" />
-                          </div>
-                        </div>
-                      } />
+                        }
+                      />
                     </Routes>
                   </ProtectedRoute>
                 }
@@ -255,7 +281,13 @@ function App() {
               <Route
                 path="/messages"
                 element={
-                  <ProtectedRoute allowedRoles={['admin' as UserRole, 'professional' as UserRole, 'client' as UserRole]}>
+                  <ProtectedRoute
+                    allowedRoles={[
+                      'admin' as UserRole,
+                      'professional' as UserRole,
+                      'client' as UserRole,
+                    ]}
+                  >
                     <ConversationView />
                   </ProtectedRoute>
                 }

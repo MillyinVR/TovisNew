@@ -15,24 +15,32 @@ export const WorkingHoursModal: React.FC<WorkingHoursModalProps> = ({
   onClose,
   workingHours,
   onSave,
-  onCustomHours
+  onCustomHours,
 }) => {
   // Create a filtered version of working hours without the updatedAt field
   const [filteredHours, setFilteredHours] = useState<WorkingHours>({});
-  
+
   useEffect(() => {
     // Filter out any non-day properties (like updatedAt)
-    const validDays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    const validDays = [
+      'monday',
+      'tuesday',
+      'wednesday',
+      'thursday',
+      'friday',
+      'saturday',
+      'sunday',
+    ];
     const filtered = Object.entries(workingHours)
       .filter(([key]) => validDays.includes(key))
       .reduce((obj, [key, value]) => {
         obj[key] = value;
         return obj;
       }, {} as WorkingHours);
-    
+
     setFilteredHours(filtered);
   }, [workingHours]);
-  
+
   if (!isOpen) return null;
 
   const handleWorkingHoursChange = (
@@ -44,8 +52,8 @@ export const WorkingHoursModal: React.FC<WorkingHoursModalProps> = ({
       ...filteredHours,
       [day]: {
         ...filteredHours[day],
-        [field]: value
-      }
+        [field]: value,
+      },
     };
     onSave(updatedHours);
   };
@@ -55,17 +63,17 @@ export const WorkingHoursModal: React.FC<WorkingHoursModalProps> = ({
       <div className="bg-white rounded-lg p-3 sm:p-6 max-w-2xl w-full mx-2 sm:mx-0 max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-3 sm:mb-4 sticky top-0 bg-white pt-1 pb-2">
           <h3 className="text-base sm:text-lg font-medium text-gray-900">Working Hours</h3>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-500"
-          >
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-500">
             <X className="h-5 w-5" />
           </button>
         </div>
 
         <div className="space-y-3 sm:space-y-4">
           {Object.entries(filteredHours).map(([day, hours]) => (
-            <div key={day} className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 p-2 border border-gray-100 rounded-md">
+            <div
+              key={day}
+              className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 p-2 border border-gray-100 rounded-md"
+            >
               <div className="w-full sm:w-32">
                 <label className="inline-flex items-center">
                   <input

@@ -1,4 +1,10 @@
-import { CallableRequest, HttpsError, onCall, onRequest, HttpsOptions } from 'firebase-functions/v2/https';
+import {
+  CallableRequest,
+  HttpsError,
+  onCall,
+  onRequest,
+  HttpsOptions,
+} from 'firebase-functions/v2/https';
 import * as admin from 'firebase-admin';
 
 // Initialize Firebase Admin if it hasn't been initialized yet
@@ -13,13 +19,13 @@ const runtimeOpts: HttpsOptions = {
   region: 'us-central1',
   minInstances: 0,
   cors: [
-    'http://localhost:5173', 
+    'http://localhost:5173',
     'http://localhost:5174',
     'http://localhost:5175',
     'http://localhost:*',
-    'https://beautyappaici.web.app', 
-    'https://beautyappaici.firebaseapp.com'
-  ]
+    'https://beautyappaici.web.app',
+    'https://beautyappaici.firebaseapp.com',
+  ],
 };
 
 interface NotificationData {
@@ -33,25 +39,19 @@ interface NotificationData {
 export const sendNotification = onCall(runtimeOpts, async (request: CallableRequest) => {
   // Verify user is authenticated
   if (!request.auth) {
-    throw new HttpsError(
-      'unauthenticated',
-      'User must be authenticated'
-    );
+    throw new HttpsError('unauthenticated', 'User must be authenticated');
   }
 
   const data = request.data as NotificationData;
-  
+
   if (!data.userId || !data.title || !data.body) {
-    throw new HttpsError(
-      'invalid-argument',
-      'Missing required notification fields'
-    );
+    throw new HttpsError('invalid-argument', 'Missing required notification fields');
   }
 
   try {
     // Create notification in Firestore
     const notificationRef = admin.firestore().collection('notifications').doc();
-    
+
     await notificationRef.set({
       userId: data.userId,
       message: data.body,
@@ -59,33 +59,33 @@ export const sendNotification = onCall(runtimeOpts, async (request: CallableRequ
       read: false,
       type: data.data?.type || 'general',
       data: data.data || {},
-      timestamp: admin.firestore.FieldValue.serverTimestamp()
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
     });
 
     // Get user's FCM token if available
     console.log('Sending notification to user:', data.userId);
     const userDoc = await admin.firestore().collection('users').doc(data.userId).get();
-    
+
     if (userDoc.exists) {
       const userData = userDoc.data();
       const fcmToken = userData?.fcmToken;
-      
+
       console.log('User data found:', userData?.displayName || 'Unknown user');
-      
+
       // Send push notification if FCM token exists
       if (fcmToken) {
         const message = {
           notification: {
             title: data.title,
-            body: data.body
+            body: data.body,
           },
           data: {
             ...data.data,
-            notificationId: notificationRef.id
+            notificationId: notificationRef.id,
           },
-          token: fcmToken
+          token: fcmToken,
         };
-        
+
         console.log('Sending FCM message:', message);
         await admin.messaging().send(message);
         console.log('FCM message sent successfully');
@@ -95,14 +95,11 @@ export const sendNotification = onCall(runtimeOpts, async (request: CallableRequ
     } else {
       console.log('User document not found for ID:', data.userId);
     }
-    
+
     return { success: true, notificationId: notificationRef.id };
   } catch (error) {
     console.error('Error sending notification:', error);
-    throw new HttpsError(
-      'internal',
-      'Error sending notification'
-    );
+    throw new HttpsError('internal', 'Error sending notification');
   }
 });
 
@@ -112,30 +109,30 @@ export const sendNotificationHttp = onRequest(runtimeOpts, async (req, res) => {
   res.set('Access-Control-Allow-Origin', '*');
   res.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  
+
   // Handle preflight OPTIONS request
   if (req.method === 'OPTIONS') {
     res.status(204).send('');
     return;
   }
-  
+
   try {
     // Check if request has a body
     if (!req.body) {
       res.status(400).json({ error: 'Missing request body' });
       return;
     }
-    
+
     const data = req.body as NotificationData;
-    
+
     if (!data.userId || !data.title || !data.body) {
       res.status(400).json({ error: 'Missing required notification fields' });
       return;
     }
-    
+
     // Create notification in Firestore
     const notificationRef = admin.firestore().collection('notifications').doc();
-    
+
     await notificationRef.set({
       userId: data.userId,
       message: data.body,
@@ -143,33 +140,33 @@ export const sendNotificationHttp = onRequest(runtimeOpts, async (req, res) => {
       read: false,
       type: data.data?.type || 'general',
       data: data.data || {},
-      timestamp: admin.firestore.FieldValue.serverTimestamp()
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
     });
-    
+
     // Get user's FCM token if available
     console.log('HTTP endpoint: Sending notification to user:', data.userId);
     const userDoc = await admin.firestore().collection('users').doc(data.userId).get();
-    
+
     if (userDoc.exists) {
       const userData = userDoc.data();
       const fcmToken = userData?.fcmToken;
-      
+
       console.log('HTTP endpoint: User data found:', userData?.displayName || 'Unknown user');
-      
+
       // Send push notification if FCM token exists
       if (fcmToken) {
         const message = {
           notification: {
             title: data.title,
-            body: data.body
+            body: data.body,
           },
           data: {
             ...data.data,
-            notificationId: notificationRef.id
+            notificationId: notificationRef.id,
           },
-          token: fcmToken
+          token: fcmToken,
         };
-        
+
         console.log('HTTP endpoint: Sending FCM message:', message);
         await admin.messaging().send(message);
         console.log('HTTP endpoint: FCM message sent successfully');
@@ -179,7 +176,7 @@ export const sendNotificationHttp = onRequest(runtimeOpts, async (req, res) => {
     } else {
       console.log('HTTP endpoint: User document not found for ID:', data.userId);
     }
-    
+
     res.status(200).json({ success: true, notificationId: notificationRef.id });
   } catch (error) {
     console.error('Error sending notification:', error);

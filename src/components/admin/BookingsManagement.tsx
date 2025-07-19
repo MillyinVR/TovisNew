@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { 
-  Calendar, 
-  Clock, 
-  CheckCircle, 
-  XCircle, 
-  AlertTriangle, 
+import {
+  Calendar,
+  Clock,
+  CheckCircle,
+  XCircle,
+  AlertTriangle,
   DollarSign,
   Eye,
   MessageSquare,
   Filter,
-  Search
+  Search,
 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -41,7 +41,7 @@ export const BookingsManagement = () => {
       price: 250,
       date: '2024-03-15T10:30:00Z',
       status: 'confirmed',
-      paymentStatus: 'paid'
+      paymentStatus: 'paid',
     },
     {
       id: 'BK-12346',
@@ -54,7 +54,7 @@ export const BookingsManagement = () => {
       date: '2024-03-14T15:45:00Z',
       status: 'disputed',
       paymentStatus: 'paid',
-      disputeReason: 'Service not as described'
+      disputeReason: 'Service not as described',
     },
     {
       id: 'BK-12347',
@@ -67,8 +67,8 @@ export const BookingsManagement = () => {
       date: '2024-03-16T14:00:00Z',
       status: 'cancelled',
       paymentStatus: 'refunded',
-      refundReason: 'Professional cancelled'
-    }
+      refundReason: 'Professional cancelled',
+    },
   ]);
 
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
@@ -80,11 +80,11 @@ export const BookingsManagement = () => {
   const handleAddNote = () => {
     if (!selectedBooking || !newNote.trim()) return;
 
-    const updatedBookings = bookings.map(booking =>
+    const updatedBookings = bookings.map((booking) =>
       booking.id === selectedBooking.id
         ? {
             ...booking,
-            notes: [...(booking.notes || []), newNote.trim()]
+            notes: [...(booking.notes || []), newNote.trim()],
           }
         : booking
     );
@@ -94,23 +94,25 @@ export const BookingsManagement = () => {
   };
 
   const handleStatusChange = (bookingId: string, newStatus: Booking['status']) => {
-    setBookings(bookings.map(booking =>
-      booking.id === bookingId
-        ? { ...booking, status: newStatus }
-        : booking
-    ));
+    setBookings(
+      bookings.map((booking) =>
+        booking.id === bookingId ? { ...booking, status: newStatus } : booking
+      )
+    );
   };
 
   const handleRefund = (bookingId: string) => {
-    setBookings(bookings.map(booking =>
-      booking.id === bookingId
-        ? { 
-            ...booking, 
-            status: 'refunded',
-            paymentStatus: 'refunded'
-          }
-        : booking
-    ));
+    setBookings(
+      bookings.map((booking) =>
+        booking.id === bookingId
+          ? {
+              ...booking,
+              status: 'refunded',
+              paymentStatus: 'refunded',
+            }
+          : booking
+      )
+    );
   };
 
   const getStatusIcon = (status: Booking['status']) => {
@@ -132,14 +134,14 @@ export const BookingsManagement = () => {
     }
   };
 
-  const filteredBookings = bookings.filter(booking => {
-    const matchesSearch = 
+  const filteredBookings = bookings.filter((booking) => {
+    const matchesSearch =
       booking.clientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       booking.professionalName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       booking.id.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesStatus = filterStatus === 'all' || booking.status === filterStatus;
-    
+
     return matchesSearch && matchesStatus;
   });
 
@@ -198,19 +200,34 @@ export const BookingsManagement = () => {
           <table className="min-w-full divide-y divide-gray-300">
             <thead className="bg-gray-50">
               <tr>
-                <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">
+                <th
+                  scope="col"
+                  className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900"
+                >
                   Booking Details
                 </th>
-                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
                   Service
                 </th>
-                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
                   Date & Time
                 </th>
-                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
                   Status
                 </th>
-                <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                <th
+                  scope="col"
+                  className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                >
                   Payment
                 </th>
                 <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
@@ -232,9 +249,7 @@ export const BookingsManagement = () => {
                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                     <div>
                       <div>{booking.service}</div>
-                      <div className="text-sm font-medium text-gray-900">
-                        ${booking.price}
-                      </div>
+                      <div className="text-sm font-medium text-gray-900">${booking.price}</div>
                     </div>
                   </td>
                   <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
@@ -246,31 +261,35 @@ export const BookingsManagement = () => {
                     </div>
                   </td>
                   <td className="whitespace-nowrap px-3 py-4 text-sm">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      booking.status === 'confirmed'
-                        ? 'bg-green-100 text-green-800'
-                        : booking.status === 'completed'
-                        ? 'bg-blue-100 text-blue-800'
-                        : booking.status === 'cancelled'
-                        ? 'bg-red-100 text-red-800'
-                        : booking.status === 'no_show'
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : booking.status === 'refunded'
-                        ? 'bg-purple-100 text-purple-800'
-                        : 'bg-orange-100 text-orange-800'
-                    }`}>
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        booking.status === 'confirmed'
+                          ? 'bg-green-100 text-green-800'
+                          : booking.status === 'completed'
+                            ? 'bg-blue-100 text-blue-800'
+                            : booking.status === 'cancelled'
+                              ? 'bg-red-100 text-red-800'
+                              : booking.status === 'no_show'
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : booking.status === 'refunded'
+                                  ? 'bg-purple-100 text-purple-800'
+                                  : 'bg-orange-100 text-orange-800'
+                      }`}
+                    >
                       {getStatusIcon(booking.status)}
                       <span className="ml-1 capitalize">{booking.status.replace('_', ' ')}</span>
                     </span>
                   </td>
                   <td className="whitespace-nowrap px-3 py-4 text-sm">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      booking.paymentStatus === 'paid'
-                        ? 'bg-green-100 text-green-800'
-                        : booking.paymentStatus === 'refunded'
-                        ? 'bg-purple-100 text-purple-800'
-                        : 'bg-yellow-100 text-yellow-800'
-                    }`}>
+                    <span
+                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        booking.paymentStatus === 'paid'
+                          ? 'bg-green-100 text-green-800'
+                          : booking.paymentStatus === 'refunded'
+                            ? 'bg-purple-100 text-purple-800'
+                            : 'bg-yellow-100 text-yellow-800'
+                      }`}
+                    >
                       <DollarSign className="h-3 w-3 mr-1" />
                       {booking.paymentStatus}
                     </span>
@@ -337,16 +356,21 @@ export const BookingsManagement = () => {
                     </div>
                     <div>
                       <dt className="text-sm font-medium text-gray-500">Professional</dt>
-                      <dd className="mt-1 text-sm text-gray-900">{selectedBooking.professionalName}</dd>
+                      <dd className="mt-1 text-sm text-gray-900">
+                        {selectedBooking.professionalName}
+                      </dd>
                     </div>
                   </dl>
                 </div>
 
                 {/* Status Information */}
-                {(selectedBooking.status === 'disputed' || selectedBooking.status === 'cancelled') && (
+                {(selectedBooking.status === 'disputed' ||
+                  selectedBooking.status === 'cancelled') && (
                   <div className="bg-red-50 p-4 rounded-lg">
                     <h4 className="text-sm font-medium text-red-800 mb-2">
-                      {selectedBooking.status === 'disputed' ? 'Dispute Reason' : 'Cancellation Reason'}
+                      {selectedBooking.status === 'disputed'
+                        ? 'Dispute Reason'
+                        : 'Cancellation Reason'}
                     </h4>
                     <p className="text-sm text-red-700">
                       {selectedBooking.disputeReason || selectedBooking.refundReason}

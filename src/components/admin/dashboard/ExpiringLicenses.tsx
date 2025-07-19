@@ -32,10 +32,15 @@ export const ExpiringLicenses = () => {
       <div className="space-y-3">
         {licenses.map((license) => {
           const expirationDate = new Date(license.expirationDate);
-          const daysUntilExpiration = Math.ceil((expirationDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
-          
+          const daysUntilExpiration = Math.ceil(
+            (expirationDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
+          );
+
           return (
-            <div key={license.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+            <div
+              key={license.id}
+              className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+            >
               <div>
                 <h3 className="font-medium text-gray-900">{license.professionalName}</h3>
                 <p className="text-sm text-gray-500">

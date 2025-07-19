@@ -8,18 +8,18 @@ export const SecuritySettings = () => {
       requireNumbers: true,
       requireSymbols: true,
       requireUppercase: true,
-      maxAge: 90
+      maxAge: 90,
     },
     loginAttempts: {
       maxAttempts: 5,
       lockoutDuration: 30,
-      resetAfter: 24
+      resetAfter: 24,
     },
     twoFactor: {
       required: false,
-      allowedMethods: ['sms', 'email', 'authenticator']
+      allowedMethods: ['sms', 'email', 'authenticator'],
     },
-    sessionTimeout: 30
+    sessionTimeout: 30,
   });
 
   return (
@@ -28,9 +28,7 @@ export const SecuritySettings = () => {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h3 className="text-lg font-medium text-gray-900">Security Settings</h3>
-            <p className="mt-1 text-sm text-gray-500">
-              Configure system-wide security policies
-            </p>
+            <p className="mt-1 text-sm text-gray-500">Configure system-wide security policies</p>
           </div>
           <Shield className="h-6 w-6 text-gray-400" />
         </div>
@@ -41,19 +39,19 @@ export const SecuritySettings = () => {
             <h4 className="text-sm font-medium text-gray-900 mb-4">Password Policy</h4>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Minimum Length
-                </label>
+                <label className="block text-sm font-medium text-gray-700">Minimum Length</label>
                 <input
                   type="number"
                   value={settings.passwordPolicy.minLength}
-                  onChange={(e) => setSettings({
-                    ...settings,
-                    passwordPolicy: {
-                      ...settings.passwordPolicy,
-                      minLength: parseInt(e.target.value)
-                    }
-                  })}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      passwordPolicy: {
+                        ...settings.passwordPolicy,
+                        minLength: parseInt(e.target.value),
+                      },
+                    })
+                  }
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 />
               </div>
@@ -64,13 +62,15 @@ export const SecuritySettings = () => {
                 <input
                   type="number"
                   value={settings.passwordPolicy.maxAge}
-                  onChange={(e) => setSettings({
-                    ...settings,
-                    passwordPolicy: {
-                      ...settings.passwordPolicy,
-                      maxAge: parseInt(e.target.value)
-                    }
-                  })}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      passwordPolicy: {
+                        ...settings.passwordPolicy,
+                        maxAge: parseInt(e.target.value),
+                      },
+                    })
+                  }
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 />
               </div>
@@ -79,13 +79,15 @@ export const SecuritySettings = () => {
                   <input
                     type="checkbox"
                     checked={settings.passwordPolicy.requireNumbers}
-                    onChange={(e) => setSettings({
-                      ...settings,
-                      passwordPolicy: {
-                        ...settings.passwordPolicy,
-                        requireNumbers: e.target.checked
-                      }
-                    })}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        passwordPolicy: {
+                          ...settings.passwordPolicy,
+                          requireNumbers: e.target.checked,
+                        },
+                      })
+                    }
                     className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                   />
                   <span className="ml-2 text-sm text-gray-600">Require numbers</span>
@@ -94,13 +96,15 @@ export const SecuritySettings = () => {
                   <input
                     type="checkbox"
                     checked={settings.passwordPolicy.requireSymbols}
-                    onChange={(e) => setSettings({
-                      ...settings,
-                      passwordPolicy: {
-                        ...settings.passwordPolicy,
-                        requireSymbols: e.target.checked
-                      }
-                    })}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        passwordPolicy: {
+                          ...settings.passwordPolicy,
+                          requireSymbols: e.target.checked,
+                        },
+                      })
+                    }
                     className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                   />
                   <span className="ml-2 text-sm text-gray-600">Require symbols</span>
@@ -109,13 +113,15 @@ export const SecuritySettings = () => {
                   <input
                     type="checkbox"
                     checked={settings.passwordPolicy.requireUppercase}
-                    onChange={(e) => setSettings({
-                      ...settings,
-                      passwordPolicy: {
-                        ...settings.passwordPolicy,
-                        requireUppercase: e.target.checked
-                      }
-                    })}
+                    onChange={(e) =>
+                      setSettings({
+                        ...settings,
+                        passwordPolicy: {
+                          ...settings.passwordPolicy,
+                          requireUppercase: e.target.checked,
+                        },
+                      })
+                    }
                     className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                   />
                   <span className="ml-2 text-sm text-gray-600">Require uppercase letters</span>
@@ -135,13 +141,15 @@ export const SecuritySettings = () => {
                 <input
                   type="number"
                   value={settings.loginAttempts.maxAttempts}
-                  onChange={(e) => setSettings({
-                    ...settings,
-                    loginAttempts: {
-                      ...settings.loginAttempts,
-                      maxAttempts: parseInt(e.target.value)
-                    }
-                  })}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      loginAttempts: {
+                        ...settings.loginAttempts,
+                        maxAttempts: parseInt(e.target.value),
+                      },
+                    })
+                  }
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 />
               </div>
@@ -152,13 +160,15 @@ export const SecuritySettings = () => {
                 <input
                   type="number"
                   value={settings.loginAttempts.lockoutDuration}
-                  onChange={(e) => setSettings({
-                    ...settings,
-                    loginAttempts: {
-                      ...settings.loginAttempts,
-                      lockoutDuration: parseInt(e.target.value)
-                    }
-                  })}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      loginAttempts: {
+                        ...settings.loginAttempts,
+                        lockoutDuration: parseInt(e.target.value),
+                      },
+                    })
+                  }
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 />
               </div>
@@ -169,13 +179,15 @@ export const SecuritySettings = () => {
                 <input
                   type="number"
                   value={settings.loginAttempts.resetAfter}
-                  onChange={(e) => setSettings({
-                    ...settings,
-                    loginAttempts: {
-                      ...settings.loginAttempts,
-                      resetAfter: parseInt(e.target.value)
-                    }
-                  })}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      loginAttempts: {
+                        ...settings.loginAttempts,
+                        resetAfter: parseInt(e.target.value),
+                      },
+                    })
+                  }
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 />
               </div>
@@ -190,16 +202,20 @@ export const SecuritySettings = () => {
                 <input
                   type="checkbox"
                   checked={settings.twoFactor.required}
-                  onChange={(e) => setSettings({
-                    ...settings,
-                    twoFactor: {
-                      ...settings.twoFactor,
-                      required: e.target.checked
-                    }
-                  })}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      twoFactor: {
+                        ...settings.twoFactor,
+                        required: e.target.checked,
+                      },
+                    })
+                  }
                   className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                 />
-                <span className="ml-2 text-sm text-gray-600">Require two-factor authentication</span>
+                <span className="ml-2 text-sm text-gray-600">
+                  Require two-factor authentication
+                </span>
               </label>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -214,13 +230,13 @@ export const SecuritySettings = () => {
                         onChange={(e) => {
                           const newMethods = e.target.checked
                             ? [...settings.twoFactor.allowedMethods, method]
-                            : settings.twoFactor.allowedMethods.filter(m => m !== method);
+                            : settings.twoFactor.allowedMethods.filter((m) => m !== method);
                           setSettings({
                             ...settings,
                             twoFactor: {
                               ...settings.twoFactor,
-                              allowedMethods: newMethods
-                            }
+                              allowedMethods: newMethods,
+                            },
                           });
                         }}
                         className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
@@ -243,10 +259,12 @@ export const SecuritySettings = () => {
               <input
                 type="number"
                 value={settings.sessionTimeout}
-                onChange={(e) => setSettings({
-                  ...settings,
-                  sessionTimeout: parseInt(e.target.value)
-                })}
+                onChange={(e) =>
+                  setSettings({
+                    ...settings,
+                    sessionTimeout: parseInt(e.target.value),
+                  })
+                }
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               />
             </div>

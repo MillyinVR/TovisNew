@@ -22,17 +22,17 @@ const BookingConfirmation: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  
+
   // Get booking details from location state
   const bookingDetails = location.state as BookingState;
-  
+
   if (!bookingDetails) {
     return (
       <div className="min-h-screen bg-gray-50 pb-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center py-12">
             <p className="text-red-600 mb-4">Missing booking information</p>
-            <button 
+            <button
               onClick={() => navigate('/discover')}
               className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700"
             >
@@ -44,7 +44,7 @@ const BookingConfirmation: React.FC = () => {
       </div>
     );
   }
-  
+
   const {
     professionalId,
     serviceId,
@@ -52,30 +52,27 @@ const BookingConfirmation: React.FC = () => {
     servicePrice,
     serviceDuration,
     appointmentTime,
-    professionalName
+    professionalName,
   } = bookingDetails;
-  
+
   // Validate appointment time format and provide fallback if invalid
   let parsedAppointmentTime: Date;
   let formattedDate: string;
   let formattedTime: string;
   let endTime: string;
-  
+
   try {
     // Try to parse the appointment time
     parsedAppointmentTime = parseISO(appointmentTime);
-    
+
     // Check if the parsed date is valid
     if (isNaN(parsedAppointmentTime.getTime())) {
       throw new Error('Invalid date');
     }
-    
+
     formattedDate = format(parsedAppointmentTime, 'EEEE, MMMM d, yyyy');
     formattedTime = format(parsedAppointmentTime, 'h:mm a');
-    endTime = format(
-      addMinutes(parsedAppointmentTime, serviceDuration),
-      'h:mm a'
-    );
+    endTime = format(addMinutes(parsedAppointmentTime, serviceDuration), 'h:mm a');
   } catch (err) {
     console.error('Error parsing appointment time:', err, appointmentTime);
     // Use current date/time as fallback
@@ -88,25 +85,25 @@ const BookingConfirmation: React.FC = () => {
       setError('There was an issue with the appointment time. Please try booking again.');
     }
   }
-  
+
   const handleConfirmBooking = async () => {
     if (!currentUser) {
       navigate('/login');
       return;
     }
-    
+
     try {
       setLoading(true);
       setError(null);
-      
+
       // Use current date as fallback if appointment time is invalid
       const now = new Date();
       const nowStr = now.toISOString();
-      
+
       // Calculate appointment date and end time safely
       let appointmentDate: string;
       let appointmentEndTimeStr: string;
-      
+
       try {
         // Try to extract date from the appointment time string
         if (appointmentTime && appointmentTime.includes('T')) {
@@ -114,28 +111,30 @@ const BookingConfirmation: React.FC = () => {
         } else {
           appointmentDate = format(now, 'yyyy-MM-dd');
         }
-        
+
         // Calculate end time by adding duration to the start time
         // Use string manipulation instead of Date operations to avoid timezone issues
         const [datePart, timePart] = (appointmentTime || nowStr).split('T');
         if (datePart && timePart) {
           const [hours, minutes] = timePart.split(':').map(Number);
-          
+
           // Add duration to get end time
           let endHours = hours;
           let endMinutes = minutes + (serviceDuration || 60);
-          
+
           // Handle minute overflow
           while (endMinutes >= 60) {
             endHours += 1;
             endMinutes -= 60;
           }
-          
+
           // Handle hour overflow
           endHours = endHours % 24;
-          
+
           // Format end time
-          const endTimePart = `${endHours.toString().padStart(2, '0')}:${endMinutes.toString().padStart(2, '0')}:00`;
+          const endTimePart = `${endHours.toString().padStart(2, '0')}:${endMinutes
+            .toString()
+            .padStart(2, '0')}:00`;
           appointmentEndTimeStr = `${datePart}T${endTimePart}`;
         } else {
           // Fallback to now + duration
@@ -147,18 +146,18 @@ const BookingConfirmation: React.FC = () => {
         appointmentDate = format(now, 'yyyy-MM-dd');
         appointmentEndTimeStr = addMinutes(now, serviceDuration || 60).toISOString();
       }
-      
+
       // Ensure professionalName is not undefined
       const safeProfessionalName = professionalName || 'Professional';
-      
+
       // Validate professionalId before creating appointment
       if (!professionalId || professionalId.trim() === '') {
         throw new Error('Professional ID is missing or invalid');
       }
-      
+
       // Clean and validate the professionalId
       const cleanProfessionalId = professionalId.trim();
-      
+
       // Log the appointment data for debugging
       console.log('Creating appointment with data:', {
         professionalId: cleanProfessionalId,
@@ -169,14 +168,14 @@ const BookingConfirmation: React.FC = () => {
         serviceName,
         date: appointmentDate,
         startTime: appointmentTime || nowStr,
-        endTime: appointmentEndTimeStr
+        endTime: appointmentEndTimeStr,
       });
-      
+
       // Additional logging to help debug the professionalId
       console.log('Professional ID type:', typeof cleanProfessionalId);
       console.log('Professional ID length:', cleanProfessionalId.length);
       console.log('Professional ID value:', cleanProfessionalId);
-      
+
       // Create appointment - ensure professionalId is correctly passed
       const appointmentData = {
         professionalId: cleanProfessionalId, // Use cleaned professional ID
@@ -190,31 +189,33 @@ const BookingConfirmation: React.FC = () => {
         endTime: appointmentEndTimeStr,
         location: '',
         notes: '',
-        calendarSync: false
+        calendarSync: false,
       };
-      
+
       console.log('Final appointment data being sent:', appointmentData);
-      
+
       await createAppointment(appointmentData);
-      
+
       setSuccess(true);
-      
+
       // Redirect to bookings page after a delay
       setTimeout(() => {
         navigate('/client/bookings');
       }, 3000);
     } catch (err) {
       console.error('Error creating appointment:', err);
-      setError(err instanceof Error ? err.message : 'Failed to book appointment. Please try again.');
+      setError(
+        err instanceof Error ? err.message : 'Failed to book appointment. Please try again.'
+      );
     } finally {
       setLoading(false);
     }
   };
-  
+
   const handleBack = () => {
     navigate(-1);
   };
-  
+
   return (
     <div className="min-h-screen bg-gray-50 pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -236,10 +237,10 @@ const BookingConfirmation: React.FC = () => {
           </svg>
           Back
         </button>
-        
+
         <div className="bg-white rounded-lg shadow-sm p-6">
           <h1 className="text-2xl font-bold text-gray-900 mb-6">Confirm Your Booking</h1>
-          
+
           {success ? (
             <div className="text-center py-8">
               <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
@@ -260,11 +261,10 @@ const BookingConfirmation: React.FC = () => {
               </div>
               <h2 className="mt-3 text-lg font-medium text-gray-900">Booking Successful!</h2>
               <p className="mt-2 text-sm text-gray-500">
-                Your appointment has been booked successfully. The professional will be notified of your request.
+                Your appointment has been booked successfully. The professional will be notified of
+                your request.
               </p>
-              <p className="mt-2 text-sm text-gray-500">
-                Redirecting to your bookings...
-              </p>
+              <p className="mt-2 text-sm text-gray-500">Redirecting to your bookings...</p>
             </div>
           ) : (
             <>
@@ -274,32 +274,34 @@ const BookingConfirmation: React.FC = () => {
                     <h2 className="text-lg font-semibold text-gray-800">{serviceName}</h2>
                     <p className="text-gray-600">with {professionalName}</p>
                     <div className="mt-2">
-                      <span className="text-indigo-600 font-medium">Starting at ${servicePrice}</span>
+                      <span className="text-indigo-600 font-medium">
+                        Starting at ${servicePrice}
+                      </span>
                       <span className="text-gray-400 text-sm ml-2">({serviceDuration} min)</span>
                     </div>
                   </div>
                   <div>
                     <h3 className="text-sm font-medium text-gray-500">Date & Time</h3>
                     <p className="text-gray-800">{formattedDate}</p>
-                    <p className="text-gray-800">{formattedTime} - {endTime}</p>
+                    <p className="text-gray-800">
+                      {formattedTime} - {endTime}
+                    </p>
                   </div>
                 </div>
               </div>
-              
+
               {error && (
                 <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md mb-6">
                   {error}
                 </div>
               )}
-              
+
               <div className="flex justify-end">
                 <button
                   onClick={handleConfirmBooking}
                   disabled={loading}
                   className={`px-6 py-3 rounded-md text-white font-medium ${
-                    loading
-                      ? 'bg-gray-400 cursor-not-allowed'
-                      : 'bg-indigo-600 hover:bg-indigo-700'
+                    loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'
                   }`}
                 >
                   {loading ? (

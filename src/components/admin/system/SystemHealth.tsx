@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Server, Database, Globe, Shield, AlertTriangle, CheckCircle, RefreshCcw } from 'lucide-react';
+import {
+  Server,
+  Database,
+  Globe,
+  Shield,
+  AlertTriangle,
+  CheckCircle,
+  RefreshCcw,
+} from 'lucide-react';
 
 interface SystemMetric {
   name: string;
@@ -28,7 +36,7 @@ export const SystemHealth = () => {
       details: 'All systems operational',
       icon: Server,
       color: 'text-green-500',
-      lastChecked: new Date().toISOString()
+      lastChecked: new Date().toISOString(),
     },
     {
       name: 'Database',
@@ -37,7 +45,7 @@ export const SystemHealth = () => {
       details: 'Response time optimal',
       icon: Database,
       color: 'text-green-500',
-      lastChecked: new Date().toISOString()
+      lastChecked: new Date().toISOString(),
     },
     {
       name: 'API Health',
@@ -46,7 +54,7 @@ export const SystemHealth = () => {
       details: 'Slightly elevated response time',
       icon: Globe,
       color: 'text-yellow-500',
-      lastChecked: new Date().toISOString()
+      lastChecked: new Date().toISOString(),
     },
     {
       name: 'Security',
@@ -55,8 +63,8 @@ export const SystemHealth = () => {
       details: 'No threats detected',
       icon: Shield,
       color: 'text-green-500',
-      lastChecked: new Date().toISOString()
-    }
+      lastChecked: new Date().toISOString(),
+    },
   ]);
 
   const [healthChecks, setHealthChecks] = useState<HealthCheck[]>([
@@ -65,22 +73,22 @@ export const SystemHealth = () => {
       component: 'Authentication Service',
       status: 'passed',
       message: 'Service responding normally',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     },
     {
       id: '2',
       component: 'Payment Processing',
       status: 'passed',
       message: 'All payment methods available',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     },
     {
       id: '3',
       component: 'Storage Service',
       status: 'failed',
       message: 'High latency detected',
-      timestamp: new Date().toISOString()
-    }
+      timestamp: new Date().toISOString(),
+    },
   ]);
 
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -131,16 +139,19 @@ export const SystemHealth = () => {
                             <div className="text-2xl font-semibold text-gray-900">
                               {metric.value}
                             </div>
-                            <span className={`ml-2 text-sm font-medium ${
-                              metric.status === 'healthy' ? 'text-green-600' :
-                              metric.status === 'warning' ? 'text-yellow-600' : 'text-red-600'
-                            }`}>
+                            <span
+                              className={`ml-2 text-sm font-medium ${
+                                metric.status === 'healthy'
+                                  ? 'text-green-600'
+                                  : metric.status === 'warning'
+                                    ? 'text-yellow-600'
+                                    : 'text-red-600'
+                              }`}
+                            >
                               {metric.status}
                             </span>
                           </dd>
-                          <dd className="mt-1 text-sm text-gray-500">
-                            {metric.details}
-                          </dd>
+                          <dd className="mt-1 text-sm text-gray-500">{metric.details}</dd>
                         </dl>
                       </div>
                     </div>
@@ -158,7 +169,10 @@ export const SystemHealth = () => {
           <h4 className="text-lg font-medium text-gray-900 mb-4">Health Checks</h4>
           <div className="space-y-4">
             {healthChecks.map((check) => (
-              <div key={check.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div
+                key={check.id}
+                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+              >
                 <div className="flex items-center">
                   {check.status === 'passed' ? (
                     <CheckCircle className="h-5 w-5 text-green-500" />

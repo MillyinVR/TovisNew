@@ -23,7 +23,7 @@ export const SavedTrends = () => {
       id: '3',
       title: 'Siren Eyes',
       image: 'https://images.unsplash.com/photo-1588367667816-ecc8f6694fe6',
-    }
+    },
   ];
 
   const handleRemoveTrend = (trendId: string) => {
@@ -35,16 +35,12 @@ export const SavedTrends = () => {
     <div className="space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {trends.map((trend) => (
-          <div 
+          <div
             key={trend.id}
             className="bg-white rounded-lg shadow overflow-hidden hover:shadow-md transition-shadow"
           >
             <div className="aspect-w-16 aspect-h-9 relative">
-              <img
-                src={trend.image}
-                alt={trend.title}
-                className="w-full h-48 object-cover"
-              />
+              <img src={trend.image} alt={trend.title} className="w-full h-48 object-cover" />
             </div>
             <div className="p-4 flex justify-between items-center">
               <h3 className="text-lg font-medium text-gray-900">{trend.title}</h3>

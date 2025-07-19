@@ -14,8 +14,8 @@ export const TrendRequests = () => {
       id: '1',
       title: 'Cloud Skin',
       status: 'pending',
-      submittedAt: '2024-03-15T10:00:00Z'
-    }
+      submittedAt: '2024-03-15T10:00:00Z',
+    },
   ]);
   const [showNewRequestModal, setShowNewRequestModal] = useState(false);
   const [newRequestTitle, setNewRequestTitle] = useState('');
@@ -26,7 +26,7 @@ export const TrendRequests = () => {
       id: Date.now().toString(),
       title: newRequestTitle,
       status: 'pending',
-      submittedAt: new Date().toISOString()
+      submittedAt: new Date().toISOString(),
     };
     setRequests([...requests, newRequest]);
     setNewRequestTitle('');
@@ -34,7 +34,7 @@ export const TrendRequests = () => {
   };
 
   const handleCancelRequest = (requestId: string) => {
-    setRequests(requests.filter(request => request.id !== requestId));
+    setRequests(requests.filter((request) => request.id !== requestId));
   };
 
   return (
@@ -59,13 +59,15 @@ export const TrendRequests = () => {
                   <div>
                     <p className="text-sm font-medium text-gray-900">{request.title}</p>
                     <div className="mt-1">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        request.status === 'pending'
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : request.status === 'approved'
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-red-100 text-red-800'
-                      }`}>
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          request.status === 'pending'
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : request.status === 'approved'
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-red-100 text-red-800'
+                        }`}
+                      >
                         {request.status.charAt(0).toUpperCase() + request.status.slice(1)}
                       </span>
                     </div>

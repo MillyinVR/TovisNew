@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { Star, Image as ImageIcon, Send, ThumbsUp, MessageSquare, Edit2, Trash2, X } from 'lucide-react';
+import {
+  Star,
+  Image as ImageIcon,
+  Send,
+  ThumbsUp,
+  MessageSquare,
+  Edit2,
+  Trash2,
+  X,
+} from 'lucide-react';
 
 interface Review {
   id: string;
@@ -29,18 +38,19 @@ export const ReviewSystem = () => {
       serviceId: 'service1',
       serviceName: 'Bridal Makeup',
       rating: 5,
-      comment: 'Amazing service! Sarah was professional and made me feel beautiful on my special day.',
+      comment:
+        'Amazing service! Sarah was professional and made me feel beautiful on my special day.',
       images: [
         'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f',
-        'https://images.unsplash.com/photo-1503236823255-94609f598e71'
+        'https://images.unsplash.com/photo-1503236823255-94609f598e71',
       ],
       createdAt: '2024-03-15T10:00:00Z',
       likes: 12,
       response: {
         text: 'Thank you so much for your kind words! It was a pleasure working with you.',
-        createdAt: '2024-03-15T12:00:00Z'
-      }
-    }
+        createdAt: '2024-03-15T12:00:00Z',
+      },
+    },
   ]);
 
   const [selectedRating, setSelectedRating] = useState(0);
@@ -50,17 +60,19 @@ export const ReviewSystem = () => {
 
   const handleSubmitReview = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (editingReview) {
-      setReviews(reviews.map(review =>
-        review.id === editingReview.id
-          ? {
-              ...review,
-              rating: selectedRating,
-              comment: reviewText
-            }
-          : review
-      ));
+      setReviews(
+        reviews.map((review) =>
+          review.id === editingReview.id
+            ? {
+                ...review,
+                rating: selectedRating,
+                comment: reviewText,
+              }
+            : review
+        )
+      );
     } else {
       const newReview: Review = {
         id: Date.now().toString(),
@@ -72,7 +84,7 @@ export const ReviewSystem = () => {
         rating: selectedRating,
         comment: reviewText,
         createdAt: new Date().toISOString(),
-        likes: 0
+        likes: 0,
       };
       setReviews([...reviews, newReview]);
     }
@@ -90,15 +102,15 @@ export const ReviewSystem = () => {
   };
 
   const handleLikeReview = (reviewId: string) => {
-    setReviews(reviews.map(review =>
-      review.id === reviewId
-        ? { ...review, likes: review.likes + 1 }
-        : review
-    ));
+    setReviews(
+      reviews.map((review) =>
+        review.id === reviewId ? { ...review, likes: review.likes + 1 } : review
+      )
+    );
   };
 
   const handleDeleteReview = (reviewId: string) => {
-    setReviews(reviews.filter(review => review.id !== reviewId));
+    setReviews(reviews.filter((review) => review.id !== reviewId));
   };
 
   return (
@@ -111,9 +123,7 @@ export const ReviewSystem = () => {
         <form onSubmit={handleSubmitReview} className="space-y-4">
           {/* Rating Selection */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Rating
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Rating</label>
             <div className="flex items-center space-x-1">
               {[1, 2, 3, 4, 5].map((rating) => (
                 <button
@@ -124,9 +134,7 @@ export const ReviewSystem = () => {
                 >
                   <Star
                     className={`h-6 w-6 ${
-                      rating <= selectedRating
-                        ? 'text-yellow-400 fill-current'
-                        : 'text-gray-300'
+                      rating <= selectedRating ? 'text-yellow-400 fill-current' : 'text-gray-300'
                     }`}
                   />
                 </button>
@@ -151,14 +159,15 @@ export const ReviewSystem = () => {
 
           {/* Image Upload */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Add Photos
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Add Photos</label>
             <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
               <div className="space-y-1 text-center">
                 <ImageIcon className="mx-auto h-12 w-12 text-gray-400" />
                 <div className="flex text-sm text-gray-600">
-                  <label htmlFor="images" className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
+                  <label
+                    htmlFor="images"
+                    className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
+                  >
                     <span>Upload images</span>
                     <input
                       id="images"
@@ -203,12 +212,8 @@ export const ReviewSystem = () => {
           <div key={review.id} className="bg-white rounded-lg shadow-sm p-6">
             <div className="flex justify-between items-start">
               <div>
-                <h4 className="text-lg font-medium text-gray-900">
-                  {review.serviceName}
-                </h4>
-                <p className="text-sm text-gray-500">
-                  by {review.professionalName}
-                </p>
+                <h4 className="text-lg font-medium text-gray-900">{review.serviceName}</h4>
+                <p className="text-sm text-gray-500">by {review.professionalName}</p>
               </div>
               <div className="flex items-center space-x-2">
                 <button
@@ -235,9 +240,7 @@ export const ReviewSystem = () => {
                 <Star
                   key={star}
                   className={`h-5 w-5 ${
-                    star <= review.rating
-                      ? 'text-yellow-400 fill-current'
-                      : 'text-gray-300'
+                    star <= review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'
                   }`}
                 />
               ))}

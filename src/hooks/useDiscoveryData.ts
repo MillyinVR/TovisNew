@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react';
-import { 
-  getCategories, 
-  getServicesByCategory, 
+import {
+  getCategories,
+  getServicesByCategory,
   getProfessionalsByService,
   getProfessionalServicesByProfessional,
-  getProfessionalServicesByCategory
+  getProfessionalServicesByCategory,
 } from '../lib/api/services';
 import { ServiceCategory, ServiceDefinition, ProfessionalService } from '../types/service';
 
-export type UnifiedService = (ServiceDefinition & { isProfessionalService?: false }) | 
-  (ProfessionalService & { isProfessionalService: true });
+export type UnifiedService =
+  | (ServiceDefinition & { isProfessionalService?: false })
+  | (ProfessionalService & { isProfessionalService: true });
 
 export interface DiscoveryCategory {
   id: string;
@@ -42,15 +43,15 @@ export const useDiscoveryData = (): DiscoveryData => {
 
         // Fetch all categories first
         const fetchedCategories = await getCategories();
-        
+
         // Initialize categories with loading states
-        const initialCategories = fetchedCategories.map(category => ({
+        const initialCategories = fetchedCategories.map((category) => ({
           ...category,
           services: [],
           loading: true,
-          error: null
+          error: null,
         }));
-        
+
         setCategories(initialCategories);
 
         // Fetch services for each category
@@ -59,26 +60,26 @@ export const useDiscoveryData = (): DiscoveryData => {
             try {
               // Get base services for this category
               const baseServices = await getServicesByCategory(category.id);
-              const baseServicesWithFlag = baseServices.map(service => ({
+              const baseServicesWithFlag = baseServices.map((service) => ({
                 ...service,
-                isProfessionalService: false as const
+                isProfessionalService: false as const,
               }));
-              
+
               // Get professional services for this category
               const professionalServices = await getProfessionalServicesByCategory(category.id);
-              const professionalServicesWithFlag = professionalServices.map(service => ({
+              const professionalServicesWithFlag = professionalServices.map((service) => ({
                 ...service,
-                isProfessionalService: true as const
+                isProfessionalService: true as const,
               }));
-              
+
               // Combine both types of services
               const allServices = [...baseServicesWithFlag, ...professionalServicesWithFlag];
-              
+
               return {
                 ...category,
                 services: allServices,
                 loading: false,
-                error: null
+                error: null,
               };
             } catch (err) {
               console.error(`Error fetching services for category ${category.id}:`, err);
@@ -86,12 +87,12 @@ export const useDiscoveryData = (): DiscoveryData => {
                 ...category,
                 services: [],
                 loading: false,
-                error: err instanceof Error ? err.message : 'Failed to fetch services'
+                error: err instanceof Error ? err.message : 'Failed to fetch services',
               };
             }
           })
         );
-        
+
         setCategories(categoriesWithServices);
         setLoading(false);
       } catch (err) {
@@ -107,8 +108,8 @@ export const useDiscoveryData = (): DiscoveryData => {
   // Update trending services whenever categories change
   useEffect(() => {
     if (categories.length > 0) {
-      const allServices = categories.flatMap(cat => cat.services);
-      
+      const allServices = categories.flatMap((cat) => cat.services);
+
       const trending = allServices
         .sort((a, b) => {
           const dateA = a.createdAt?.toDate?.() || new Date(0);
@@ -125,6 +126,6 @@ export const useDiscoveryData = (): DiscoveryData => {
     categories,
     trendingServices,
     loading,
-    error
+    error,
   };
 };

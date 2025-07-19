@@ -11,11 +11,7 @@ interface ServiceSetupProps {
   serviceId?: string;
 }
 
-const ServiceSetupContent: React.FC<ServiceSetupProps> = ({
-  onClose,
-  mode = 'add',
-  serviceId
-}) => {
+const ServiceSetupContent: React.FC<ServiceSetupProps> = ({ onClose, mode = 'add', serviceId }) => {
   console.log('ServiceSetupContent: Rendering');
 
   const { userProfile } = useAuth();
@@ -30,7 +26,7 @@ const ServiceSetupContent: React.FC<ServiceSetupProps> = ({
   // We can assume they're a professional if they have access to this component
 
   const serviceManagement = useServiceManagement();
-  
+
   if (!serviceManagement) {
     console.error('ServiceSetupContent: useServiceManagement returned null');
     return <div>Error: Service management not available</div>;
@@ -46,7 +42,7 @@ const ServiceSetupContent: React.FC<ServiceSetupProps> = ({
     selectedCategory,
     setSelectedCategory,
     addService,
-    clearError
+    clearError,
   } = serviceManagement;
 
   // Debug logging
@@ -57,14 +53,14 @@ const ServiceSetupContent: React.FC<ServiceSetupProps> = ({
     services,
     selectedCategory,
     loading,
-    isFetchingServices
+    isFetchingServices,
   });
 
   const [formData, setFormData] = useState({
     serviceId: serviceId || '',
     price: '',
     duration: '',
-    bufferTime: '15'
+    bufferTime: '15',
   });
 
   useEffect(() => {
@@ -79,7 +75,7 @@ const ServiceSetupContent: React.FC<ServiceSetupProps> = ({
           serviceId,
           price: professionalService.price.toString(),
           duration: professionalService.duration.toString(),
-          bufferTime: '15'
+          bufferTime: '15',
         });
       }
     }
@@ -87,7 +83,10 @@ const ServiceSetupContent: React.FC<ServiceSetupProps> = ({
 
   // Check if a service is already added by the professional
   const isServiceAdded = (serviceId: string) => {
-    return professionalServices?.some((ps: ProfessionalService) => ps.baseServiceId === serviceId) || false;
+    return (
+      professionalServices?.some((ps: ProfessionalService) => ps.baseServiceId === serviceId) ||
+      false
+    );
   };
 
   // Get professional service details if service is already added
@@ -121,7 +120,7 @@ const ServiceSetupContent: React.FC<ServiceSetupProps> = ({
       const duration = Number(formData.duration);
       const minDuration = Math.max(15, selectedService.baseDuration * 0.5); // Can't be less than 50% of base duration or 15 mins
       const maxDuration = selectedService.baseDuration * 2; // Can't be more than double the base duration
-      
+
       if (!duration || duration < minDuration) {
         throw new Error(`Duration must be at least ${minDuration} minutes`);
       }
@@ -130,12 +129,7 @@ const ServiceSetupContent: React.FC<ServiceSetupProps> = ({
       }
 
       if (addService) {
-        await addService(
-          formData.serviceId,
-          price,
-          duration,
-          true
-        );
+        await addService(formData.serviceId, price, duration, true);
       }
 
       onClose?.();
@@ -156,7 +150,9 @@ const ServiceSetupContent: React.FC<ServiceSetupProps> = ({
       ...formData,
       serviceId: service.id,
       price: existingService ? existingService.price.toString() : service.basePrice.toString(),
-      duration: existingService ? existingService.duration.toString() : service.baseDuration.toString()
+      duration: existingService
+        ? existingService.duration.toString()
+        : service.baseDuration.toString(),
     });
   };
 
@@ -191,7 +187,9 @@ const ServiceSetupContent: React.FC<ServiceSetupProps> = ({
     console.log('ServiceSetupContent: No categories available');
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">No service categories available. Please contact an administrator.</p>
+        <p className="text-gray-500">
+          No service categories available. Please contact an administrator.
+        </p>
       </div>
     );
   }
@@ -204,7 +202,7 @@ const ServiceSetupContent: React.FC<ServiceSetupProps> = ({
   console.log('- services array:', services);
   console.log('- shouldShowForm:', !!(formData.serviceId && services));
   console.log('- formData:', formData);
-  
+
   return (
     <div className="space-y-6">
       {/* Category Filter */}
@@ -220,11 +218,13 @@ const ServiceSetupContent: React.FC<ServiceSetupProps> = ({
           disabled={loading || isFetchingServices}
         >
           <option value="">All Categories</option>
-          {categories.map((category: ServiceCategory) => (
+          {categories.map((category: ServiceCategory) =>
             category && category.id ? (
-              <option key={category.id} value={category.id}>{category.name}</option>
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
             ) : null
-          ))}
+          )}
         </select>
       </div>
 
@@ -245,8 +245,8 @@ const ServiceSetupContent: React.FC<ServiceSetupProps> = ({
               const addedService = getProfessionalService(service.id);
               const isSelected = service.id === formData.serviceId;
               return (
-                <li 
-                  key={service.id} 
+                <li
+                  key={service.id}
                   className={`px-4 py-4 sm:px-6 cursor-pointer hover:bg-gray-50 ${
                     isSelected ? 'bg-indigo-50' : ''
                   }`}
@@ -267,19 +267,13 @@ const ServiceSetupContent: React.FC<ServiceSetupProps> = ({
                     <div className="flex items-center space-x-4">
                       <div className="flex items-center text-sm text-gray-500">
                         <Clock className="h-4 w-4 mr-1" />
-                        {addedService ? (
-                          `${addedService.duration} min`
-                        ) : (
-                          `Base: ${service.baseDuration} min`
-                        )}
+                        {addedService
+                          ? `${addedService.duration} min`
+                          : `Base: ${service.baseDuration} min`}
                       </div>
                       <div className="flex items-center text-sm text-gray-500">
                         <DollarSign className="h-4 w-4 mr-1" />
-                        {addedService ? (
-                          `$${addedService.price}`
-                        ) : (
-                          `From $${service.basePrice}`
-                        )}
+                        {addedService ? `$${addedService.price}` : `From $${service.basePrice}`}
                       </div>
                     </div>
                   </div>
@@ -308,7 +302,8 @@ const ServiceSetupContent: React.FC<ServiceSetupProps> = ({
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
             <p className="mt-1 text-sm text-gray-500">
-              Base price: ${services.find((s: Service) => s.id === formData.serviceId)?.basePrice} (You can only increase the price)
+              Base price: ${services.find((s: Service) => s.id === formData.serviceId)?.basePrice}{' '}
+              (You can only increase the price)
             </p>
           </div>
 
@@ -322,14 +317,26 @@ const ServiceSetupContent: React.FC<ServiceSetupProps> = ({
               value={formData.duration}
               onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
               required
-              min={formData.serviceId ? 
-                Math.max(15, (services.find((s: Service) => s.id === formData.serviceId)?.baseDuration || 0) * 0.5) : 15}
-              max={formData.serviceId ? 
-                (services.find((s: Service) => s.id === formData.serviceId)?.baseDuration || 0) * 2 : undefined}
+              min={
+                formData.serviceId
+                  ? Math.max(
+                      15,
+                      (services.find((s: Service) => s.id === formData.serviceId)?.baseDuration ||
+                        0) * 0.5
+                    )
+                  : 15
+              }
+              max={
+                formData.serviceId
+                  ? (services.find((s: Service) => s.id === formData.serviceId)?.baseDuration ||
+                      0) * 2
+                  : undefined
+              }
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
             <p className="mt-1 text-sm text-gray-500">
-              Base duration: {services.find((s: Service) => s.id === formData.serviceId)?.baseDuration} minutes
+              Base duration:{' '}
+              {services.find((s: Service) => s.id === formData.serviceId)?.baseDuration} minutes
               (Can be adjusted between 50% and 200% of base duration)
             </p>
           </div>

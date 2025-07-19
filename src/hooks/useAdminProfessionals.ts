@@ -37,90 +37,94 @@ export const useAdminProfessionals = (statusFilter: string = 'all') => {
         let attempts = 0;
         const maxAttempts = 5;
         let claimsVerified = false;
-        
+
         while (attempts < maxAttempts && !claimsVerified) {
           const tokenResult = await auth.currentUser?.getIdTokenResult(true);
           console.log(`Attempt ${attempts + 1}: Verifying admin claims:`, tokenResult?.claims);
-          
+
           if (tokenResult?.claims.admin || tokenResult?.claims.role === 'admin') {
             claimsVerified = true;
             console.log('Admin access verified via claims:', tokenResult?.claims);
           } else {
             attempts++;
-            console.log(`Admin claims not found in useAdminProfessionals, attempt ${attempts} of ${maxAttempts}`);
+            console.log(
+              `Admin claims not found in useAdminProfessionals, attempt ${attempts} of ${maxAttempts}`
+            );
             if (attempts < maxAttempts) {
-              await new Promise(resolve => setTimeout(resolve, 2000));
+              await new Promise((resolve) => setTimeout(resolve, 2000));
             }
           }
         }
 
         if (!claimsVerified) {
-          console.error('Failed to verify admin claims after multiple attempts in useAdminProfessionals');
+          console.error(
+            'Failed to verify admin claims after multiple attempts in useAdminProfessionals'
+          );
           setLoading(false);
           return;
         }
 
         // Create base query
-        let professionalQuery = query(
-          collection(db, 'users'),
-          where('role', '==', 'professional')
-        );
+        let professionalQuery = query(collection(db, 'users'), where('role', '==', 'professional'));
 
         // Add status filter if not 'all'
         if (statusFilter !== 'all') {
-          professionalQuery = query(
-            professionalQuery,
-            where('status', '==', statusFilter)
-          );
+          professionalQuery = query(professionalQuery, where('status', '==', statusFilter));
         }
 
         // Set up real-time listener
-        const unsubscribe = onSnapshot(professionalQuery, async (snapshot) => {
-          const professionalsData = await Promise.all(
-            snapshot.docs.map(async (doc) => {
-              const data = doc.data();
-              
-              // Get bookings count
-              const bookingsQuery = query(
-                collection(db, 'bookings'),
-                where('professionalId', '==', doc.id)
-              );
-              const bookingsSnapshot = await getDocs(bookingsQuery);
-              
-              // Get average rating
-              const reviewsQuery = query(
-                collection(db, 'reviews'),
-                where('professionalId', '==', doc.id)
-              );
-              const reviewsSnapshot = await getDocs(reviewsQuery);
-              const reviews = reviewsSnapshot.docs.map(doc => doc.data());
-              const averageRating = reviews.length > 0
-                ? reviews.reduce((acc, review) => acc + (review.rating || 0), 0) / reviews.length
-                : 0;
+        const unsubscribe = onSnapshot(
+          professionalQuery,
+          async (snapshot) => {
+            const professionalsData = await Promise.all(
+              snapshot.docs.map(async (doc) => {
+                const data = doc.data();
 
-              return {
-                id: doc.id,
-                name: data.name || 'Unknown',
-                photo: data.photoURL || '',
-                type: data.specialization || 'Beauty Professional',
-                rating: averageRating,
-                location: data.location || 'Location not set',
-                status: data.status || 'inactive',
-                totalBookings: bookingsSnapshot.size,
-                joinDate: data.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
-                email: data.email || '',
-                phone: data.phone || ''
-              } as Professional;
-            })
-          );
+                // Get bookings count
+                const bookingsQuery = query(
+                  collection(db, 'bookings'),
+                  where('professionalId', '==', doc.id)
+                );
+                const bookingsSnapshot = await getDocs(bookingsQuery);
 
-          setProfessionals(professionalsData);
-          setLoading(false);
-        }, (error) => {
-          console.error('Error fetching professionals:', error);
-          setError(error as Error);
-          setLoading(false);
-        });
+                // Get average rating
+                const reviewsQuery = query(
+                  collection(db, 'reviews'),
+                  where('professionalId', '==', doc.id)
+                );
+                const reviewsSnapshot = await getDocs(reviewsQuery);
+                const reviews = reviewsSnapshot.docs.map((doc) => doc.data());
+                const averageRating =
+                  reviews.length > 0
+                    ? reviews.reduce((acc, review) => acc + (review.rating || 0), 0) /
+                      reviews.length
+                    : 0;
+
+                return {
+                  id: doc.id,
+                  name: data.name || 'Unknown',
+                  photo: data.photoURL || '',
+                  type: data.specialization || 'Beauty Professional',
+                  rating: averageRating,
+                  location: data.location || 'Location not set',
+                  status: data.status || 'inactive',
+                  totalBookings: bookingsSnapshot.size,
+                  joinDate: data.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+                  email: data.email || '',
+                  phone: data.phone || '',
+                } as Professional;
+              })
+            );
+
+            setProfessionals(professionalsData);
+            setLoading(false);
+          },
+          (error) => {
+            console.error('Error fetching professionals:', error);
+            setError(error as Error);
+            setLoading(false);
+          }
+        );
 
         return () => unsubscribe();
       } catch (error) {

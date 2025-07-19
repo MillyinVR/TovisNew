@@ -22,7 +22,7 @@ export const TransactionHistory = () => {
       status: 'completed',
       description: 'Bridal Makeup Service',
       client: 'Emma Wilson',
-      service: 'Bridal Makeup'
+      service: 'Bridal Makeup',
     },
     {
       id: 'tx2',
@@ -30,7 +30,7 @@ export const TransactionHistory = () => {
       type: 'payout',
       amount: 450,
       status: 'completed',
-      description: 'Weekly payout'
+      description: 'Weekly payout',
     },
     {
       id: 'tx3',
@@ -40,8 +40,8 @@ export const TransactionHistory = () => {
       status: 'completed',
       description: 'Partial refund',
       client: 'Sarah Johnson',
-      service: 'Natural Glam'
-    }
+      service: 'Natural Glam',
+    },
   ]);
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -52,9 +52,7 @@ export const TransactionHistory = () => {
       <div className="sm:flex sm:items-center sm:justify-between">
         <div>
           <h3 className="text-lg font-medium text-gray-900">Transaction History</h3>
-          <p className="mt-2 text-sm text-gray-700">
-            View and manage all financial transactions
-          </p>
+          <p className="mt-2 text-sm text-gray-700">View and manage all financial transactions</p>
         </div>
       </div>
 
@@ -96,19 +94,34 @@ export const TransactionHistory = () => {
               <table className="min-w-full divide-y divide-gray-300">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">
+                    <th
+                      scope="col"
+                      className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900"
+                    >
                       Date
                     </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    <th
+                      scope="col"
+                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                    >
                       Type
                     </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    <th
+                      scope="col"
+                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                    >
                       Description
                     </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    <th
+                      scope="col"
+                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                    >
                       Amount
                     </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                    <th
+                      scope="col"
+                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                    >
                       Status
                     </th>
                   </tr>
@@ -120,13 +133,15 @@ export const TransactionHistory = () => {
                         {transaction.date}
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          transaction.type === 'payment'
-                            ? 'bg-green-100 text-green-800'
-                            : transaction.type === 'refund'
-                            ? 'bg-red-100 text-red-800'
-                            : 'bg-blue-100 text-blue-800'
-                        }`}>
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            transaction.type === 'payment'
+                              ? 'bg-green-100 text-green-800'
+                              : transaction.type === 'refund'
+                                ? 'bg-red-100 text-red-800'
+                                : 'bg-blue-100 text-blue-800'
+                          }`}
+                        >
                           {transaction.type}
                         </span>
                       </td>
@@ -140,19 +155,25 @@ export const TransactionHistory = () => {
                           ) : (
                             <ArrowUp className="h-4 w-4 text-green-500 mr-1" />
                           )}
-                          <span className={transaction.type === 'refund' ? 'text-red-600' : 'text-gray-900'}>
+                          <span
+                            className={
+                              transaction.type === 'refund' ? 'text-red-600' : 'text-gray-900'
+                            }
+                          >
                             ${transaction.amount}
                           </span>
                         </div>
                       </td>
                       <td className="whitespace-nowrap px-3 py-4 text-sm">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          transaction.status === 'completed'
-                            ? 'bg-green-100 text-green-800'
-                            : transaction.status === 'pending'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-red-100 text-red-800'
-                        }`}>
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            transaction.status === 'completed'
+                              ? 'bg-green-100 text-green-800'
+                              : transaction.status === 'pending'
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : 'bg-red-100 text-red-800'
+                          }`}
+                        >
                           {transaction.status}
                         </span>
                       </td>

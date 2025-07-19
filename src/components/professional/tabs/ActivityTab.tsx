@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FooterNav } from '../../shared/FooterNav';
-import { 
-  Bell, 
-  Calendar, 
-  Star, 
-  Heart, 
-  ClipboardList, 
+import {
+  Bell,
+  Calendar,
+  Star,
+  Heart,
+  ClipboardList,
   Clock,
   TrendingUp,
   CheckCircle,
-  AlertTriangle
+  AlertTriangle,
 } from 'lucide-react';
 import { useNotifications } from '../../../hooks/useNotifications';
 import { useProfessionalAppointments } from '../../../hooks/useProfessionalAppointments';
@@ -36,16 +36,16 @@ export const ActivityTab = () => {
   const { notifications } = useNotifications();
   const { pendingAppointments } = useProfessionalAppointments();
   const [activities, setActivities] = useState<Activity[]>([]);
-  
+
   // Convert notifications and pending appointments to activities
   useEffect(() => {
-    const notificationActivities = notifications.map(notification => {
+    const notificationActivities = notifications.map((notification) => {
       // Determine activity type based on notification type
       let type: Activity['type'] = 'appointment';
       if (notification.type?.includes('review')) type = 'review';
       else if (notification.type?.includes('favorite')) type = 'favorite';
       else if (notification.type?.includes('aftercare')) type = 'aftercare';
-      
+
       return {
         id: notification.id,
         type,
@@ -53,18 +53,21 @@ export const ActivityTab = () => {
         description: notification.message,
         timestamp: notification.timestamp.toISOString(),
         status: notification.read ? 'completed' : 'pending',
-        action: type === 'appointment' ? {
-          label: 'Review Request',
-          onClick: () => navigate('/professional/bookings')
-        } : undefined
+        action:
+          type === 'appointment'
+            ? {
+                label: 'Review Request',
+                onClick: () => navigate('/professional/bookings'),
+              }
+            : undefined,
       } as Activity;
     });
-    
+
     // Convert pending appointments to activities
-    const appointmentActivities = pendingAppointments.map(appointment => {
+    const appointmentActivities = pendingAppointments.map((appointment) => {
       const formattedDate = format(parseISO(appointment.startTime), 'MMMM d, yyyy');
       const formattedTime = format(parseISO(appointment.startTime), 'h:mm a');
-      
+
       return {
         id: `appointment_${appointment.id}`,
         type: 'appointment',
@@ -74,15 +77,16 @@ export const ActivityTab = () => {
         status: 'pending',
         action: {
           label: 'Review Request',
-          onClick: () => navigate('/professional/bookings')
-        }
+          onClick: () => navigate('/professional/bookings'),
+        },
       } as Activity;
     });
-    
+
     // Combine and sort by timestamp (newest first)
-    const allActivities = [...notificationActivities, ...appointmentActivities]
-      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-    
+    const allActivities = [...notificationActivities, ...appointmentActivities].sort(
+      (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    );
+
     setActivities(allActivities);
   }, [notifications, pendingAppointments, navigate]);
 
@@ -119,7 +123,7 @@ export const ActivityTab = () => {
   };
 
   const filteredActivities = activities.filter(
-    activity => filter === 'all' || activity.type === filter
+    (activity) => filter === 'all' || activity.type === filter
   );
 
   return (
@@ -195,30 +199,26 @@ export const ActivityTab = () => {
             {filteredActivities.map((activity) => (
               <div key={activity.id} className="bg-white rounded-lg shadow-sm p-4">
                 <div className="flex items-start space-x-4">
-                  <div className="flex-shrink-0">
-                    {getActivityIcon(activity.type)}
-                  </div>
+                  <div className="flex-shrink-0">{getActivityIcon(activity.type)}</div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium text-gray-900">
-                        {activity.title}
-                      </p>
+                      <p className="text-sm font-medium text-gray-900">{activity.title}</p>
                       {activity.status && (
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          activity.status === 'pending'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : activity.status === 'completed'
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-red-100 text-red-800'
-                        }`}>
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            activity.status === 'pending'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : activity.status === 'completed'
+                                ? 'bg-green-100 text-green-800'
+                                : 'bg-red-100 text-red-800'
+                          }`}
+                        >
                           {getStatusIcon(activity.status)}
                           <span className="ml-1 capitalize">{activity.status}</span>
                         </span>
                       )}
                     </div>
-                    <p className="mt-1 text-sm text-gray-500">
-                      {activity.description}
-                    </p>
+                    <p className="mt-1 text-sm text-gray-500">{activity.description}</p>
                     <div className="mt-2 flex items-center justify-between">
                       <span className="text-xs text-gray-500">
                         {new Date(activity.timestamp).toLocaleString()}
