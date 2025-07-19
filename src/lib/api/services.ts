@@ -233,7 +233,10 @@ export async function getProfessionalServicesByCategory(categoryId: string): Pro
     
     // For each professional, check if they offer services in this category
     const professionalServicesPromises = usersSnapshot.docs
-      .filter(doc => doc.data().role === 'professional')
+      .filter(doc => {
+        const userData = doc.data();
+        return userData.role === 'professional' || userData.role === 'pending_professional';
+      })
       .map(async (userDoc) => {
         const professionalId = userDoc.id;
         const servicesRef = collection(db, 'users', professionalId, 'services');

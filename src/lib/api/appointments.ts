@@ -134,6 +134,10 @@ export const getProfessionalAppointments = async (
   status?: Appointment['status']
 ) => {
   try {
+    console.log('Fetching appointments for professional ID:', professionalId);
+    console.log('Professional ID type:', typeof professionalId);
+    console.log('Professional ID length:', professionalId.length);
+    
     let q = query(
       appointmentsRef,
       where('professionalId', '==', professionalId),
@@ -141,16 +145,38 @@ export const getProfessionalAppointments = async (
     );
 
     if (status) {
+      console.log('Filtering by status:', status);
       q = query(q, where('status', '==', status));
     }
 
+    console.log('Executing query...');
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    })) as Appointment[];
+    console.log(`Found ${querySnapshot.size} appointments for professional ${professionalId}`);
+    
+    const appointments = querySnapshot.docs.map(doc => {
+      const data = doc.data();
+      console.log(`Appointment ${doc.id}:`, {
+        professionalId: data.professionalId,
+        clientId: data.clientId,
+        serviceName: data.serviceName,
+        status: data.status,
+        startTime: data.startTime
+      });
+      return {
+        id: doc.id,
+        ...data
+      };
+    }) as Appointment[];
+    
+    console.log('Returning appointments:', appointments.length);
+    return appointments;
   } catch (error) {
     console.error('Error fetching professional appointments:', error);
+    console.error('Error details:', {
+      professionalId,
+      status,
+      errorMessage: error instanceof Error ? error.message : 'Unknown error'
+    });
     throw error;
   }
 };

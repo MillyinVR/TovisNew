@@ -151,9 +151,17 @@ const BookingConfirmation: React.FC = () => {
       // Ensure professionalName is not undefined
       const safeProfessionalName = professionalName || 'Professional';
       
+      // Validate professionalId before creating appointment
+      if (!professionalId || professionalId.trim() === '') {
+        throw new Error('Professional ID is missing or invalid');
+      }
+      
+      // Clean and validate the professionalId
+      const cleanProfessionalId = professionalId.trim();
+      
       // Log the appointment data for debugging
       console.log('Creating appointment with data:', {
-        professionalId,
+        professionalId: cleanProfessionalId,
         professionalName: safeProfessionalName,
         clientId: currentUser.uid,
         clientName: userProfile?.displayName || 'Client',
@@ -165,16 +173,16 @@ const BookingConfirmation: React.FC = () => {
       });
       
       // Additional logging to help debug the professionalId
-      console.log('Professional ID type:', typeof professionalId);
-      console.log('Professional ID length:', professionalId.length);
-      console.log('Professional ID contains underscore:', professionalId.includes('_'));
+      console.log('Professional ID type:', typeof cleanProfessionalId);
+      console.log('Professional ID length:', cleanProfessionalId.length);
+      console.log('Professional ID value:', cleanProfessionalId);
       
       // Create appointment - ensure professionalId is correctly passed
-      await createAppointment({
-        professionalId: professionalId, // Ensure this is the correct professional ID
+      const appointmentData = {
+        professionalId: cleanProfessionalId, // Use cleaned professional ID
         professionalName: safeProfessionalName,
         clientId: currentUser.uid,
-        clientName: userProfile?.displayName || 'Client',
+        clientName: userProfile?.displayName || userProfile?.name || 'Client',
         service: serviceId,
         serviceName: serviceName || 'Service',
         date: appointmentDate,
@@ -183,7 +191,11 @@ const BookingConfirmation: React.FC = () => {
         location: '',
         notes: '',
         calendarSync: false
-      });
+      };
+      
+      console.log('Final appointment data being sent:', appointmentData);
+      
+      await createAppointment(appointmentData);
       
       setSuccess(true);
       
