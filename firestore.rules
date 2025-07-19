@@ -1,55 +1,37 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Helper functions
+    // Helper functions for authentication and authorization
     function isAuthenticated() {
       return request.auth != null;
     }
 
+    // Primary authorization using custom claims
     function isAdmin() {
       return request.auth != null && (
-        // Check token claims first
         request.auth.token.admin == true || 
-        request.auth.token.role == 'admin' ||
-        // Fallback to checking user documents
-        (
-          exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
-        ) ||
-        (
-          exists(/databases/$(database)/documents/admins/$(request.auth.uid)) 
-        )
+        request.auth.token.role == 'admin'
       );
     }
 
     function isProfessional() {
       return request.auth != null && (
-        // Check token claims first
         request.auth.token.professional == true || 
-        request.auth.token.role == 'professional' ||
-        // Fallback to checking user documents
-        (
-          exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'professional'
-        ) ||
-        (
-          exists(/databases/$(database)/documents/professionals/$(request.auth.uid))
-        )
+        request.auth.token.role == 'professional'
+      );
+    }
+
+    function isPendingProfessional() {
+      return request.auth != null && (
+        request.auth.token.role == 'pending_professional'
       );
     }
 
     function isClient() {
       return request.auth != null && (
-        // Check token claims
         request.auth.token.role == 'client' ||
-        // Fallback to checking user documents
-        (
-          exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'client'
-        ) ||
-        (
-          exists(/databases/$(database)/documents/clients/$(request.auth.uid))
-        )
+        // Fallback for users without claims set yet
+        (!('role' in request.auth.token) && !('admin' in request.auth.token) && !('professional' in request.auth.token))
       );
     }
 
@@ -57,294 +39,146 @@ service cloud.firestore {
       return request.auth != null && request.auth.uid == userId;
     }
 
-    function isNewUser() {
-      return request.resource != null && request.resource.data.role == 'client';
+    function hasVerificationStatus(status) {
+      return request.auth != null && request.auth.token.verificationStatus == status;
     }
 
-    // Note: Complex geospatial calculations are not supported in Firestore rules.
-    // For location-based security, use Firebase GeoFirestore or implement in application code.
+    function isApprovedProfessional() {
+      return isProfessional() && hasVerificationStatus('approved');
+    }
 
-    // Core Users Collection - Maintains backward compatibility
+    // Users collection - canonical source of truth for user data
     match /users/{userId} {
       allow list: if isAuthenticated() && isAdmin();
       allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
-      allow create: if isAuthenticated() && (isOwner(userId) || isNewUser());
+      allow create: if isAuthenticated() && isOwner(userId);
       allow update: if isAuthenticated() && (isOwner(userId) || isAdmin());
-
-      // Professional's services subcollection
-      match /services/{serviceId} {
-        allow read: if isAuthenticated();
-        allow create, update: if isAuthenticated() && isOwner(userId);
-        allow delete: if isAuthenticated() && isOwner(userId);
-      }
-        
-      // Professional's settings subcollection
-      match /settings/{settingId} {
-        allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
-        allow write: if isAuthenticated() && (isOwner(userId) || isProfessional() && userId == request.auth.uid);
-      }
-        
-      // Professional's custom working hours subcollection
-      match /customWorkingHours/{hourId} {
-        allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
-        allow write: if isAuthenticated() && (isOwner(userId) || isProfessional() && userId == request.auth.uid);
-      }
-        
-      // Professional's blocked times subcollection
-      match /blockedTimes/{timeId} {
-        allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
-        allow write: if isAuthenticated() && (isOwner(userId) || isProfessional() && userId == request.auth.uid);
-      }
-    }
-
-    // New Role-Specific Collections
-    match /professionals/{professionalId} {
-      allow list: if isAuthenticated();
-      allow read: if isAuthenticated();
-      allow create, update: if isAuthenticated() && (isOwner(professionalId) || isAdmin());
-      allow delete: if isAuthenticated() && isAdmin();
-
-      // Professional's services subcollection
-      match /services/{serviceId} {
-        allow read: if isAuthenticated();
-        allow create, update, delete: if isAuthenticated() && (isOwner(professionalId) || isAdmin());
-      }
-
-      // Professional's settings subcollection
-      match /settings/{settingId} {
-        allow read: if true;
-        allow write: if true;
-      }
-      
-      // Professional's working hours subcollection
-      match /workingHours/{day} {
-        allow read: if isAuthenticated();
-        allow write: if isAuthenticated() && (isOwner(professionalId) || isAdmin());
-      }
-
-      // Professional's custom working hours subcollection
-      match /customWorkingHours/{hourId} {
-        allow read: if true;
-        allow write: if true;
-      }
-
-      // Professional's time off subcollection
-      match /timeOff/{timeOffId} {
-        allow read: if true;
-        allow write: if true;
-      }
-
-      // Professional's portfolio subcollection
-      match /portfolio/{itemId} {
-        allow read: if isAuthenticated();
-        allow create, update, delete: if isAuthenticated() && (isOwner(professionalId) || isAdmin());
-      }
-
-      // Professional's licenses subcollection
-      match /licenses/{licenseId} {
-        allow read: if isAuthenticated() && (isOwner(professionalId) || isAdmin());
-        allow create, update: if isAuthenticated() && (isOwner(professionalId) || isAdmin());
-        allow delete: if isAuthenticated() && isAdmin();
-      }
-    }
-
-    match /clients/{clientId} {
-      allow read: if isAuthenticated() && (
-        isOwner(clientId) || 
-        isAdmin() || 
-        // Allow professionals to read client profiles if they have appointments with the client
-        (isProfessional() && 
-         exists(/databases/$(database)/documents/appointments) && 
-         (
-           // We can't use complex queries in rules, so we'll allow access for all professionals
-           // The application code will enforce the proper access control
-           isProfessional()
-         ))
-      );
-      allow create, update: if isAuthenticated() && (isOwner(clientId) || isAdmin());
       allow delete: if isAuthenticated() && isAdmin();
     }
 
-    match /admins/{adminId} {
-      allow read: if isAuthenticated() && (isOwner(adminId) || isAdmin());
-      allow create, update, delete: if isAuthenticated() && isAdmin();
-    }
-
-    // Reference images are admin-only for writing, but the AI service can read
-    match /reference-images/{document=**} {
-      allow read: if isAuthenticated() && (isAdmin() || isProfessional());
-      allow write: if isAuthenticated() && isAdmin();
-    }
-
-    // License management collections (legacy)
-    match /licenses/{licenseId} {
-      allow read, list: if isAuthenticated() && (
-        isOwner(resource.data.professionalId) || 
-        isAdmin()
-      );
-      allow create: if isAuthenticated() && (
-        isOwner(request.resource.data.professionalId) || 
-        isAdmin()
-      );
-      allow update: if isAuthenticated() && isAdmin();
-
-      match /history/{historyId} {
-        allow read, list: if isAuthenticated() && (
-          exists(/databases/$(database)/documents/licenses/$(licenseId)) &&
-          (isOwner(get(/databases/$(database)/documents/licenses/$(licenseId)).data.professionalId) || isAdmin())
-        );
-        allow create: if isAuthenticated() && isAdmin();
-      }
-    }
-
-    match /reminders/{reminderId} {
-      allow read, list: if isAuthenticated() && (
-        isOwner(resource.data.professionalId) || 
-        isAdmin()
-      );
-      allow create: if isAuthenticated() && isAdmin();
-    }
-
-    // Performance metrics collections
-    match /bookings/{bookingId} {
-      allow read, list: if isAuthenticated() && (
-        isOwner(resource.data.professionalId) || 
-        isAdmin()
-      );
-    }
-
-    match /reviews/{reviewId} {
-      allow read: if isAuthenticated();
-      allow list: if isAuthenticated() && (
-        isOwner(resource.data.professionalId) || 
-        isAdmin()
-      );
-      allow create: if isAuthenticated() && isClient();
+    // Verifications collection - separate from user data, only verification documents and statuses
+    match /verifications/{userId} {
+      allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      allow create: if isAuthenticated() && isOwner(userId);
       allow update: if isAuthenticated() && (
-        isOwner(resource.data.clientId) || 
+        // Users can update their own pending verifications
+        (isOwner(userId) && resource.data.status == 'pending') ||
+        // Admins can update any verification
         isAdmin()
       );
+      allow delete: if false; // Verification documents cannot be deleted
+
+      // Verification documents subcollection
+      match /documents/{documentId} {
+        allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
+        allow create: if isAuthenticated() && isOwner(userId);
+        allow update: if isAuthenticated() && (
+          (isOwner(userId) && get(/databases/$(database)/documents/verifications/$(userId)).data.status == 'pending') ||
+          isAdmin()
+        );
+        allow delete: if false; // Verification documents cannot be deleted
+      }
     }
 
-    match /messages/{messageId} {
-      allow read, list: if isAuthenticated() && (
-        isOwner(resource.data.professionalId) || 
-        isAdmin()
-      );
-    }
-
-    // Service categories
-    match /serviceCategories/{categoryId} {
-      allow read: if isAuthenticated();
-      allow write, delete: if isAuthenticated() && isAdmin();
-    }
-
-    // Services (top-level collection)
+    // Services collection - base service definitions (admin managed)
     match /services/{serviceId} {
       allow read: if isAuthenticated();
       allow create, update, delete: if isAuthenticated() && isAdmin();
     }
-    
-    // Service Providers collection (top-level)
-    match /serviceProviders/{serviceProviderId} {
+
+    // Service categories collection
+    match /serviceCategories/{categoryId} {
       allow read: if isAuthenticated();
-      allow create, update: if isAuthenticated() && (
+      allow create, update, delete: if isAuthenticated() && isAdmin();
+    }
+
+    // Professional services - services offered by specific professionals
+    match /professionalServices/{serviceId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && (
         (isProfessional() && request.resource.data.professionalId == request.auth.uid) || 
         isAdmin()
       );
-      allow delete: if isAuthenticated() && (
+      allow update, delete: if isAuthenticated() && (
         (isProfessional() && resource.data.professionalId == request.auth.uid) || 
         isAdmin()
       );
     }
 
-    // Professional Services collection (top-level)
-    match /professionalServices/{serviceId} {
-      allow read: if true; // Allow public read access to professional services
-      allow create, update, delete: if isAuthenticated() && 
-        (isProfessional() && request.resource.data.professionalId == request.auth.uid || isAdmin());
+    // Appointments collection
+    match /appointments/{appointmentId} {
+      allow read: if isAuthenticated() && (
+        resource.data.clientId == request.auth.uid ||
+        resource.data.professionalId == request.auth.uid ||
+        isAdmin()
+      );
+      allow create: if isAuthenticated() && (
+        isClient() || isProfessional() || isAdmin()
+      );
+      allow update: if isAuthenticated() && (
+        resource.data.clientId == request.auth.uid ||
+        resource.data.professionalId == request.auth.uid ||
+        isAdmin()
+      );
+      allow delete: if isAuthenticated() && isAdmin();
     }
 
-    // Legacy portfolio collection
+    // Portfolio collection
     match /portfolio/{itemId} {
       allow read: if isAuthenticated();
-      allow create: if isAuthenticated() && (isProfessional() || isAdmin());
-      allow update, delete: if isAuthenticated() && (
-        (isProfessional() && request.auth.uid == resource.data.professionalId) || 
-        isAdmin()
-      );
-    }
-
-    match /products/{productId} {
-      allow read: if isAuthenticated();
-      allow create: if isAuthenticated() && (isProfessional() || isAdmin());
-      allow update, delete: if isAuthenticated() && (
-        (isProfessional() && request.auth.uid == resource.data.professionalId) || 
-        isAdmin()
-      );
-    }
-    
-    match /appointments/{appointmentId} {
-      allow read: if true; // Allow public read access to appointments
-      allow create: if true; // Allow public creation of appointments
-      allow update: if true; // Allow public updates to appointments
-    }
-
-    // Verification documents collection
-    match /professionalVerifications/{verificationId} {
-      allow read, list: if isAuthenticated() && isAdmin();
       allow create: if isAuthenticated() && (
-        isOwner(request.resource.data.userId) || 
+        (isProfessional() && request.resource.data.professionalId == request.auth.uid) || 
+        isAdmin()
+      );
+      allow update, delete: if isAuthenticated() && (
+        (isProfessional() && resource.data.professionalId == request.auth.uid) || 
+        isAdmin()
+      );
+    }
+
+    // Content collection - for social media features
+    match /content/{contentId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && (
+        (isProfessional() && request.resource.data.professionalId == request.auth.uid) || 
+        isAdmin()
+      );
+      allow update, delete: if isAuthenticated() && (
+        (isProfessional() && resource.data.professionalId == request.auth.uid) || 
+        isAdmin()
+      );
+      
+      match /comments/{commentId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated();
+        allow update, delete: if isAuthenticated() && (
+          isOwner(resource.data.userId) || 
+          isAdmin()
+        );
+      }
+    }
+
+    // The Looks collection - curated feed (admin managed)
+    match /theLooks/{lookId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isAuthenticated() && isAdmin();
+    }
+
+    // Reviews collection
+    match /reviews/{reviewId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && (
+        (isClient() && request.resource.data.clientId == request.auth.uid) ||
         isAdmin()
       );
       allow update: if isAuthenticated() && (
-        isOwner(resource.data.userId) || 
+        isOwner(resource.data.clientId) || 
         isAdmin()
       );
-      allow delete: if false; // Verification documents cannot be deleted
+      allow delete: if isAuthenticated() && isAdmin();
     }
 
-    match /verifications/{userId} {
-      allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
-      allow create, update: if isAuthenticated() && (
-        isOwner(userId) || 
-        (isAdmin() && request.resource.data.verificationStatus in ['approved', 'rejected'])
-      );
-      allow delete: if false; // Verification documents cannot be deleted
-    }
-
-    match /aftercareSummaries/{summaryId} {
-      allow read: if isAuthenticated() && 
-        (request.auth.uid == resource.data.professionalId || 
-         request.auth.uid == resource.data.clientId ||
-         isAdmin());
-      allow create: if isAuthenticated() && (isProfessional() || isAdmin());
-      allow update: if isAuthenticated() && 
-        ((isProfessional() && request.auth.uid == resource.data.professionalId) || 
-         isAdmin());
-    }
-    
-    match /professionalNotes/{noteId} {
-      allow read: if isAuthenticated() && (
-        // Admin can read all notes
-        isAdmin() ||
-        // Professionals can read their own notes
-        (isProfessional() && request.auth.uid == resource.data.professionalId) ||
-        // Professionals can read shared notes for clients they have appointments with
-        (isProfessional() && 
-         resource.data.visibility == 'shared')
-      );
-      allow create, update: if isAuthenticated() && (
-        (isProfessional() && request.auth.uid == request.resource.data.professionalId) || 
-        isAdmin()
-      );
-      allow delete: if isAuthenticated() && (
-        (isProfessional() && request.auth.uid == resource.data.professionalId) || 
-        isAdmin()
-      );
-    }
-
-    // Messaging rules
+    // Conversations and messaging
     match /conversations/{conversationId} {
       allow create: if isAuthenticated();
       allow read: if isAuthenticated() && 
@@ -362,61 +196,124 @@ service cloud.firestore {
       }
     }
 
-    // New collections for social media features
-    match /content/{contentId} {
-      allow read: if isAuthenticated();
-      allow create: if isAuthenticated() && isProfessional();
-      allow update, delete: if isAuthenticated() && (
-        (isProfessional() && request.auth.uid == resource.data.professionalId) || 
-        isAdmin()
-      );
-      
-      match /comments/{commentId} {
-        allow read: if isAuthenticated();
-        allow create: if isAuthenticated();
-        allow update, delete: if isAuthenticated() && (
-          isOwner(resource.data.userId) || 
-          isAdmin()
-        );
-      }
-    }
-
-    match /theLooks/{lookId} {
-      allow read: if isAuthenticated();
-      allow write: if isAuthenticated() && isAdmin();
-    }
-
-    match /geoIndex/{geohash} {
-      allow read: if isAuthenticated();
-      allow write: if isAuthenticated() && isAdmin();
-    }
-
-    match /userActivity/{activityId} {
-      allow read: if isAuthenticated() && (
-        activityId.split('_')[0] == request.auth.uid || 
-        isAdmin()
-      );
-      allow write: if isAuthenticated() && activityId.split('_')[0] == request.auth.uid;
-    }
-
-    match /userRecommendations/{recommendationId} {
-      allow read: if isAuthenticated() && (
-        recommendationId.split('_')[0] == request.auth.uid || 
-        isAdmin()
-      );
-      allow write: if isAuthenticated() && isAdmin();
-    }
-    
     // Notifications collection
     match /notifications/{notificationId} {
       allow read: if isAuthenticated() && (
         resource.data.userId == request.auth.uid || 
         isAdmin()
       );
-      allow write: if isAuthenticated() && (
+      allow create, update: if isAuthenticated() && (
         request.resource.data.userId == request.auth.uid || 
         isAdmin()
       );
+      allow delete: if isAuthenticated() && (
+        resource.data.userId == request.auth.uid || 
+        isAdmin()
+      );
+    }
+
+    // Aftercare summaries
+    match /aftercareSummaries/{summaryId} {
+      allow read: if isAuthenticated() && 
+        (request.auth.uid == resource.data.professionalId || 
+         request.auth.uid == resource.data.clientId ||
+         isAdmin());
+      allow create: if isAuthenticated() && (
+        (isProfessional() && request.resource.data.professionalId == request.auth.uid) || 
+        isAdmin()
+      );
+      allow update: if isAuthenticated() && 
+        ((isProfessional() && request.auth.uid == resource.data.professionalId) || 
+         isAdmin());
+      allow delete: if isAuthenticated() && isAdmin();
+    }
+    
+    // Professional notes
+    match /professionalNotes/{noteId} {
+      allow read: if isAuthenticated() && (
+        isAdmin() ||
+        (isProfessional() && request.auth.uid == resource.data.professionalId) ||
+        (isProfessional() && resource.data.visibility == 'shared')
+      );
+      allow create, update: if isAuthenticated() && (
+        (isProfessional() && request.auth.uid == request.resource.data.professionalId) || 
+        isAdmin()
+      );
+      allow delete: if isAuthenticated() && (
+        (isProfessional() && request.auth.uid == resource.data.professionalId) || 
+        isAdmin()
+      );
+    }
+
+    // User activity tracking
+    match /userActivity/{activityId} {
+      allow read: if isAuthenticated() && (
+        activityId.split('_')[0] == request.auth.uid || 
+        isAdmin()
+      );
+      allow create, update: if isAuthenticated() && activityId.split('_')[0] == request.auth.uid;
+      allow delete: if isAuthenticated() && isAdmin();
+    }
+
+    // User recommendations
+    match /userRecommendations/{recommendationId} {
+      allow read: if isAuthenticated() && (
+        recommendationId.split('_')[0] == request.auth.uid || 
+        isAdmin()
+      );
+      allow create, update, delete: if isAuthenticated() && isAdmin();
+    }
+
+    // Geo index for location-based queries
+    match /geoIndex/{geohash} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isAuthenticated() && isAdmin();
+    }
+
+    // Products collection
+    match /products/{productId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && (
+        (isProfessional() && request.resource.data.professionalId == request.auth.uid) || 
+        isAdmin()
+      );
+      allow update, delete: if isAuthenticated() && (
+        (isProfessional() && resource.data.professionalId == request.auth.uid) || 
+        isAdmin()
+      );
+    }
+
+    // Legacy collections for backward compatibility
+    // These will be gradually phased out as we migrate to the new structure
+
+    // Legacy professionals collection (read-only for migration)
+    match /professionals/{professionalId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Deprecated - use users collection instead
+    }
+
+    // Legacy clients collection (read-only for migration)
+    match /clients/{clientId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Deprecated - use users collection instead
+    }
+
+    // Legacy admins collection (read-only for migration)
+    match /admins/{adminId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Deprecated - use users collection instead
+    }
+
+    // Legacy license collections (read-only for migration)
+    match /licenses/{licenseId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Deprecated - use verifications collection instead
+    }
+
+    // Reference images (admin only)
+    match /reference-images/{document=**} {
+      allow read: if isAuthenticated() && (isAdmin() || isProfessional());
+      allow write: if isAuthenticated() && isAdmin();
     }
   }
 }

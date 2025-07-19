@@ -21,6 +21,7 @@ export interface User {
     phone: boolean;
     identity: boolean;
   };
+  professionalVerificationStatus?: 'pending' | 'approved' | 'rejected';
   professionalProfile?: {
     bio?: string;
     location?: string | LocationData;

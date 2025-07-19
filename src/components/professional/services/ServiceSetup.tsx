@@ -197,6 +197,14 @@ const ServiceSetupContent: React.FC<ServiceSetupProps> = ({
   }
 
   console.log('ServiceSetupContent: Rendering main UI');
+  console.log('ServiceSetupContent: Form condition check:');
+  console.log('- formData.serviceId:', formData.serviceId);
+  console.log('- services exists:', !!services);
+  console.log('- services length:', services?.length);
+  console.log('- services array:', services);
+  console.log('- shouldShowForm:', !!(formData.serviceId && services));
+  console.log('- formData:', formData);
+  
   return (
     <div className="space-y-6">
       {/* Category Filter */}

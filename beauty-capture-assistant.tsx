@@ -1,20 +1,33 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Camera, Video, Pause, Square, Instagram } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Card, CardHeader, CardTitle, CardContent } from './src/components/ui/card';
+import { Alert, AlertDescription } from './src/components/ui/alert';
+
+// Define types for the captured frames
+interface CapturedFrame {
+  id: number;
+  timestamp: string;
+  quality: number;
+  type: string;
+  aspects: {
+    lighting: number;
+    composition: number;
+    focus: number;
+  };
+}
 
 const BeautyCapture = () => {
   const [isRecording, setIsRecording] = useState(false);
-  const [selectedFrames, setSelectedFrames] = useState([]);
+  const [selectedFrames, setSelectedFrames] = useState<CapturedFrame[]>([]);
   const [currentGuidance, setCurrentGuidance] = useState('');
   const [recordingDuration, setRecordingDuration] = useState(0);
   const [processingStatus, setProcessingStatus] = useState('');
   
-  const videoRef = useRef(null);
-  const mediaRecorderRef = useRef(null);
-  const chunksRef = useRef([]);
-  const streamRef = useRef(null);
-  const canvasRef = useRef(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+  const streamRef = useRef<MediaStream | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // Professional photography guidance sequences
   const guidanceSequences = [
@@ -52,7 +65,7 @@ const BeautyCapture = () => {
     }
   };
 
-  const initializeRecorder = (stream) => {
+  const initializeRecorder = (stream: MediaStream) => {
     const mediaRecorder = new MediaRecorder(stream, {
       mimeType: 'video/webm;codecs=vp9',
       videoBitsPerSecond: 8000000 // 8 Mbps for high quality
@@ -73,17 +86,21 @@ const BeautyCapture = () => {
   };
 
   const startRecording = () => {
-    chunksRef.current = [];
-    mediaRecorderRef.current.start(1000);
-    setIsRecording(true);
-    startGuidanceLoop();
-    startDurationTimer();
+    if (mediaRecorderRef.current) {
+      chunksRef.current = [];
+      mediaRecorderRef.current.start(1000);
+      setIsRecording(true);
+      startGuidanceLoop();
+      startDurationTimer();
+    }
   };
 
   const stopRecording = () => {
-    mediaRecorderRef.current.stop();
-    setIsRecording(false);
-    setCurrentGuidance('Processing your captures...');
+    if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+      setCurrentGuidance('Processing your captures...');
+    }
   };
 
   const startGuidanceLoop = () => {
@@ -111,7 +128,7 @@ const BeautyCapture = () => {
     }, 1000);
   };
 
-  const processRecording = async (blob) => {
+  const processRecording = async (blob: Blob) => {
     setProcessingStatus('Analyzing video frames...');
     
     // Simulate frame extraction and analysis

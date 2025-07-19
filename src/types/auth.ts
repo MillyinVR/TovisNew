@@ -1,7 +1,7 @@
-export type UserRole = 'admin' | 'professional' | 'client';
+export type UserRole = 'admin' | 'professional' | 'client' | 'pending_professional';
 
 export type PermissionAction = 'create' | 'read' | 'update' | 'delete';
-export type PermissionResource = 'users' | 'bookings' | 'services' | 'settings' | 'profiles';
+export type PermissionResource = 'users' | 'bookings' | 'services' | 'settings' | 'profiles' | 'verifications';
 
 export interface Permission {
   action: PermissionAction;
@@ -19,6 +19,37 @@ export interface UserType {
   tier: 'standard' | 'premium' | 'vip';
   permissions: Permission[];
   features: string[];
+}
+
+// Firebase Custom Claims interface
+export interface CustomClaims {
+  admin?: boolean;
+  professional?: boolean;
+  role?: UserRole;
+  verificationStatus?: 'pending' | 'approved' | 'rejected';
+  tier?: 'standard' | 'premium' | 'vip';
+}
+
+// Verification status types
+export type VerificationStatus = 'pending' | 'approved' | 'rejected' | 'expired';
+
+export interface VerificationDocument {
+  id: string;
+  userId: string;
+  type: 'license' | 'certification' | 'insurance' | 'identity';
+  documentUrl: string;
+  status: VerificationStatus;
+  submittedAt: any; // Firestore timestamp
+  reviewedAt?: any; // Firestore timestamp
+  reviewedBy?: string; // Admin user ID
+  expiresAt?: any; // Firestore timestamp
+  notes?: string;
+  metadata?: {
+    licenseNumber?: string;
+    issuingAuthority?: string;
+    state?: string;
+    country?: string;
+  };
 }
 
 export const ROLES: Record<UserRole, Role> = {
@@ -40,6 +71,10 @@ export const ROLES: Record<UserRole, Role> = {
       { action: 'create', resource: 'settings' },
       { action: 'read', resource: 'settings' },
       { action: 'update', resource: 'settings' },
+      { action: 'create', resource: 'verifications' },
+      { action: 'read', resource: 'verifications' },
+      { action: 'update', resource: 'verifications' },
+      { action: 'delete', resource: 'verifications' },
     ],
   },
   professional: {
@@ -54,6 +89,18 @@ export const ROLES: Record<UserRole, Role> = {
       { action: 'update', resource: 'bookings' },
       { action: 'read', resource: 'profiles' },
       { action: 'update', resource: 'profiles' },
+      { action: 'create', resource: 'verifications' },
+      { action: 'read', resource: 'verifications' },
+    ],
+  },
+  pending_professional: {
+    name: 'pending_professional',
+    displayName: 'Pending Professional',
+    permissions: [
+      { action: 'read', resource: 'profiles' },
+      { action: 'update', resource: 'profiles' },
+      { action: 'create', resource: 'verifications' },
+      { action: 'read', resource: 'verifications' },
     ],
   },
   client: {

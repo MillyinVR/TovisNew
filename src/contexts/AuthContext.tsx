@@ -19,8 +19,7 @@ import {
 } from 'firebase/firestore';
 import { auth, db } from '../lib/firebase';
 import { User, UserRole } from '../types/user';
-import { initializeServiceData } from '../lib/initializeData';
-import { verifyDatabase, verifyUserServices } from '../lib/verifyDatabase';
+import { CustomClaims } from '../types/auth';
 
 export interface AuthContextType {
   currentUser: User | null;
@@ -34,6 +33,7 @@ export interface AuthContextType {
   signInWithFacebook: () => Promise<void>;
   signInWithApple: () => Promise<void>;
   updateUserProfile: (data: Partial<User>) => Promise<{ success: boolean }>;
+  refreshUserClaims: () => Promise<CustomClaims | null>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -53,20 +53,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   
-  // Add a token refresh interval reference
+  // Token refresh interval reference
   const tokenRefreshIntervalRef = React.useRef<NodeJS.Timeout | null>(null);
 
-  // Function to refresh the token
-  const refreshToken = async () => {
+  // Function to refresh the token and get latest claims
+  const refreshUserClaims = async () => {
     try {
       if (auth.currentUser) {
-        console.log('Refreshing auth token periodically');
+        console.log('Refreshing auth token and claims');
         await auth.currentUser.getIdToken(true);
-        console.log('Token refreshed successfully');
+        const tokenResult = await auth.currentUser.getIdTokenResult();
+        console.log('Refreshed token claims:', tokenResult.claims);
+        return tokenResult.claims as CustomClaims;
       }
     } catch (error) {
       console.error('Error refreshing token:', error);
     }
+    return null;
+  };
+
+  // Function to determine user role from claims and fallback to document
+  const getUserRole = (claims: CustomClaims, documentRole?: UserRole): UserRole => {
+    // Primary: Use custom claims
+    if (claims.admin || claims.role === 'admin') {
+      return 'admin';
+    }
+    if (claims.professional || claims.role === 'professional') {
+      return 'professional';
+    }
+    if (claims.role === 'pending_professional') {
+      return 'pending_professional';
+    }
+    if (claims.role === 'client') {
+      return 'client';
+    }
+    
+    // Fallback: Use document role if no claims are set
+    if (documentRole) {
+      return documentRole;
+    }
+    
+    // Default: client
+    return 'client';
   };
 
   useEffect(() => {
@@ -76,74 +104,103 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         hasUser: !!user
       });
       
-      setCurrentUser(user ? {
-        uid: user.uid,
-        email: user.email || '',
-        displayName: user.displayName || '',
-        photoURL: user.photoURL || '',
-        role: 'client', // Default role until we load the profile
-        phoneNumber: user.phoneNumber || undefined,
-        preferences: {
-          notifications: true,
-          theme: 'light',
-          language: 'en',
-        },
-        verificationStatus: {
-          email: user.emailVerified,
-          phone: !!user.phoneNumber,
-          identity: false,
-        },
-        membershipTier: 'standard',
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-        lastLoginAt: serverTimestamp(),
-        failedLoginAttempts: 0,
-      } : null);
       setLoading(true);
       
       if (user) {
         try {
           // Get the latest token result to check claims
           const tokenResult = await user.getIdTokenResult(true);
-          console.log('Token claims:', tokenResult.claims);
+          const claims = tokenResult.claims as CustomClaims;
+          console.log('Token claims:', claims);
 
+          // Get user document from the canonical users collection
           const userRef = doc(db, 'users', user.uid);
           const userDoc = await getDoc(userRef);
 
           if (!userDoc.exists()) {
             console.log('No user profile found in database - waiting for profile creation');
+            setCurrentUser({
+              uid: user.uid,
+              email: user.email || '',
+              displayName: user.displayName || '',
+              photoURL: user.photoURL || '',
+              role: getUserRole(claims),
+              phoneNumber: user.phoneNumber || undefined,
+              preferences: {
+                notifications: true,
+                theme: 'light',
+                language: 'en',
+              },
+              verificationStatus: {
+                email: user.emailVerified,
+                phone: !!user.phoneNumber,
+                identity: false,
+              },
+              membershipTier: 'standard',
+              createdAt: serverTimestamp(),
+              updatedAt: serverTimestamp(),
+              lastLoginAt: serverTimestamp(),
+              failedLoginAttempts: 0,
+            });
+            setUserProfile(null);
             setLoading(false);
             return;
           }
 
-          const profile = {
-            ...(userDoc.data() as User),
+          const documentData = userDoc.data() as User;
+          
+          // Determine role using claims first, document as fallback
+          const userRole = getUserRole(claims, documentData.role);
+          
+          const profile: User = {
+            ...documentData,
             uid: user.uid, // Ensure we have the uid from Firebase
-            // Override role based on claims
-            role: tokenResult.claims.admin || tokenResult.claims.role === 'admin' 
-              ? 'admin' 
-              : tokenResult.claims.professional || tokenResult.claims.role === 'professional'
-                ? 'professional'
-                : (userDoc.data() as User).role
+            role: userRole, // Use the determined role
+            professionalVerificationStatus: claims.verificationStatus || documentData.professionalVerificationStatus || 'pending'
           };
+          
           console.log('Loaded user profile:', {
             userId: profile.uid,
             userEmail: profile.email,
-            userRole: profile.role
+            userRole: profile.role,
+            claimsRole: claims.role,
+            documentRole: documentData.role,
+            verificationStatus: profile.verificationStatus
+          });
+          
+          setCurrentUser({
+            uid: user.uid,
+            email: user.email || '',
+            displayName: user.displayName || '',
+            photoURL: user.photoURL || '',
+            role: userRole,
+            phoneNumber: user.phoneNumber || undefined,
+            preferences: profile.preferences || {
+              notifications: true,
+              theme: 'light',
+              language: 'en',
+            },
+            verificationStatus: {
+              email: user.emailVerified,
+              phone: !!user.phoneNumber,
+              identity: false,
+            },
+            membershipTier: profile.membershipTier || 'standard',
+            createdAt: profile.createdAt || serverTimestamp(),
+            updatedAt: profile.updatedAt || serverTimestamp(),
+            lastLoginAt: serverTimestamp(),
+            failedLoginAttempts: profile.failedLoginAttempts || 0,
           });
           
           setUserProfile(profile);
           
-          if (profile.role === 'professional') {
-            console.log('Verifying services for professional user');
-            await verifyUserServices(user.uid);
-          }
         } catch (error) {
           console.error('Error fetching user profile:', error);
           setError('Failed to fetch user profile');
         }
       } else {
         console.log('No user signed in, clearing profile');
+        setCurrentUser(null);
         setUserProfile(null);
       }
       
@@ -151,23 +208,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     // Set up periodic token refresh (every 45 minutes)
-    // Firebase tokens expire after 1 hour by default, so refresh before that
     if (currentUser) {
       console.log('Setting up periodic token refresh');
-      // Clear any existing interval
       if (tokenRefreshIntervalRef.current) {
         clearInterval(tokenRefreshIntervalRef.current);
       }
       
-      // Set new interval - refresh every 45 minutes (2,700,000 ms)
-      tokenRefreshIntervalRef.current = setInterval(refreshToken, 2700000);
-      
-      // Do an initial refresh
-      refreshToken();
+      tokenRefreshIntervalRef.current = setInterval(refreshUserClaims, 2700000);
+      refreshUserClaims();
     }
 
     return () => {
-      // Clean up the interval when the component unmounts
       if (tokenRefreshIntervalRef.current) {
         clearInterval(tokenRefreshIntervalRef.current);
         tokenRefreshIntervalRef.current = null;
@@ -184,12 +235,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const auth_result = await signInWithEmailAndPassword(auth, email, password);
       console.log('Auth successful, fetching user profile');
       
+      // Get user document from canonical users collection
       let userDoc = await getDoc(doc(db, 'users', auth_result.user.uid));
 
-      // If this is the admin user, ensure admin document exists and set custom claim
+      // Handle special test accounts
       if (email === 'Admin@test.com') {
         try {
-          // Create admin user document if it doesn't exist
+          // Create/update admin user document
           if (!userDoc.exists()) {
             const adminProfile = {
               uid: auth_result.user.uid,
@@ -203,154 +255,105 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             await setDoc(doc(db, 'users', auth_result.user.uid), adminProfile);
             console.log('Created admin user document');
           } else if (userDoc.data()?.role !== 'admin') {
-            // Update role to admin if not already
             await setDoc(doc(db, 'users', auth_result.user.uid), { role: 'admin' }, { merge: true });
             console.log('Updated user role to admin');
           }
 
+          // Set admin claim via cloud function
           console.log('Setting admin claim...');
           const functions = getFunctions();
           const setAdminClaim = httpsCallable(functions, 'setAdminClaim');
-          const result = await setAdminClaim();
-          console.log('Admin claim result:', result);
+          await setAdminClaim();
           
-          // Force token refresh and wait for it
+          // Wait for claims to propagate
+          await new Promise(resolve => setTimeout(resolve, 2000));
           await auth_result.user.getIdToken(true);
-          const decodedToken = await auth_result.user.getIdTokenResult();
-          console.log('New token claims:', decodedToken.claims);
-
-          // Wait for claims to propagate and verify
-          let attempts = 0;
-          const maxAttempts = 5;
-          let claimsVerified = false;
           
-          while (attempts < maxAttempts && !claimsVerified) {
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            const newTokenResult = await auth_result.user.getIdTokenResult(true);
-            console.log(`Attempt ${attempts + 1}: Verifying admin claims:`, newTokenResult.claims);
-            
-            console.log('Token result in AuthContext:', newTokenResult);
-            // Check for either admin:true or role:'admin' claim
-            if (newTokenResult.claims.admin || newTokenResult.claims.role === 'admin') {
-              claimsVerified = true;
-              console.log('Admin access verified via claims:', newTokenResult.claims);
-            } else {
-              attempts++;
-              console.log(`Admin claims not found, attempt ${attempts} of ${maxAttempts}`);
-            }
-          }
-
-          if (!claimsVerified) {
-            console.error('Failed to verify admin claims after multiple attempts');
-            throw new Error('Failed to set admin permissions');
-          }
-
-          // Fetch updated user doc after claims are verified
           userDoc = await getDoc(doc(db, 'users', auth_result.user.uid));
         } catch (error) {
           console.error('Error setting admin claim:', error);
         }
       } 
-      // If this is a professional user, ensure professional claim is set
-      else if (email === 'professional@test.com' || (userDoc.exists() && userDoc.data()?.role === 'professional')) {
+      else if (email === 'professional@test.com') {
         try {
-          // First, ensure the user document has the correct role
-          if (userDoc.exists() && userDoc.data()?.role !== 'professional') {
-            // Update role to professional if not already
-            await setDoc(doc(db, 'users', auth_result.user.uid), { role: 'professional' }, { merge: true });
+          // Create/update professional user document
+          if (!userDoc.exists()) {
+            const professionalProfile = {
+              uid: auth_result.user.uid,
+              email: auth_result.user.email,
+              role: 'professional',
+              name: 'Professional User',
+              professionalVerificationStatus: 'approved',
+              createdAt: serverTimestamp(),
+              updatedAt: serverTimestamp(),
+              lastLoginAt: serverTimestamp()
+            };
+            await setDoc(doc(db, 'users', auth_result.user.uid), professionalProfile);
+            console.log('Created professional user document');
+          } else if (userDoc.data()?.role !== 'professional') {
+            await setDoc(doc(db, 'users', auth_result.user.uid), { 
+              role: 'professional',
+              professionalVerificationStatus: 'approved'
+            }, { merge: true });
             console.log('Updated user role to professional');
-            // Refresh the user document
-            userDoc = await getDoc(doc(db, 'users', auth_result.user.uid));
           }
+
+          // Set professional claim via cloud function
+          console.log('Setting professional claim...');
+          const functions = getFunctions();
+          const setProfessionalClaim = httpsCallable(functions, 'setProfessionalClaim');
+          await setProfessionalClaim();
           
-          // Set professional claim - but don't rely on it for authentication
-          console.log('Setting professional claim (but will use document-based role as primary)...');
+          // Wait for claims to propagate
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          await auth_result.user.getIdToken(true);
           
-          try {
-            // Call the cloud function to set the claim, but don't wait for it
-            // This avoids blocking the login process if there are token issues
-            const functions = getFunctions();
-            const setProfessionalClaim = httpsCallable(functions, 'setProfessionalClaim');
-            
-            // Fire and forget - we'll use document-based role regardless
-            setProfessionalClaim()
-              .then(result => {
-                console.log('Professional claim result:', result);
-              })
-              .catch(error => {
-                console.log('Error setting professional claim, but continuing with document-based role:', error);
-              });
-            
-            // Don't attempt token refresh here - we'll use document-based role
-            console.log('Using document-based role for professional authentication');
-            
-          } catch (claimError) {
-            console.error('Error calling setProfessionalClaim function:', claimError);
-            console.log('Continuing with document-based role assignment as fallback');
-          }
+          userDoc = await getDoc(doc(db, 'users', auth_result.user.uid));
         } catch (error) {
-          console.error('Error in professional role process:', error);
-          console.log('Continuing with document-based role assignment as fallback');
+          console.error('Error setting professional claim:', error);
         }
-      } else if (!userDoc.exists()) {
+      }
+      else if (email === 'client@test.com') {
+        try {
+          // Create/update client user document
+          if (!userDoc.exists()) {
+            const clientProfile = {
+              uid: auth_result.user.uid,
+              email: auth_result.user.email,
+              role: 'client',
+              name: 'Client User',
+              createdAt: serverTimestamp(),
+              updatedAt: serverTimestamp(),
+              lastLoginAt: serverTimestamp()
+            };
+            await setDoc(doc(db, 'users', auth_result.user.uid), clientProfile);
+            console.log('Created client user document');
+          }
+          
+          userDoc = await getDoc(doc(db, 'users', auth_result.user.uid));
+        } catch (error) {
+          console.error('Error setting up client account:', error);
+        }
+      }
+      else if (!userDoc.exists()) {
         throw new Error('User profile not found');
       }
 
       // Get fresh token result after claims are set
-      let tokenClaims: Record<string, any> = {};
-      try {
-        const tokenResult = await auth_result.user.getIdTokenResult(true);
-        tokenClaims = tokenResult.claims as Record<string, any>;
-        console.log('Final token claims:', tokenClaims);
-      } catch (error) {
-        console.log('Error getting final token, using document-based role');
-        // If we can't get the token, use the document-based role
-      }
+      const tokenResult = await auth_result.user.getIdTokenResult(true);
+      const claims = tokenResult.claims as CustomClaims;
+      console.log('Final token claims:', claims);
 
-      // Determine the role based on claims or document data
-      let role: UserRole = 'client';
-      
-      // First try to use claims
-      if (tokenClaims.admin || tokenClaims.role === 'admin') {
-        role = 'admin';
-      } else if (tokenClaims.professional || tokenClaims.role === 'professional') {
-        role = 'professional';
-      } 
-      // If no claims or claims don't indicate a special role, use document data
-      else if (userDoc.exists()) {
-        const userData = userDoc.data();
-        if (userData?.role === 'admin') {
-          role = 'admin';
-        } else if (userData?.role === 'professional') {
-          role = 'professional';
-        } else if (userData?.role === 'pending_professional') {
-          role = 'pending_professional';
-        } else {
-          role = 'client';
-        }
-      }
+      // Determine the role using claims and document data
+      const documentData = userDoc.data() as User;
+      const role = getUserRole(claims, documentData?.role);
 
       const profile = {
-        ...(userDoc.data() as User),
+        ...documentData,
         uid: auth_result.user.uid,
         role: role
       };
 
-      // DEBUG: Log user role verification
-      if (email === 'Admin@test.com') {
-        console.log('Admin user role verification:', {
-          uid: profile.uid,
-          role: profile.role,
-          profileData: profile
-        });
-      } else if (email === 'professional@test.com') {
-        console.log('Professional user role verification:', {
-          uid: profile.uid,
-          role: profile.role,
-          profileData: profile,
-          claims: tokenClaims
-        });
-      }
       console.log('Profile loaded, navigating based on role:', profile.role);
       
       // Update local state
@@ -382,41 +385,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signUp = async (email: string, password: string, role: 'client' | 'professional') => {
     try {
-      console.log('Starting signup process:', {
-        email,
-        role,
-        typeofRole: typeof role
-      });
+      console.log('Starting signup process:', { email, role });
       setError(null);
       
-      // Explicitly determine role before auth creation
+      // Determine initial role
       const userRole: UserRole = role === 'professional' ? 'pending_professional' : 'client';
-      console.log('Role determined:', {
-        providedRole: role,
-        determinedRole: userRole,
-        isProfessional: role === 'professional'
-      });
+      console.log('Role determined:', { providedRole: role, determinedRole: userRole });
 
       // Create auth user
-      console.log('Creating auth user');
       const result = await createUserWithEmailAndPassword(auth, email, password);
       
-      // Create the profile document
+      // Create the profile document in the canonical users collection
       const newProfile: User = {
         uid: result.user.uid,
         email: result.user.email || '',
         displayName: result.user.displayName || '',
         photoURL: result.user.photoURL || '',
         role: userRole,
+        professionalVerificationStatus: userRole === 'pending_professional' ? 'pending' : undefined,
         preferences: {
           notifications: true,
           theme: 'light',
           language: 'en',
-        },
-        verificationStatus: {
-          email: result.user.emailVerified,
-          phone: !!result.user.phoneNumber,
-          identity: false,
         },
         membershipTier: 'standard',
         createdAt: serverTimestamp(),
@@ -425,16 +415,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         failedLoginAttempts: 0,
       };
 
-      // Save to database
+      // Save to users collection (canonical source of truth)
       const userRef = doc(db, 'users', result.user.uid);
-      console.log('Saving profile to database:', {
+      console.log('Saving profile to users collection:', {
         userId: newProfile.uid,
         userRole: newProfile.role
       });
       
-      // Use a clean object without any undefined values
-      const profileToSave = JSON.parse(JSON.stringify(newProfile));
-      await setDoc(userRef, profileToSave);
+      await setDoc(userRef, newProfile);
       
       // Verify the save
       const savedDoc = await getDoc(userRef);
@@ -446,7 +434,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Update local state
       setUserProfile(newProfile);
       
-      // Navigate to pending dashboard for pending professionals
+      // Navigate based on role
       if (userRole === 'pending_professional') {
         navigate('/professional/pending');
       } else {
@@ -484,11 +472,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             theme: 'light',
             language: 'en',
           },
-          verificationStatus: {
-            email: result.user.emailVerified,
-            phone: !!result.user.phoneNumber,
-            identity: false,
-          },
           membershipTier: 'standard',
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
@@ -513,7 +496,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           navigate('/professional/dashboard');
           break;
         case 'pending_professional':
-          navigate('/professional/registration');
+          navigate('/professional/pending');
           break;
         case 'client':
           navigate('/client/dashboard');
@@ -555,18 +538,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // Get current user data first
       const userDoc = await getDoc(userRef);
-      const currentData = userDoc.exists() ? userDoc.data() as User : {
-        professionalProfile: {},
-      } as Partial<User>;
+      const currentData = userDoc.exists() ? userDoc.data() as User : {} as Partial<User>;
 
-      // Properly merge professionalProfile if it exists
+      // Properly merge data
       const updateData = {
         ...data,
         updatedAt: serverTimestamp(),
-        professionalProfile: data.professionalProfile ? {
-          ...(currentData.professionalProfile || {}),
-          ...data.professionalProfile
-        } : currentData.professionalProfile
       };
 
       await setDoc(userRef, updateData, { merge: true });
@@ -577,10 +554,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return {
           ...prev,
           ...data,
-          professionalProfile: data.professionalProfile ? {
-            ...(prev.professionalProfile || {}),
-            ...data.professionalProfile
-          } : prev.professionalProfile
         };
       });
 
@@ -604,6 +577,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     signInWithFacebook,
     signInWithApple,
     updateUserProfile,
+    refreshUserClaims,
   };
 
   return (
