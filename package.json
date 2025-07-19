@@ -20,7 +20,9 @@
     "lint:fix": "eslint . --fix"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,json,css,md,scss}": "prettier --write --ignore-unknown"
+    "**/*.{ts,tsx,js,jsx,json,md}": [
+      "prettier --write"
+    ]
   },
   "dependencies": {
     "@fullcalendar/core": "^6.1.15",
