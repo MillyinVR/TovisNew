@@ -5,6 +5,7 @@ import {
   createUserWithEmailAndPassword,
   signOut as firebaseSignOut,
   onAuthStateChanged,
+  onIdTokenChanged,
   GoogleAuthProvider,
   signInWithPopup,
   FacebookAuthProvider,
@@ -12,6 +13,7 @@ import {
 } from 'firebase/auth';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { toast } from 'react-toastify';
 import { auth, db } from '../lib/firebase';
 import { User, UserRole } from '../types/user';
 import { CustomClaims } from '../types/auth';
@@ -202,6 +204,52 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
     });
 
+    // Set up ID token change listener to handle token revocation
+    const unsubscribeIdToken = onIdTokenChanged(auth, async (user) => {
+      if (user) {
+        try {
+          console.log('ID token changed, refreshing claims');
+          await user.getIdToken(true);
+          const tokenResult = await user.getIdTokenResult();
+          const claims = tokenResult.claims as CustomClaims;
+
+          // Check if user has professional role and show success toast
+          if (claims.role === 'professional' && claims.verificationStatus === 'approved') {
+            toast.success("You're all set—dashboard unlocked!", {
+              position: 'top-right',
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+            });
+          }
+
+          console.log('Token refreshed successfully:', claims);
+        } catch (error: any) {
+          console.error('Error handling token change:', error);
+
+          // Handle token revocation specifically
+          if (error.code === 'auth/id-token-revoked') {
+            console.log('Token was revoked, forcing refresh');
+            try {
+              await user.getIdToken(true);
+              toast.success("You're all set—dashboard unlocked!", {
+                position: 'top-right',
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+              });
+            } catch (refreshError) {
+              console.error('Failed to refresh revoked token:', refreshError);
+            }
+          }
+        }
+      }
+    });
+
     // Set up periodic token refresh (every 45 minutes)
     if (currentUser) {
       console.log('Setting up periodic token refresh');
@@ -219,6 +267,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         tokenRefreshIntervalRef.current = null;
       }
       unsubscribe();
+      unsubscribeIdToken();
     };
   }, [currentUser?.uid]);
 
