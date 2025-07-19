@@ -2,7 +2,7 @@
 .fc {
   background: #ffffff;
   color: #333;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   height: 100% !important;
   display: flex !important;
   flex-direction: column !important;
@@ -188,94 +188,94 @@
     overflow-x: auto !important;
     width: 100% !important;
   }
-  
+
   .fc {
     min-width: auto !important; /* Allow calendar to fit screen width */
     width: 100% !important;
   }
-  
+
   .fc-header-toolbar {
     flex-direction: column !important;
     align-items: center !important;
     padding: 0.5rem !important;
   }
-  
+
   .fc-toolbar-chunk {
     margin-bottom: 0.5rem !important;
     display: flex !important;
     justify-content: center !important;
     width: 100% !important;
   }
-  
+
   .fc-toolbar-title {
     font-size: 1.2rem !important;
     margin: 0.5rem 0 !important;
   }
-  
+
   .fc-button {
     padding: 0.3rem 0.5rem !important;
     font-size: 0.8rem !important;
     min-height: 36px !important; /* Increase touch target height */
   }
-  
+
   .fc-col-header-cell-cushion {
     font-size: 0.8rem !important;
     padding: 4px !important;
   }
-  
+
   .fc-timegrid-slot {
     height: 35px !important;
   }
-  
+
   .fc-timegrid-axis-cushion {
     font-size: 0.7rem !important;
   }
-  
+
   .fc-event-title {
     font-size: 0.75rem !important;
   }
-  
+
   .fc-event-time {
     font-size: 0.7rem !important;
   }
-  
+
   /* Increase touch targets for mobile */
-  .pending-approve-btn, 
+  .pending-approve-btn,
   .pending-deny-btn {
     width: 32px !important;
     height: 32px !important;
     font-size: 16px !important;
   }
-  
+
   /* Improve day view on mobile */
   .fc-timeGridDay-view .fc-timegrid-slot {
     height: 40px !important; /* Taller slots for day view */
   }
-  
+
   /* Better handling of small screens */
   .fc-view-harness {
     min-height: 450px !important;
   }
-  
+
   /* Month view improvements for mobile */
   .fc-dayGridMonth-view {
     min-height: 500px !important;
     height: auto !important;
   }
-  
+
   .fc-dayGridMonth-view .fc-scrollgrid-sync-table {
     min-height: 450px !important;
   }
-  
+
   .fc-daygrid-day-frame {
     min-height: 80px !important;
     padding: 2px !important;
   }
-  
+
   .fc-daygrid-day-top {
     justify-content: center !important;
   }
-  
+
   .fc-daygrid-day-number {
     font-size: 0.85rem !important;
     padding: 2px !important;
@@ -286,25 +286,25 @@
     justify-content: center !important;
     margin: 0 auto !important;
   }
-  
+
   .fc-daygrid-event {
     margin: 1px 2px !important;
     padding: 2px 4px !important;
   }
-  
+
   .fc-daygrid-event-dot {
     margin: 0 4px 0 0 !important;
   }
-  
+
   .fc-daygrid-event .fc-event-title {
     font-size: 0.7rem !important;
   }
-  
+
   .fc-daygrid-more-link {
     font-size: 0.7rem !important;
     margin-top: 1px !important;
   }
-  
+
   /* Ensure the calendar is scrollable horizontally on mobile */
   .fc-view-harness {
     overflow-x: auto !important;
@@ -317,21 +317,21 @@
   .fc-header-toolbar {
     padding: 0.3rem !important;
   }
-  
+
   .fc-toolbar-title {
     font-size: 1rem !important;
   }
-  
+
   .fc-button {
     padding: 0.2rem 0.4rem !important;
     font-size: 0.75rem !important;
   }
-  
+
   .fc-col-header-cell-cushion {
     font-size: 0.7rem !important;
     padding: 2px !important;
   }
-  
+
   .fc-timegrid-slot {
     height: 30px !important;
   }
@@ -353,19 +353,19 @@
 
 /* Event types - more distinct colors */
 .event-booking {
-  background-color: #4F46E5 !important;
+  background-color: #4f46e5 !important;
   border-left: 3px solid #3730a3 !important;
   box-shadow: 0 2px 4px rgba(79, 70, 229, 0.3) !important;
 }
 
 .event-blocked {
-  background-color: #EF4444 !important;
+  background-color: #ef4444 !important;
   border-left: 3px solid #b91c1c !important;
   box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3) !important;
 }
 
 .event-available {
-  background-color: #10B981 !important;
+  background-color: #10b981 !important;
   border-left: 3px solid #047857 !important;
   box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3) !important;
 }
@@ -424,7 +424,7 @@
   margin-top: auto !important;
 }
 
-.pending-approve-btn, 
+.pending-approve-btn,
 .pending-deny-btn {
   border: none !important;
   border-radius: 50% !important;
@@ -440,13 +440,13 @@
 }
 
 .pending-approve-btn {
-  background-color: #10B981 !important; /* Green */
+  background-color: #10b981 !important; /* Green */
   color: white !important;
   margin-right: 4px !important;
 }
 
 .pending-deny-btn {
-  background-color: #EF4444 !important; /* Red */
+  background-color: #ef4444 !important; /* Red */
   color: white !important;
 }
 
@@ -456,13 +456,13 @@
 }
 
 .pending-deny-btn:hover {
-  background-color: #B91C1C !important;
+  background-color: #b91c1c !important;
   transform: scale(1.1) !important;
 }
 
 /* Make pending appointments stand out */
 .pending-appointment {
-  border: 2px dashed #F59E0B !important;
+  border: 2px dashed #f59e0b !important;
   animation: pulse 2s infinite !important;
 }
 
